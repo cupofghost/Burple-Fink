@@ -200,6 +200,20 @@ Document the choice in `docs/PLAN.md` when you implement it.
   `src/data.py`, the checkpoint format, and these three docs. If you must change a shared
   file, make the smallest change that works and call it out in your PR description.
 
+### GitHub repository settings (already configured — work within these, don't try to change them)
+
+- `main` is protected: PRs are required before merging; direct pushes are rejected.
+- Required approvals: **0** — you're authorized to merge your own PR once your branch is
+  current with `main`.
+- Merge method: **squash only** (merge commit and rebase are disabled).
+- Linear history is required.
+- Force pushes are blocked.
+- Head branches auto-delete after merge.
+- No CI/status checks are configured — don't wait on checks that don't exist.
+- No required signed commits, no required reviewers, no code owners.
+- Branch naming: `<agent-name>/<short-feature-description>`, branched off the latest
+  `main` (the `claude/ws<N>-<slug>` scheme above is a specific case of this pattern).
+
 ---
 
 ## 8. Definition of done (per workstream)
