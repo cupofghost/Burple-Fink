@@ -1,21 +1,44 @@
 # Burple-Fink 🚗🤖
 
-A character-level recurrent neural network (char-RNN) that invents **new names** by
-learning the "spelling style" of a set of real ones. Inspired by
-[Janelle Shane's neural-network paint-color experiment](https://aiweirdness.com/),
-where a char-rnn trained on ~7,700 Sherwin-Williams paint colors learned to
-hallucinate new colors with names like *"Dondarf"*, *"Sane Green"*, and
-*"Stoomy Brown"*.
+A character-level RNN **name-generation platform**. One reusable model, trained and
+fine-tuned on many different datasets, to invent new names in a variety of styles —
+car brands, model names, and (over time) whatever else we point it at.
 
-Just like Shane's model, this one predicts **one character at a time**. Give it a
-list of real names, let it read them thousands of times, and it starts to produce
-plausible-but-invented names in the same style.
+Inspired by [Janelle Shane's neural-network paint-color experiment](https://aiweirdness.com/),
+where a char-rnn trained on ~7,700 Sherwin-Williams paint colors learned to hallucinate
+new colors with names like *"Dondarf"*, *"Sane Green"*, and *"Stoomy Brown"*. Like hers,
+this model predicts **one character at a time**, so it can synthesize brand-new words
+that no dictionary contains.
 
-**First job:** generate fake **automobile manufacturer** names and **car model**
-names after training on real ones (`Toyota`, `Corvette`, `Lamborghini`, `Wrangler`, ...).
+> The name *"Burple-Fink"* is exactly the kind of thing this project emits — a perfectly
+> product-shaped word that means nothing at all.
 
-> The name *"Burple-Fink"* is exactly the kind of thing this project is designed to
-> emit — a perfectly car-shaped word that means nothing at all.
+---
+
+## 📌 This is a multi-stage, multi-agent project
+
+Burple-Fink is being built in stages by **multiple agents working in parallel**. The end
+state is a single char-RNN engine plus a growing library of training datasets and
+per-domain fine-tuned checkpoints, so the same engine can generate many *kinds* of names.
+
+**If you are an agent (or human) picking up work here, start with
+[`HANDOFF.md`](HANDOFF.md).** It defines the stages, the open workstreams, the
+conventions every contributor must follow, and how to add a new dataset without
+colliding with other agents. Repo-wide conventions and commands for agents also live in
+[`CLAUDE.md`](CLAUDE.md).
+
+### Where the project is now
+
+| Stage | Description | Status |
+|-------|-------------|--------|
+| **0. MVP engine** | Char-RNN (LSTM) that trains per-dataset from scratch + temperature sampling | ✅ Done |
+| **1. Dataset library** | Many clean, documented name datasets under a shared convention | ⏳ In progress |
+| **2. Shared base + fine-tuning** | Pretrain one base model on all corpora, then fine-tune per domain (transfer learning) | 🔜 Planned |
+| **3. Evaluation harness** | Automatic novelty / plausibility / diversity metrics to compare checkpoints | 🔜 Planned |
+| **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | 🔜 Planned |
+| **5. Serving** | CLI ✅ → API → tiny web demo | ⏳ CLI done |
+
+The full rationale and design for each stage lives in [`docs/PLAN.md`](docs/PLAN.md).
 
 ---
 
@@ -25,59 +48,35 @@ A char-RNN doesn't know what a "word" is. It only learns:
 
 > *"Given the characters I've seen so far, what character probably comes next?"*
 
-Train it on `Corvette` and thousands of siblings and it internalizes patterns like
-"car names love hard C's, double-T's, and Italian-ish `-o`/`-i` endings." Then you
-seed it with a starting character and let it babble, sampling one character at a
-time until it emits an end-of-name token. Turn up the **sampling temperature**
-("creativity" in Shane's telling) and it gets weirder — *Dondarf* territory.
+Made-up product names aren't real words, so a **word-level** model literally cannot
+produce them. A **character-level** model works letter-by-letter and can therefore
+synthesize entirely new tokens like `Corvella` or `Burple-Fink`. The price is that it
+must also *learn to spell* — which is what makes the early-training output so gloriously
+broken.
 
-This repo uses an **LSTM** variant of the RNN, which trains more reliably than a
-vanilla RNN but works on exactly the same principle.
+We use an **LSTM** variant, which trains far more reliably than a vanilla RNN on exactly
+the same principle. See [`docs/PLAN.md`](docs/PLAN.md) for the architecture.
 
 ---
 
 ## Quick start
 
 ```bash
-# 1. Install dependencies (PyTorch)
+# 1. Install dependencies (PyTorch). Note: install from the default PyPI index —
+#    the custom pytorch download index is not reachable in this environment.
 pip install -r requirements.txt
 
-# 2. Train on the bundled car-manufacturer list (writes a checkpoint to ./checkpoints)
+# 2. Train on a dataset (writes a checkpoint to ./checkpoints)
 python -m src.train --data data/car_manufacturers.txt --epochs 300 --name manufacturers
 
 # 3. Generate 20 brand-new manufacturer names
 python -m src.sample --checkpoint checkpoints/manufacturers.pt --num 20 --temperature 0.8
+
+# …or do both in one shot:
+python generate.py --data data/car_models.txt --train --name models --num 20
 ```
 
-Swap `data/car_manufacturers.txt` for `data/car_models.txt` to generate model names
-instead, or point `--data` at any newline-separated list of names (dog breeds, metal
-bands, Doctor Who episodes — Shane did them all).
-
----
-
-## Repository layout
-
-```
-Burple-Fink/
-├── README.md                 # you are here
-├── requirements.txt
-├── docs/
-│   └── PLAN.md               # the full project plan & roadmap
-├── data/
-│   ├── car_manufacturers.txt # ~150 real auto brands (training data)
-│   └── car_models.txt        # ~250 real car model names (training data)
-├── src/
-│   ├── config.py             # hyperparameters in one place
-│   ├── data.py               # read names -> vocab -> tensors
-│   ├── model.py              # the char-RNN (LSTM) itself
-│   ├── train.py              # training loop + checkpointing
-│   └── sample.py             # load checkpoint, generate names
-└── generate.py               # tiny convenience wrapper around sample.py
-```
-
-See **[docs/PLAN.md](docs/PLAN.md)** for the design rationale, the training pipeline,
-the "creativity knob," and the roadmap toward the RGB-style dual-output extension
-that Shane used for paint colors.
+Point `--data` at any newline-separated list of names to train a new generator.
 
 ---
 
@@ -89,15 +88,58 @@ that Shane used for paint colors.
 | `0.7–0.9`   | The sweet spot — plausible but novel                 |
 | `1.1–1.5`   | *Dondarf* / *Bylfgoam Glosd* chaos                   |
 
+Sample runs from the current engine:
+
+- **Manufacturers @ 0.8:** Sabarg, Jaguat, Mercuber, Tovaso, Chewo
+- **Manufacturers @ 1.3:** Muhkelveo, Volvoz, UVismann, Driza
+- **Car models @ 0.8:** Sentaza, Carlare, Ventora, Chezla
+
 ---
 
-## Roadmap (short version)
+## Repository layout
 
-1. ✅ Char-RNN that generates names from any name list.
-2. ⏩ Bundle & clean larger real-world car datasets for better output.
-3. ⏩ Add the **dual-output** trick from the paint-color experiment: predict a name
-   **and** an associated numeric attribute (for cars: e.g. horsepower or a "sportiness"
-   score) at the same time.
-4. ⏩ Web demo / API.
+```
+Burple-Fink/
+├── README.md                 # you are here — the project overview
+├── HANDOFF.md                # ← START HERE if you're picking up work
+├── CLAUDE.md                 # repo conventions & commands for agents
+├── requirements.txt
+├── docs/
+│   └── PLAN.md               # full design rationale, pipelines, and roadmap
+├── data/                     # training datasets, one name per line
+│   ├── car_manufacturers.txt # ~150 real auto brands
+│   └── car_models.txt        # ~250 real car model names
+├── src/
+│   ├── config.py             # hyperparameters in one place
+│   ├── data.py               # read names -> vocab -> tensors
+│   ├── model.py              # the char-RNN (LSTM) itself
+│   ├── train.py              # training loop + checkpointing
+│   └── sample.py             # load checkpoint, generate names
+└── generate.py               # one-command train-and-generate wrapper
+```
 
-Full detail in [docs/PLAN.md](docs/PLAN.md).
+---
+
+## Dataset catalog
+
+The whole point of the platform is *variety* of names, so datasets are first-class. Each
+lives in `data/` as a newline-separated `.txt` file and follows the conventions in
+[`HANDOFF.md`](HANDOFF.md#adding-a-new-dataset).
+
+| Dataset file | Domain | Count | Status |
+|--------------|--------|-------|--------|
+| `car_manufacturers.txt` | Auto brands | ~150 | ✅ seed |
+| `car_models.txt` | Car model names | ~250 | ✅ seed |
+| _(your dataset here)_ | — | — | 🔜 |
+
+Ideas for future domains (a Shane-style variety): boat & yacht names, motorcycle brands,
+aircraft, spacecraft, perfumes, craft beers, racehorses, tech startups, paint colors
+(homage), fantasy characters, city names. Claim one in `HANDOFF.md` before you start.
+
+---
+
+## Contributing / handoff
+
+This repo is worked on by multiple agents. **Read [`HANDOFF.md`](HANDOFF.md) first** — it
+covers the branch strategy, how to claim a workstream, dataset conventions, the
+fine-tuning design, evaluation criteria, and the definition of done for each stage.
