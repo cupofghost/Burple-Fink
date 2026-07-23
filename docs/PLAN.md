@@ -119,3 +119,81 @@ Everything is deliberately small so it trains in seconds-to-minutes on a laptop 
 - After training, ≥50% of generated manufacturer names are (a) novel — not in the
   training set — and (b) pronounceable / "car-shaped."
 - The temperature knob visibly changes output from conservative to chaotic.
+
+## 11. Fine-tuning, evaluation, and serving (Stages 2 / 3 / 5)
+
+Stage 0 trained a fresh model per dataset. Everything below turns that into the
+platform described in the README: one base model, specialized cheaply per domain,
+measured objectively, and served through a phone-friendly UI.
+
+### 11.1 Shared vocabulary — the enabling decision
+
+A char-RNN's embedding and output layers are sized to its vocabulary. If the base
+model and a fine-tune disagree on the character↔id mapping, the saved weights simply
+don't fit the new model. So **fine-tuning requires a single vocabulary shared by every
+checkpoint that exchanges weights.**
+
+Design (implemented in `src/data.py`):
+
+- `build_shared_vocab(paths)` builds one `Vocab` from the **union of characters across
+  all datasets** — the existing `Vocab` already derives its char set from the names it's
+  given, so feeding it every dataset yields a superset that each per-dataset vocab is
+  contained in.
+- It is persisted to `data/shared_vocab.json` (via the unchanged `Vocab.to_dict`) the
+  first time `src/pretrain.py` runs, and every fine-tune loads that same file. Keeping it
+  on disk makes the mapping stable across future runs.
+- `filter_to_vocab(names, vocab)` splits a dataset into representable vs. dropped names,
+  so a dataset that introduces a brand-new character fails loudly (with a hint to rebuild
+  the vocab) instead of crashing deep in encoding.
+
+`Vocab.from_dict` / `to_dict` and the checkpoint format (HANDOFF §2) are **unchanged**;
+the shared vocab is just a specific `Vocab` that happens to span every dataset.
+
+### 11.2 Pretrain → fine-tune (transfer learning)
+
+- `src/train.py` was refactored so its epoch loop lives in a reusable
+  `fit(model, vocab, names, cfg)` plus a `save_checkpoint(...)` helper. `train()` (and its
+  CLI) behave exactly as before; pretraining and fine-tuning reuse the same loop.
+- `src/pretrain.py` builds the shared vocab, trains a base model on the concatenation of
+  all datasets, and saves `checkpoints/base.pt`.
+- `src/finetune.py` loads the base checkpoint (inheriting its architecture **and** shared
+  vocab), then continues training on one dataset with a **lower learning rate for fewer
+  epochs** (defaults: 5e-4, 60 epochs) — nudging the general speller toward a domain
+  rather than overwriting it. Output: `checkpoints/<dataset>_ft.pt`, with `training_names`
+  set to the fine-tune dataset so novelty is judged against that domain.
+
+### 11.3 Evaluation harness
+
+`src/evaluate.py` turns "looks fun" into numbers for a checkpoint against its own
+training set:
+
+- **Novelty** — fraction of distinct generated names not present in training.
+- **Plausibility** — mean character-bigram log-likelihood under an add-1-smoothed model
+  of the training names, reported for generated names *and* real names so the ratio is
+  interpretable (~1 = as typical as real names). Plus the model's own training NLL as a
+  fit sanity-check (labeled not-held-out).
+- **Diversity** — uniqueness rate and mean pairwise Levenshtein distance.
+
+These make the temperature trade-off measurable and let WS-2 prove fine-tuning helps.
+
+### 11.4 Serving (two front-ends, one UI)
+
+Both share `web/app_template.html` (the instrument-panel CSS + markup); only the "brain"
+differs:
+
+- **`src/export_web.py`** bakes a checkpoint's weights into one self-contained HTML file
+  that re-runs `Embedding → LSTM → Linear` **in JavaScript**. Before writing, it verifies
+  a pure-Python reference of that same forward pass reproduces the real PyTorch model's
+  logits (tolerance 5e-3) — so the browser net can't silently diverge from the trained
+  one. Good for sharing / offline / opening on a phone with no server.
+- **`src/serve.py`** is a stdlib-only HTTP server that serves the same UI but generates
+  by calling the live checkpoints in-process (`/api/generate`). It binds `0.0.0.0` so a
+  phone on the same network can reach it, and swapping in a newly trained checkpoint
+  changes the output with no re-export.
+
+### 11.5 What's still open
+
+- **WS-1 (more datasets):** the single biggest quality lever is still more data; the
+  fine-tuning machinery is ready for any dataset dropped into `data/` (rebuild the shared
+  vocab by deleting `data/shared_vocab.json` and re-running pretrain).
+- **WS-4 (dual-output):** the name+attribute regression head (§9.3) is not yet built.

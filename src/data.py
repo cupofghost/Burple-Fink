@@ -7,6 +7,9 @@ every character (plus the special START/END/PAD tokens) -> turn each name into a
 
 from __future__ import annotations
 
+import glob
+import json
+import os
 from typing import List, Tuple
 
 import torch
@@ -80,6 +83,85 @@ class Vocab:
         obj.itos = list(d["itos"])
         obj.stoi = {ch: i for i, ch in enumerate(obj.itos)}
         return obj
+
+
+# --- shared vocabulary (the precondition for fine-tuning) ------------------------
+#
+# Stage 0 builds a Vocab per dataset. That is fine when every model is trained from
+# scratch, but it *breaks fine-tuning*: a base model's embedding and output layers
+# are sized to its vocabulary, so re-using its weights against a differently-sized
+# per-dataset vocab is impossible. WS-2 therefore fixes ONE vocabulary spanning every
+# dataset (persisted to ``data/shared_vocab.json``) and builds ``Vocab`` from it for
+# both pretraining and every fine-tune, so all checkpoints share identical
+# embedding/head dimensions. See HANDOFF §6 and docs/PLAN.md.
+
+DEFAULT_VOCAB_PATH = "data/shared_vocab.json"
+
+
+def list_dataset_files(data_dir: str = "data") -> List[str]:
+    """Return dataset paths (``*.txt``) under ``data_dir``, sorted.
+
+    Sorting makes the shared vocabulary deterministic regardless of the order the
+    filesystem happens to return files in.
+    """
+    return sorted(glob.glob(os.path.join(data_dir, "*.txt")))
+
+
+def load_all_names(paths: List[str]) -> List[str]:
+    """Concatenate the names from several files, de-duplicated across all of them.
+
+    This is the corpus the base model pretrains on: every dataset at once, so it
+    learns the spelling regularities common to all name domains before any one of
+    them is specialized by fine-tuning.
+    """
+    seen = set()
+    names: List[str] = []
+    for path in paths:
+        for name in load_names(path):
+            if name in seen:
+                continue
+            seen.add(name)
+            names.append(name)
+    return names
+
+
+def build_shared_vocab(paths: List[str]) -> Vocab:
+    """Build one vocabulary covering every character across every dataset.
+
+    Because ``Vocab`` derives its character set from the names it is given, feeding
+    it the union of all datasets yields a superset that every per-dataset vocab is
+    contained in — exactly what fine-tuning needs.
+    """
+    return Vocab(load_all_names(paths))
+
+
+def save_shared_vocab(vocab: Vocab, path: str = DEFAULT_VOCAB_PATH) -> None:
+    """Persist a vocab as JSON. Control-character special tokens are ``\\uXXXX``-escaped."""
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(vocab.to_dict(), fh, indent=2)
+        fh.write("\n")
+
+
+def load_shared_vocab(path: str = DEFAULT_VOCAB_PATH) -> Vocab:
+    """Reload a shared vocab saved by :func:`save_shared_vocab`."""
+    with open(path, "r", encoding="utf-8") as fh:
+        return Vocab.from_dict(json.load(fh))
+
+
+def filter_to_vocab(names: List[str], vocab: Vocab) -> Tuple[List[str], List[str]]:
+    """Split ``names`` into (representable, dropped) given a (shared) vocab.
+
+    Fine-tuning a base model onto a new dataset only works for characters the base
+    model was built with; a stray character would otherwise raise a ``KeyError`` deep
+    inside encoding. Returning the dropped names lets callers report them honestly
+    instead of crashing.
+    """
+    known = set(vocab.stoi)
+    kept, dropped = [], []
+    for name in names:
+        (kept if all(ch in known for ch in name) else dropped).append(name)
+    return kept, dropped
 
 
 def make_pairs(names: List[str], vocab: Vocab) -> List[Tuple[List[int], List[int]]]:
