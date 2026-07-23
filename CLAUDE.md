@@ -35,6 +35,11 @@ python generate.py --data data/<x>.txt --train --name <x> --num 20  # train + ge
   `main` — no exceptions. Commit and push your branch, then open the PR (summarize what
   changed and how you verified it). Work that isn't in a PR is invisible to the other
   agents and doesn't count as done. See HANDOFF §8.
+- **GitHub settings (already configured, don't change them):** `main` is protected —
+  PRs required, direct pushes rejected, squash-merge only, linear history, force-pushes
+  blocked, head branches auto-delete on merge. Required approvals are **0**, so you may
+  merge your own PR once it's current with `main`. No CI/status checks exist — don't wait
+  on them. Full list in HANDOFF §7.
 - **Low-collision zones** (edit freely): new files in `data/` and `src/`.
   **High-collision zones** (minimal diffs, call out in PR): `config.py`, `data.py`, the
   checkpoint format, and the top-level docs.
