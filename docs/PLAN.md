@@ -93,6 +93,14 @@ Everything is deliberately small so it trains in seconds-to-minutes on a laptop 
 
 - `data/car_manufacturers.txt` — ~150 real auto brands worldwide.
 - `data/car_models.txt` — ~250 real car model names.
+- `data/english_words.txt` — ~8,600 common English words. This is the "just make it
+  *plausible*" corpus: unlike the domain-specific brand/model lists, it isn't about any
+  one topic — it teaches the model the general shape of English spelling so it emits
+  believable word-forms (the *Burple-Fink* effect). Sourced from a frequency-ranked
+  common-word list (Google Web Trillion Word Corpus via `first20hours/google-10000-english`,
+  MIT) and curated to lowercase `a–z`, length 3–10, vowel-bearing tokens. At ~8.6k entries
+  it's the largest corpus here (near Shane's ~7,700), which also makes it strong fuel for
+  the shared-vocab base model in §11.2.
 
 > ⚠️ **Data-size reality check:** Shane used ~7,700 examples. Our seed lists are much
 > smaller, so expect charming nonsense rather than polished output at first. The
