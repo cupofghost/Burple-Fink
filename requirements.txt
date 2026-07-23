@@ -1,0 +1,5 @@
+# Burple-Fink dependencies
+#
+# Only PyTorch is required to train and sample. A recent CPU-only build is fine;
+# the models here are tiny and train comfortably on a laptop CPU.
+torch>=2.0

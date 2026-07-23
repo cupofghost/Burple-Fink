@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Trained model checkpoints (can be large / regenerable)
+checkpoints/
+*.pt
+*.pth
+
+# OS / editor cruft
+.DS_Store
+.idea/
+.vscode/
