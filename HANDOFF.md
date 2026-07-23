@@ -125,6 +125,7 @@ Keep this in sync with `data/` and the README catalog. One row per dataset file.
 |------|--------|-------|----------------|-------|
 | `car_manufacturers.txt` | Auto brands | ~150 | seed | Real worldwide brands |
 | `car_models.txt` | Car model names | ~250 | seed | Real model names |
+| `english_words.txt` | Common English words | ~8,600 | `claude/plausible-words-dataset-53qyyg` | Frequency-ranked common words (Google Web Trillion Word Corpus via `first20hours/google-10000-english`, MIT). Curated to lowercase a–z, length 3–10, vowel-bearing. Teaches general English spelling → plausible word-shapes; good base-model fuel. |
 
 ---
 
@@ -191,6 +192,7 @@ Document the choice in `docs/PLAN.md` when you implement it.
   |--------|-----------|--------------|--------|
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
   | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
+  | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ⏳ in review |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.
