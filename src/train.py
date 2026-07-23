@@ -22,29 +22,30 @@ from .model import CharRNN
 from . import sample as sampling
 
 
-def train(
-    data_path: str,
-    out_name: str,
+def fit(
+    model: CharRNN,
+    vocab: Vocab,
+    names: list[str],
     cfg: Config,
-    checkpoint_dir: str = "checkpoints",
     device: str = "cpu",
-) -> str:
+    log_prefix: str = "",
+) -> CharRNN:
+    """Run the training loop *in place* on an already-built model and vocab.
+
+    Factored out of :func:`train` so pretraining (a fresh base model) and fine-tuning
+    (a loaded base model) share exactly one optimizer / loss / gradient-clipping /
+    live-preview implementation. It never touches the checkpoint on disk — callers
+    save with :func:`save_checkpoint` — because fine-tuning wants a different
+    ``training_names`` list than the names it trained the base on.
+    """
     torch.manual_seed(cfg.seed)
     generator = torch.Generator().manual_seed(cfg.seed)
-
-    # --- data ---
-    names = load_names(data_path)
-    vocab = Vocab(names)
     pairs = make_pairs(names, vocab)
-    print(f"Loaded {len(names)} names | vocab size {len(vocab)} | device {device}")
 
-    # --- model / optimizer / loss ---
-    model = CharRNN(len(vocab), cfg, pad_id=vocab.pad_id).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.learning_rate)
     # ignore_index=pad_id => padding positions contribute nothing to the loss.
     criterion = nn.CrossEntropyLoss(ignore_index=vocab.pad_id)
 
-    # --- training loop ---
     for epoch in range(1, cfg.epochs + 1):
         model.train()
         total_loss = 0.0
@@ -74,7 +75,7 @@ def train(
         avg_loss = total_loss / max(num_batches, 1)
 
         if epoch == 1 or epoch % 10 == 0 or epoch == cfg.epochs:
-            print(f"epoch {epoch:4d}/{cfg.epochs} | loss {avg_loss:.4f}")
+            print(f"{log_prefix}epoch {epoch:4d}/{cfg.epochs} | loss {avg_loss:.4f}")
 
         # Peek at what the model can produce so far.
         if epoch % cfg.sample_every == 0 or epoch == cfg.epochs:
@@ -84,9 +85,18 @@ def train(
             )
             print("   samples:", ", ".join(previews) if previews else "(none)")
 
-    # --- save checkpoint (weights + everything needed to sample later) ---
-    os.makedirs(checkpoint_dir, exist_ok=True)
-    out_path = os.path.join(checkpoint_dir, f"{out_name}.pt")
+    return model
+
+
+def save_checkpoint(
+    out_path: str,
+    model: CharRNN,
+    cfg: Config,
+    vocab: Vocab,
+    names: list[str],
+) -> str:
+    """Write the checkpoint dict — the format contract every stage depends on (§2)."""
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     torch.save(
         {
             "model_state": model.state_dict(),
@@ -95,6 +105,29 @@ def train(
             "training_names": names,
         },
         out_path,
+    )
+    return out_path
+
+
+def train(
+    data_path: str,
+    out_name: str,
+    cfg: Config,
+    checkpoint_dir: str = "checkpoints",
+    device: str = "cpu",
+) -> str:
+    # --- data ---
+    names = load_names(data_path)
+    vocab = Vocab(names)
+    print(f"Loaded {len(names)} names | vocab size {len(vocab)} | device {device}")
+
+    # --- model + training ---
+    model = CharRNN(len(vocab), cfg, pad_id=vocab.pad_id).to(device)
+    fit(model, vocab, names, cfg, device=device)
+
+    # --- save checkpoint (weights + everything needed to sample later) ---
+    out_path = save_checkpoint(
+        os.path.join(checkpoint_dir, f"{out_name}.pt"), model, cfg, vocab, names
     )
     print(f"\nSaved checkpoint -> {out_path}")
     return out_path

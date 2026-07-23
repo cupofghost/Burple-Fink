@@ -1,0 +1,596 @@
+<style>
+  /* ------------------------------------------------------------------ *
+   * Burple-Fink — instrument-panel UI. The "Creativity" control is a
+   * temperature gauge: its accent runs cold blue -> marigold -> redline
+   * as you push it, mirroring what the model actually does (low temp =
+   * safe/boring, high temp = gloriously broken). Colors are driven by
+   * CSS custom properties so both themes and the live temperature hue
+   * flow through one place.
+   * ------------------------------------------------------------------ */
+  :root {
+    color-scheme: light dark;
+    --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+    /* dark (night dashboard) is the default ground */
+    --ground: #14161c;
+    --ground-2: #0f1116;
+    --surface: #1c1f27;
+    --surface-2: #262a34;
+    --ink: #eef1f6;
+    --muted: #99a2b2;
+    --faint: #6b7382;
+    --hairline: rgba(255,255,255,0.09);
+    --hairline-strong: rgba(255,255,255,0.16);
+    --shadow: 0 18px 40px -20px rgba(0,0,0,0.8);
+
+    /* live temperature accent (recomputed by JS); safe defaults here */
+    --accent: #ffc23a;
+    --accent-ink: #14161c;      /* text that sits on top of the accent */
+    --accent-soft: rgba(255,194,58,0.16);
+
+    --gauge-cold: #37b6ff;
+    --gauge-mid:  #ffc23a;
+    --gauge-hot:  #ff4326;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --ground: #eef0f4;
+      --ground-2: #e3e6ec;
+      --surface: #ffffff;
+      --surface-2: #f1f3f7;
+      --ink: #191c23;
+      --muted: #5b6472;
+      --faint: #8b93a2;
+      --hairline: rgba(20,22,28,0.10);
+      --hairline-strong: rgba(20,22,28,0.18);
+      --shadow: 0 16px 34px -22px rgba(20,30,60,0.45);
+    }
+  }
+  /* explicit toggle wins over the media query, in both directions */
+  :root[data-theme="dark"] {
+    --ground: #14161c; --ground-2: #0f1116; --surface: #1c1f27; --surface-2: #262a34;
+    --ink: #eef1f6; --muted: #99a2b2; --faint: #6b7382;
+    --hairline: rgba(255,255,255,0.09); --hairline-strong: rgba(255,255,255,0.16);
+    --shadow: 0 18px 40px -20px rgba(0,0,0,0.8);
+  }
+  :root[data-theme="light"] {
+    --ground: #eef0f4; --ground-2: #e3e6ec; --surface: #ffffff; --surface-2: #f1f3f7;
+    --ink: #191c23; --muted: #5b6472; --faint: #8b93a2;
+    --hairline: rgba(20,22,28,0.10); --hairline-strong: rgba(20,22,28,0.18);
+    --shadow: 0 16px 34px -22px rgba(20,30,60,0.45);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background:
+      radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 60%),
+      var(--ground);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100dvh;
+    transition: background 400ms ease;
+  }
+  .panel {
+    width: min(560px, 100%);
+    margin: 0 auto;
+    padding: 22px 18px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* --- wordmark ---------------------------------------------------- */
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .emblem {
+    flex: none;
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: grid; place-items: center;
+    font-family: var(--mono);
+    font-weight: 700; font-size: 15px; letter-spacing: 0.04em;
+    color: var(--accent-ink);
+    background: linear-gradient(150deg, var(--gauge-cold), var(--gauge-mid) 52%, var(--gauge-hot));
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25), var(--shadow);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(1.7rem, 7vw, 2.2rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+  .tagline {
+    margin: 5px 0 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* --- control panel ---------------------------------------------- */
+  .controls {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 18px;
+    padding: 18px 16px;
+    display: flex; flex-direction: column; gap: 18px;
+    box-shadow: var(--shadow);
+  }
+  .field { display: flex; flex-direction: column; gap: 9px; }
+  .lab {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .lab-row { display: flex; align-items: baseline; justify-content: space-between; }
+  .readout {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* segmented controls (engine + count) */
+  .seg { display: flex; gap: 4px; background: var(--surface-2); border-radius: 12px; padding: 4px; }
+  .seg button {
+    flex: 1 1 0;
+    appearance: none; border: 0; cursor: pointer;
+    background: transparent; color: var(--muted);
+    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    padding: 9px 6px; border-radius: 9px;
+    transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+  }
+  .seg button[aria-pressed="true"] {
+    color: var(--ink);
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.25), inset 0 0 0 1px var(--hairline-strong);
+  }
+  .seg.compact { max-width: 220px; }
+
+  /* temperature dial */
+  .dial {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 22px; margin: 2px 0; background: transparent; cursor: pointer;
+  }
+  .dial::-webkit-slider-runnable-track {
+    height: 8px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--gauge-cold), var(--gauge-mid) 52%, var(--gauge-hot));
+  }
+  .dial::-moz-range-track {
+    height: 8px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--gauge-cold), var(--gauge-mid) 52%, var(--gauge-hot));
+  }
+  .dial::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 24px; height: 24px; margin-top: -8px; border-radius: 50%;
+    background: var(--surface);
+    border: 3px solid var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35), 0 0 12px var(--accent-soft);
+  }
+  .dial::-moz-range-thumb {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--surface); border: 3px solid var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  }
+  .dial:focus-visible { outline: none; }
+  .dial:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--accent-soft); }
+  .scale {
+    display: flex; justify-content: space-between;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--faint);
+  }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .text {
+    width: 100%;
+    font-family: var(--mono); font-size: 15px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--hairline);
+    border-radius: 11px; padding: 10px 12px;
+  }
+  .text::placeholder { color: var(--faint); }
+  .text:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+  .check {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13.5px; color: var(--muted); cursor: pointer; user-select: none;
+  }
+  .check input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+
+  .go {
+    appearance: none; border: 0; cursor: pointer;
+    font-family: var(--sans); font-weight: 800; font-size: 16px; letter-spacing: 0.01em;
+    color: var(--accent-ink);
+    background: var(--accent);
+    padding: 15px 18px; border-radius: 13px;
+    box-shadow: 0 10px 22px -10px color-mix(in srgb, var(--accent) 70%, transparent);
+    transition: transform 120ms ease, filter 160ms ease, box-shadow 200ms ease;
+  }
+  .go:hover { filter: brightness(1.05); }
+  .go:active { transform: translateY(1px) scale(0.995); }
+  .go:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+  .go[disabled] { opacity: 0.7; cursor: progress; }
+
+  /* --- results ----------------------------------------------------- */
+  .results { display: flex; flex-direction: column; gap: 8px; min-height: 40px; }
+  .empty {
+    margin: 8px 2px; color: var(--muted); font-size: 14.5px; text-align: center;
+    line-height: 1.5;
+  }
+  .name {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--accent);
+    border-radius: 12px;
+    padding: 13px 14px;
+    cursor: pointer;
+    text-align: left; width: 100%;
+    appearance: none; font-family: inherit;
+    color: var(--ink);
+    transition: border-color 140ms ease, background 140ms ease, transform 120ms ease;
+  }
+  .name:hover { background: var(--surface-2); }
+  .name:active { transform: scale(0.99); }
+  .name:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+  .name .word {
+    flex: 1 1 auto;
+    font-size: clamp(1.15rem, 5vw, 1.4rem); font-weight: 700; letter-spacing: -0.01em;
+  }
+  .name .tag {
+    flex: none;
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 7px; border-radius: 999px;
+  }
+  .name.novel { border-left-color: var(--accent); }
+  .name.novel .tag { color: var(--accent-ink); background: var(--accent); }
+  .name.known { border-left-color: var(--hairline-strong); }
+  .name.known .word { color: var(--muted); }
+  .name.known .tag { color: var(--faint); background: var(--surface-2); }
+  .name .copy { flex: none; color: var(--faint); font-family: var(--mono); font-size: 11px; }
+
+  @keyframes stamp {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to   { opacity: 1; transform: none; }
+  }
+  .name { animation: stamp 260ms cubic-bezier(0.2,0.7,0.2,1) both; }
+
+  .stat {
+    margin: 2px 2px 0; text-align: center;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .stat b { color: var(--accent); font-weight: 700; }
+
+  .foot {
+    margin: 6px 4px 0; color: var(--faint);
+    font-size: 12px; line-height: 1.55; text-align: center;
+  }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px);
+    background: var(--ink); color: var(--ground);
+    font-size: 13px; font-weight: 600;
+    padding: 10px 16px; border-radius: 999px;
+    box-shadow: var(--shadow);
+    opacity: 0; pointer-events: none; transition: opacity 200ms ease, transform 200ms ease;
+    z-index: 10;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .name { animation: none; }
+    body, .go, .seg button, .name { transition: none; }
+  }
+</style>
+
+<main class="panel">
+  <header class="brand">
+    <div class="emblem" aria-hidden="true">B&#8202;F</div>
+    <div>
+      <h1>Burple&#8209;Fink</h1>
+      <p class="tagline">a machine that invents car names, one letter at a time</p>
+    </div>
+  </header>
+
+  <section class="controls">
+    <div class="field">
+      <span class="lab">Engine</span>
+      <div class="seg" id="engine" role="group" aria-label="Which name generator"></div>
+    </div>
+
+    <div class="field">
+      <div class="lab-row">
+        <label class="lab" for="temp">Creativity &mdash; the temperature dial</label>
+        <span class="readout" id="tempVal">1.00</span>
+      </div>
+      <input id="temp" class="dial" type="range" min="0.4" max="1.6" step="0.01" value="1.0"
+             aria-label="Creativity (sampling temperature)">
+      <div class="scale"><span>safe</span><span>sweet spot</span><span>unhinged</span></div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <span class="lab">How many</span>
+        <div class="seg compact" id="count" role="group" aria-label="How many names"></div>
+      </div>
+      <div class="field">
+        <label class="lab" for="prefix">Starts with</label>
+        <input id="prefix" class="text" type="text" autocomplete="off" autocapitalize="characters"
+               spellcheck="false" placeholder="optional" maxlength="12">
+      </div>
+    </div>
+
+    <label class="check">
+      <input type="checkbox" id="novelOnly">
+      <span>Hide names that already exist</span>
+    </label>
+
+    <button id="go" class="go" type="button">Invent names</button>
+  </section>
+
+  <section class="results" id="results" aria-live="polite">
+    <p class="empty" id="empty">Tap <b>Invent names</b> and watch the net hallucinate.</p>
+  </section>
+
+  <p class="stat" id="stat" hidden></p>
+
+  <footer class="foot">
+    Every name is dreamed up on your device by a tiny character-level neural net &mdash;
+    the same engine, fine-tuned per dataset. Tap any name to copy it. No two runs are alike.
+  </footer>
+</main>
+
+<div class="toast" id="toast" role="status" aria-hidden="true"></div>
+
+<script>
+/* ==================================================================== *
+ * The trained models, spliced in by src/export_web.py. Each carries the
+ * exact weights of a char-RNN plus its vocabulary and training names.
+ * ==================================================================== */
+const BURPLE = /*__BURPLE_MODELS__*/;
+
+/* ---- the char-RNN, re-implemented faithfully in the browser --------- *
+ * This mirrors src/model.py (Embedding -> LSTM -> Linear) and the
+ * reference forward pass that src/export_web.py verifies against the real
+ * PyTorch model before shipping. Same math, same weights => same net.    */
+
+function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+
+function zeroState(model) {
+  const H = model.hidden_dim;
+  return {
+    h: Array.from({ length: model.num_layers }, () => new Float64Array(H)),
+    c: Array.from({ length: model.num_layers }, () => new Float64Array(H)),
+  };
+}
+
+// Feed one character id; mutate state; return the logits for the *next* char.
+function step(model, state, tokenId) {
+  const H = model.hidden_dim;
+  let x = model.embedding[tokenId];              // (E,) for layer 0; then (H,)
+  for (let li = 0; li < model.num_layers; li++) {
+    const L = model.layers[li];
+    const wih = L.w_ih, whh = L.w_hh, bih = L.b_ih, bhh = L.b_hh;
+    const hl = state.h[li], cl = state.c[li];
+    const nh = new Float64Array(H), nc = new Float64Array(H);
+    for (let k = 0; k < H; k++) {
+      // gate rows are stacked [input, forget, cell, output] in the 4H dim
+      const pre = (off) => {
+        const r = off + k;
+        const wr = wih[r], hr = whh[r];
+        let s = bih[r] + bhh[r];
+        for (let j = 0; j < x.length; j++) s += wr[j] * x[j];
+        for (let j = 0; j < H; j++)        s += hr[j] * hl[j];
+        return s;
+      };
+      const ig = sigmoid(pre(0));
+      const fg = sigmoid(pre(H));
+      const gg = Math.tanh(pre(2 * H));
+      const og = sigmoid(pre(3 * H));
+      nc[k] = fg * cl[k] + ig * gg;
+      nh[k] = og * Math.tanh(nc[k]);
+    }
+    state.h[li] = nh; state.c[li] = nc;
+    x = nh;                                        // output feeds the next layer
+  }
+  // linear head -> one logit per vocabulary character
+  const V = model.head_b.length, logits = new Float64Array(V);
+  for (let v = 0; v < V; v++) {
+    const row = model.head_w[v];
+    let s = model.head_b[v];
+    for (let j = 0; j < H; j++) s += row[j] * x[j];
+    logits[v] = s;
+  }
+  return logits;
+}
+
+function sampleId(logits, temperature) {
+  const t = Math.max(temperature, 1e-6);
+  let max = -Infinity;
+  for (let i = 0; i < logits.length; i++) { const a = logits[i] / t; if (a > max) max = a; }
+  let sum = 0; const p = new Float64Array(logits.length);
+  for (let i = 0; i < logits.length; i++) { const e = Math.exp(logits[i] / t - max); p[i] = e; sum += e; }
+  let r = Math.random() * sum;
+  for (let i = 0; i < p.length; i++) { r -= p[i]; if (r <= 0) return i; }
+  return p.length - 1;
+}
+
+// Generate one name, optionally forced to start with `prefix`.
+function generateOne(model, temperature, prefix) {
+  const stoi = model._stoi;
+  const state = zeroState(model);
+  let logits = step(model, state, model.start_id);
+  let out = "";
+  for (const ch of prefix) {
+    const id = stoi[ch];
+    if (id === undefined) return null;             // prefix char not in vocab
+    out += ch;
+    logits = step(model, state, id);
+  }
+  for (let n = 0; n < model.max_length; n++) {
+    const id = sampleId(logits, temperature);
+    if (id === model.end_id) break;
+    if (id === model.pad_id || id === model.start_id) break;
+    out += model.itos[id];
+    logits = step(model, state, id);
+  }
+  return out;
+}
+
+// A batch of distinct names, tagged novel vs. present-in-training.
+function generateMany(model, { count, temperature, prefix, novelOnly }) {
+  const results = [], seen = new Set();
+  const cap = count * 60;
+  let attempts = 0;
+  while (results.length < count && attempts < cap) {
+    attempts++;
+    const name = generateOne(model, temperature, prefix);
+    if (name === null || name.length < 2 || seen.has(name)) continue;
+    const novel = !model._train.has(name);
+    if (novelOnly && !novel) { seen.add(name); continue; }
+    seen.add(name);
+    results.push({ name, novel });
+  }
+  return results;
+}
+
+/* ---- prepare models (build lookup tables once) --------------------- */
+for (const m of BURPLE.models) {
+  m._stoi = Object.fromEntries(m.itos.map((ch, i) => [ch, i]));
+  m._train = new Set(m.training_names);
+}
+
+/* ---- temperature -> accent hue (cold blue -> marigold -> redline) --- */
+function hexToRgb(h) { return [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)); }
+function lerp(a, b, t) { return a.map((v, i) => Math.round(v + (b[i] - v) * t)); }
+const COLD = hexToRgb("37b6ff"), MID = hexToRgb("ffc23a"), HOT = hexToRgb("ff4326");
+function accentFor(temp) {
+  const t = (temp - 0.4) / 1.2;                    // 0.4..1.6 -> 0..1
+  const rgb = t < 0.5 ? lerp(COLD, MID, t / 0.5) : lerp(MID, HOT, (t - 0.5) / 0.5);
+  return rgb;
+}
+function luminance([r, g, b]) { return (0.299 * r + 0.587 * g + 0.114 * b) / 255; }
+
+/* ---- wiring -------------------------------------------------------- */
+const $ = (id) => document.getElementById(id);
+const root = document.documentElement;
+const state = { engine: 0, temp: 1.0, count: 12, prefix: "", novelOnly: false };
+
+function buildSeg(host, options, current, onPick) {
+  host.innerHTML = "";
+  options.forEach((opt, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = opt.label;
+    b.setAttribute("aria-pressed", String(i === current));
+    b.addEventListener("click", () => {
+      [...host.children].forEach((c, j) => c.setAttribute("aria-pressed", String(j === i)));
+      onPick(i, opt);
+    });
+    host.appendChild(b);
+  });
+}
+
+function applyAccent() {
+  const rgb = accentFor(state.temp);
+  const hex = "#" + rgb.map((v) => v.toString(16).padStart(2, "0")).join("");
+  root.style.setProperty("--accent", hex);
+  root.style.setProperty("--accent-soft", `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.18)`);
+  // pick legible text for on-accent surfaces (button, tags)
+  root.style.setProperty("--accent-ink", luminance(rgb) > 0.6 ? "#14161c" : "#fff");
+}
+
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove("show"), 1500);
+}
+
+function render(batch) {
+  const box = $("results");
+  box.innerHTML = "";
+  if (!batch.length) {
+    box.innerHTML = '<p class="empty">The net drew a blank at this setting &mdash; try nudging the dial or clearing the prefix.</p>';
+    $("stat").hidden = true;
+    return;
+  }
+  batch.forEach((item, i) => {
+    const el = document.createElement("button");
+    el.type = "button";
+    el.className = "name " + (item.novel ? "novel" : "known");
+    el.style.animationDelay = (i * 45) + "ms";
+    el.innerHTML =
+      `<span class="word"></span>` +
+      `<span class="tag">${item.novel ? "new" : "real"}</span>` +
+      `<span class="copy">copy</span>`;
+    el.querySelector(".word").textContent = item.name;
+    el.addEventListener("click", () => copy(item.name));
+    box.appendChild(el);
+  });
+  const novelCount = batch.filter((b) => b.novel).length;
+  const stat = $("stat");
+  stat.innerHTML = `<b>${novelCount}</b> of ${batch.length} never existed before`;
+  stat.hidden = false;
+}
+
+function copy(text) {
+  const done = () => toast(`Copied &ldquo;${text}&rdquo;`.replace(/&ldquo;|&rdquo;/g, '"'));
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else { fallbackCopy(text, done); }
+}
+function fallbackCopy(text, done) {
+  const ta = document.createElement("textarea");
+  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); done(); } catch (e) { /* ignore */ }
+  document.body.removeChild(ta);
+}
+
+function run() {
+  const model = BURPLE.models[state.engine];
+  const go = $("go");
+  go.disabled = true; go.textContent = "Inventing…";
+  // let the button state paint before the (fast) synchronous crunch
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const batch = generateMany(model, {
+      count: state.count,
+      temperature: state.temp,
+      prefix: (state.prefix || "").trim(),
+      novelOnly: state.novelOnly,
+    });
+    render(batch);
+    go.disabled = false; go.textContent = "Invent names";
+  }));
+}
+
+/* build controls from the actual bundled models */
+buildSeg($("engine"), BURPLE.models.map((m) => ({ label: m.label })), state.engine,
+  (i) => { state.engine = i; });
+buildSeg($("count"), [6, 12, 24].map((n) => ({ label: String(n), value: n })), 1,
+  (i, opt) => { state.count = opt.value; });
+
+$("temp").addEventListener("input", (e) => {
+  state.temp = parseFloat(e.target.value);
+  $("tempVal").textContent = state.temp.toFixed(2);
+  applyAccent();
+});
+$("prefix").addEventListener("input", (e) => { state.prefix = e.target.value; });
+$("novelOnly").addEventListener("change", (e) => { state.novelOnly = e.target.checked; });
+$("go").addEventListener("click", run);
+
+document.title = "Burple-Fink — invented car names";
+applyAccent();
+</script>

@@ -31,6 +31,10 @@ python generate.py --data data/<x>.txt --train --name <x> --num 20  # train + ge
   Don't break these keys — other stages depend on them. See HANDOFF §2.
 - **Branch per workstream:** `claude/ws<N>-<slug>`, branched from `main`, PR into `main`.
   Claim it in the HANDOFF §7 table.
+- **Always open a PR when your task is complete.** Every task ends with a pull request into
+  `main` — no exceptions. Commit and push your branch, then open the PR (summarize what
+  changed and how you verified it). Work that isn't in a PR is invisible to the other
+  agents and doesn't count as done. See HANDOFF §8.
 - **Low-collision zones** (edit freely): new files in `data/` and `src/`.
   **High-collision zones** (minimal diffs, call out in PR): `config.py`, `data.py`, the
   checkpoint format, and the top-level docs.

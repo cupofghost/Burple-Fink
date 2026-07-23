@@ -18,11 +18,16 @@ outward — the way Janelle Shane's char-rnn generated paint colors.
 
 ---
 
-## 2. Current state (Stage 0 complete)
+## 2. Current state (Stages 0, 2, 3, 5 complete)
 
 A working character-level LSTM that trains **per-dataset from scratch** and samples with a
 temperature ("creativity") knob. Verified end-to-end on CPU: loss drops from ~3.7 to
 <1.0 and output matures from noise → plausible names.
+
+On top of that MVP, the fine-tuning core (**WS-2**), evaluation harness (**WS-3**), and both
+serving front-ends (**WS-5**) are now implemented — see the ✅ markers in §3. A `tests/`
+suite (`python -m unittest discover -s tests`) pins the vocab, training, and export
+invariants. Still open: more datasets (**WS-1**) and dual-output (**WS-4**).
 
 Modules and their responsibilities:
 
@@ -62,8 +67,14 @@ agents can do this simultaneously with near-zero merge risk.
 - Target ≥300 names per dataset (more is much better — Shane used ~7,700).
 - Update the catalog table in `README.md` and §4 below.
 
-### WS-2 · Shared base model + fine-tuning  *(the "fine-tuning" core)*
-Turn the from-scratch trainer into **pretrain-then-fine-tune** (transfer learning):
+### WS-2 · Shared base model + fine-tuning  *(the "fine-tuning" core)* — ✅ **done** (`claude/program-development-q4fcp7`)
+Implemented: `src/data.py` grew a shared-vocabulary layer (`build/save/load_shared_vocab`,
+`filter_to_vocab`, persisted to `data/shared_vocab.json`); `src/train.py` was refactored to
+expose a reusable `fit()` loop + `save_checkpoint()`; `src/pretrain.py` trains a base model
+on all datasets; `src/finetune.py` specializes it per dataset (gentler LR, fewer epochs) into
+`checkpoints/<dataset>_ft.pt`. Checkpoint format (§2) unchanged. Design write-up in `docs/PLAN.md §11`.
+
+Original brief — turn the from-scratch trainer into **pretrain-then-fine-tune** (transfer learning):
 1. Introduce a **shared vocabulary** (see §6) so one base model can be fine-tuned on any
    dataset without resizing the embedding/head.
 2. Add `src/pretrain.py`: train a base model on the concatenation of *all* datasets.
@@ -73,8 +84,14 @@ Turn the from-scratch trainer into **pretrain-then-fine-tune** (transfer learnin
 - **Deliverable:** a fine-tuned checkpoint that reaches lower loss / better samples in
   fewer epochs than the from-scratch baseline on the same dataset.
 
-### WS-3 · Evaluation harness
-Add `src/evaluate.py` computing, for a checkpoint + its dataset:
+### WS-3 · Evaluation harness — ✅ **done** (`claude/program-development-q4fcp7`)
+Implemented in `src/evaluate.py`: `python -m src.evaluate --checkpoint …` prints novelty,
+uniqueness, mean pairwise edit distance, a character-bigram log-likelihood plausibility
+(generated vs. training reference), and the model's training NLL. Metrics confirm the
+temperature knob trades novelty for typicality (e.g. car-models novelty ~16% @ 0.8 → ~56% @ 1.4
+while the plausibility ratio stays ~1.0).
+
+Original brief — add `src/evaluate.py` computing, for a checkpoint + its dataset:
 - **Novelty** — % of generated names not in the training set.
 - **Plausibility** — a cheap heuristic (e.g. character-bigram log-likelihood vs the
   training distribution) and/or held-out validation loss.
@@ -87,9 +104,16 @@ Implement Shane's name+number trick: a second head that regresses a numeric attr
 (for cars: horsepower / price tier / a learned "sportiness" score). Requires datasets
 with a value column — coordinate with WS-1 on a `name<TAB>value` format.
 
-### WS-5 · Serving
-CLI is done. Next: a small FastAPI/Flask endpoint, then a tiny static web demo. No
-coupling to WS-2/3/4 beyond the checkpoint format.
+### WS-5 · Serving — ✅ **done** (`claude/program-development-q4fcp7`)
+Two front-ends, both a mobile-friendly "instrument panel" UI (temperature dial, prefix,
+live novelty flags), sharing one CSS/markup source in `web/app_template.html`:
+- `src/serve.py` — a **stdlib-only** HTTP server (no new deps) that serves the UI and a
+  `/api/generate` endpoint backed by the live PyTorch checkpoints. Binds `0.0.0.0` for phones.
+- `src/export_web.py` — bakes weights into one self-contained `web/burple-fink.html` that
+  runs the char-RNN **in the browser**; it verifies the JS forward pass matches the torch
+  model's logits before writing, so the in-browser net is faithful.
+
+No coupling to WS-2/3/4 beyond the checkpoint format.
 
 ---
 
@@ -147,6 +171,12 @@ layers are sized to its vocab, so loading it against a different dataset's vocab
 
 Document the choice in `docs/PLAN.md` when you implement it.
 
+> ✅ **Implemented** on `claude/program-development-q4fcp7`. `src/data.py` gained
+> `build_shared_vocab` / `save_shared_vocab` / `load_shared_vocab` / `filter_to_vocab`;
+> `src/pretrain.py` builds and persists `data/shared_vocab.json` on first run and every
+> fine-tune loads it. `Vocab.from_dict` / `to_dict` are unchanged, so the checkpoint
+> format in §2 still holds. Rationale is written up in `docs/PLAN.md §11`.
+
 ---
 
 ## 7. Coordination & branch strategy
@@ -160,7 +190,7 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | Branch | Workstream | Agent / date | Status |
   |--------|-----------|--------------|--------|
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
-  | _(add yours)_ | | | |
+  | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.
@@ -180,6 +210,9 @@ A workstream is done when:
    updated to reflect your change.
 5. The checkpoint format (§2) is unchanged **or** the change is documented here and in
    `docs/PLAN.md`.
+6. **A pull request into `main` is open.** Always open a PR when your task is complete —
+   every task ends this way, no exceptions. Push your branch, then open the PR with a
+   summary of what changed and how you verified it. A task with no PR is not done.
 
 ---
 
