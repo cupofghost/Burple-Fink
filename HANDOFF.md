@@ -210,6 +210,9 @@ A workstream is done when:
    updated to reflect your change.
 5. The checkpoint format (§2) is unchanged **or** the change is documented here and in
    `docs/PLAN.md`.
+6. **A pull request into `main` is open.** Always open a PR when your task is complete —
+   every task ends this way, no exceptions. Push your branch, then open the PR with a
+   summary of what changed and how you verified it. A task with no PR is not done.
 
 ---
 
