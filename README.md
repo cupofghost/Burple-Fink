@@ -184,11 +184,12 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `car_manufacturers.txt` | Auto brands | ~150 | ✅ seed |
 | `car_models.txt` | Car model names | ~250 | ✅ seed |
 | `english_words.txt` | Common English words | ~8,600 | ✅ added |
+| `world_cities.txt` | World city names | ~670 | ✅ added |
 | _(your dataset here)_ | — | — | 🔜 |
 
 Ideas for future domains (a Shane-style variety): boat & yacht names, motorcycle brands,
 aircraft, spacecraft, perfumes, craft beers, racehorses, tech startups, paint colors
-(homage), fantasy characters, city names. Claim one in `HANDOFF.md` before you start.
+(homage), fantasy characters. Claim one in `HANDOFF.md` before you start.
 
 ---
 
