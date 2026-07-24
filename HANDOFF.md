@@ -227,7 +227,7 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
   | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
   | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ⏳ in review |
-  | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt` + `city_names.txt` + `motorcycle_brands.txt` + WS-4 dual-output (`DualCharRNN`, `dual_data.py`, `train_dual.py`, `sample_dual.py`, `data/dual/paint_colors.tsv`) | 2026-07-24 | ⏳ in review |
+  | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt` + `city_names.txt` + `motorcycle_brands.txt` + WS-4 dual-output (`DualCharRNN`, `dual_data.py`, `train_dual.py`, `sample_dual.py`, `data/dual/paint_colors.tsv`, `data/dual/periodic_elements.tsv`) | 2026-07-24 | ⏳ in review |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.
