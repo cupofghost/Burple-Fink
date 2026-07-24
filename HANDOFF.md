@@ -126,6 +126,12 @@ Keep this in sync with `data/` and the README catalog. One row per dataset file.
 | `car_manufacturers.txt` | Auto brands | ~150 | seed | Real worldwide brands |
 | `car_models.txt` | Car model names | ~250 | seed | Real model names |
 | `english_words.txt` | Common English words | ~8,600 | `claude/plausible-words-dataset-53qyyg` | Frequency-ranked common words (Google Web Trillion Word Corpus via `first20hours/google-10000-english`, MIT). Curated to lowercase a–z, length 3–10, vowel-bearing. Teaches general English spelling → plausible word-shapes; good base-model fuel. |
+| `racehorses.txt` | Racehorse names | 355 | `claude/next-three-items-nj7dyj` | Real thoroughbred racehorse names spanning classic legends (Secretariat, Man O' War) to modern winners. Creative, varied naming patterns; good for testing diverse English word-building. |
+| `spacecraft.txt` | NASA/ESA spacecraft & satellites | 270 | `claude/next-three-items-nj7dyj` | Real spacecraft, satellites, and mission names from NASA, ESA, JAXA, CNSA. Includes rovers, orbiters, landers, and space stations. Mix of acronyms (GOES, TESS) and full names (Voyager, Cassini). |
+| `paint_colors.txt` | Paint color names | 391 | `claude/next-three-items-nj7dyj` | Real and whimsical paint color names from major manufacturers. Ranges from descriptive (Alabaster, Apricot) to poetic (Aurora Red, Crystal Clear). Homage to Janelle Shane's original neural-network paint-color project. |
+| `motorcycles.txt` | Motorcycle brands & models | 359 | `claude/next-three-items-nj7dyj` | Real motorcycle and brand names from Honda, Yamaha, Kawasaki, Harley-Davidson, Ducati, BMW, KTM, Royal Enfield, and others. Mix of short punchy names (Rebel, Shadow, Ninja) and compound names (Street Glide, Fat Boy). |
+| `craft_beers.txt` | Craft brewery & beer names | 398 | `claude/next-three-items-nj7dyj` | Creative beer names from US and international craft breweries. Includes descriptive names (IPA, Porter, Stout), whimsical names (Hoppy Beer, Belly Dance), and branded brewery ales (Stone IPA, Founders All Day). |
+| `aircraft.txt` | Aircraft models | 435 | `claude/next-three-items-nj7dyj` | Real aircraft and helicopter model names from Boeing, Airbus, Bombardier, Embraer, Gulfstream, Cessna, Piper, Learjet, Saab, Dassault, and others. Mix of alphanumeric (Boeing 737, A320) and named models (Dreamliner, Super King Air). |
 
 ---
 
