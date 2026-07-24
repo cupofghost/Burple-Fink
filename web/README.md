@@ -33,3 +33,16 @@ in-browser network is faithful to the real one. Regenerate it whenever you retra
 
 > `burple-fink.html` is a build artifact checked in for convenience. If you change
 > `app_template.html` or retrain, rebuild it with the command above.
+
+**Bundling many engines:** every `--model` embeds its full weight matrices as JSON, so
+file size scales with `hidden_dim` squared *and* the number of engines — at the default
+`hidden_dim=256` a 13-engine export came out to ~92MB (unshippable). Pretrain the shared
+base with a smaller `--hidden-dim` (96 gives ~1.1MB/engine, ~14MB for 13 engines, with no
+visible quality loss on this project's dataset sizes) when exporting more than a couple
+of engines:
+```bash
+python -m src.pretrain --name base --hidden-dim 96
+```
+Also see `src/finetune.py`'s `FINETUNE_EPOCHS`/`FINETUNE_LR` comment — a base shared
+across many dissimilar domains needs a less gentle fine-tune than the original two
+(similar, automotive) domains did, or engines leak each other's vocabulary.

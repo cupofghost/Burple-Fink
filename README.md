@@ -190,6 +190,11 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `motorcycles.txt` | Motorcycle brands & models | 359 | ✅ added |
 | `craft_beers.txt` | Craft brewery & beer names | 398 | ✅ added |
 | `aircraft.txt` | Aircraft models | 435 | ✅ added |
+| `team_names.txt` | Pro/college sports team names | 427 | ✅ added |
+| `dog_breeds.txt` | Dog breed names | 378 | ✅ added |
+| `food_brands.txt` | Food & beverage brand names | 565 | ✅ added |
+| `firearm_names.txt` | Firearm model names | 560 | ✅ added |
+| `band_names.txt` | Band / musical group names | 988 | ✅ added |
 | _(your dataset here)_ | — | — | 🔜 |
 
 Ideas for future domains (a Shane-style variety): boat & yacht names, motorcycle brands,

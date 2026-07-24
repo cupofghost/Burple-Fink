@@ -132,6 +132,11 @@ Keep this in sync with `data/` and the README catalog. One row per dataset file.
 | `motorcycles.txt` | Motorcycle brands & models | 359 | `claude/next-three-items-nj7dyj` | Real motorcycle and brand names from Honda, Yamaha, Kawasaki, Harley-Davidson, Ducati, BMW, KTM, Royal Enfield, and others. Mix of short punchy names (Rebel, Shadow, Ninja) and compound names (Street Glide, Fat Boy). |
 | `craft_beers.txt` | Craft brewery & beer names | 398 | `claude/next-three-items-nj7dyj` | Creative beer names from US and international craft breweries. Includes descriptive names (IPA, Porter, Stout), whimsical names (Hoppy Beer, Belly Dance), and branded brewery ales (Stone IPA, Founders All Day). |
 | `aircraft.txt` | Aircraft models | 435 | `claude/next-three-items-nj7dyj` | Real aircraft and helicopter model names from Boeing, Airbus, Bombardier, Embraer, Gulfstream, Cessna, Piper, Learjet, Saab, Dassault, and others. Mix of alphanumeric (Boeing 737, A320) and named models (Dreamliner, Super King Air). |
+| `team_names.txt` | Pro/college sports team names | 427 | `claude/frontend-dev-setup-6gfwgu` | Real team names spanning NFL/NBA/MLB/NHL/MLS/WNBA/NWSL/CFL plus major European soccer clubs and well-known NCAA programs. |
+| `dog_breeds.txt` | Dog breed names | 378 | `claude/frontend-dev-setup-6gfwgu` | Real AKC/FCI/UK Kennel Club and other internationally recognized breeds, deduplicated across regional name variants. |
+| `food_brands.txt` | Food & beverage brand names | 565 | `claude/frontend-dev-setup-6gfwgu` | Real grocery/CPG brand names across cereal, snacks, candy, soda, coffee, dairy, condiments, and fast food. |
+| `firearm_names.txt` | Firearm model names | 560 | `claude/frontend-dev-setup-6gfwgu` | Real manufacturer + model designations only (no specs/calibers) across ~50 makers — pistols, rifles, revolvers, shotguns. Same factual-product-name pattern as `aircraft.txt`/`motorcycles.txt`. |
+| `band_names.txt` | Band / musical group names | 988 | `claude/frontend-dev-setup-6gfwgu` | Real band/musical group names spanning rock, punk, metal, hip-hop, pop, K-pop, jazz, country, electronic, reggae, soul/funk, and post-punk eras. |
 
 ---
 
@@ -199,6 +204,7 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
   | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
   | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ⏳ in review |
+  | `claude/frontend-dev-setup-6gfwgu` | WS-1 (5 datasets) + WS-5 (engine dropdown, compare-engines UI) | 2026-07-24 | ⏳ in review |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.

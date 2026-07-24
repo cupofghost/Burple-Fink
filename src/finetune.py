@@ -35,8 +35,14 @@ from .train import fit, save_checkpoint
 
 # Fine-tuning defaults: much shorter and gentler than pretraining, so the base
 # model is *nudged* toward the domain rather than overwritten. Overridable on the CLI.
-FINETUNE_EPOCHS = 60
-FINETUNE_LR = 5e-4
+#
+# Raised from the original 60 epochs / 5e-4 once the base spanned 13 wildly
+# different domains (guns, dog breeds, bands, ...) instead of just two similar
+# automotive ones: the gentler defaults left visible cross-domain leakage (e.g.
+# dog-breed samples with beer/aircraft fragments in them). 150 epochs @ 2e-3
+# specializes cleanly — verified via samples across every current dataset.
+FINETUNE_EPOCHS = 150
+FINETUNE_LR = 2e-3
 
 
 def finetune(
