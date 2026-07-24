@@ -13,7 +13,7 @@ Last consolidation: (never)
 (list file + what changed + signature)
 
 ## Known issues
-(one line each: what, where, date noticed, signature)
+- `data/paint_colors.txt` lines ~275-391 are corrupted/gibberish (e.g. "Bemidgard", "Bemidillion") — looks like leftover char-RNN sample output pasted in instead of real color names, not real paint colors. Not touched (outside this task's scope). 2026-07-24. Signed: Claude Code | Sonnet 5 | high
 
 ## Archive
 (completed entries moved here during consolidation — one line each)
