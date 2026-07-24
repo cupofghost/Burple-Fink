@@ -122,6 +122,15 @@ function buildSeg(host,options,current,onPick){
     host.appendChild(b);
   });
 }
+function buildSelect(host,options,current,onPick){
+  host.innerHTML="";
+  options.forEach((opt,i)=>{
+    const o=document.createElement("option");o.value=String(i);o.textContent=opt.label;
+    if(i===current)o.selected=true;
+    host.appendChild(o);
+  });
+  host.addEventListener("change",()=>{const i=host.selectedIndex;onPick(i,options[i]);});
+}
 function render(batch){
   const box=$("results");box.innerHTML="";
   if(!batch.length){box.innerHTML='<p class="empty">The net drew a blank at this setting &mdash; try nudging the dial or clearing the prefix.</p>';$("stat").hidden=true;return;}
@@ -151,7 +160,7 @@ async function run(){
   }
 }
 
-buildSeg($("engine"),LABELS.map(l=>({label:l})),state.engine,(i)=>{state.engine=i;});
+buildSelect($("engine"),LABELS.map(l=>({label:l})),state.engine,(i)=>{state.engine=i;});
 buildSeg($("count"),[6,12,24].map(n=>({label:String(n),value:n})),1,(i,opt)=>{state.count=opt.value;});
 $("temp").addEventListener("input",e=>{state.temp=parseFloat(e.target.value);$("tempVal").textContent=state.temp.toFixed(2);applyAccent();});
 $("prefix").addEventListener("input",e=>{state.prefix=e.target.value;});

@@ -139,7 +139,7 @@
     font-weight: 600;
   }
 
-  /* segmented controls (engine + count) */
+  /* segmented control (count) */
   .seg { display: flex; gap: 4px; background: var(--surface-2); border-radius: 12px; padding: 4px; }
   .seg button {
     flex: 1 1 0;
@@ -155,6 +155,31 @@
     box-shadow: 0 1px 2px rgba(0,0,0,0.25), inset 0 0 0 1px var(--hairline-strong);
   }
   .seg.compact { max-width: 220px; }
+
+  /* engine dropdown — a plain <select>, styled to match the panel (there will be lots) */
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: "";
+    position: absolute; right: 17px; top: 50%;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+  .dropdown {
+    appearance: none; -webkit-appearance: none; -moz-appearance: none;
+    width: 100%;
+    font-family: var(--sans); font-size: 15.5px; font-weight: 700;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--hairline);
+    border-radius: 11px;
+    padding: 12px 40px 12px 14px;
+    cursor: pointer;
+    transition: border-color 140ms ease, box-shadow 140ms ease;
+  }
+  .dropdown option { color: var(--ink); background: var(--surface); font-weight: 500; }
+  .dropdown:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 
   /* temperature dial */
   .dial {
@@ -305,8 +330,10 @@
 
   <section class="controls">
     <div class="field">
-      <span class="lab">Engine</span>
-      <div class="seg" id="engine" role="group" aria-label="Which name generator"></div>
+      <label class="lab" for="engine">Engine</label>
+      <div class="select-wrap">
+        <select id="engine" class="dropdown" aria-label="Which name generator"></select>
+      </div>
     </div>
 
     <div class="field">
@@ -502,6 +529,22 @@ function buildSeg(host, options, current, onPick) {
   });
 }
 
+// A plain <select> — used for "engine" now that the list has grown too long for tabs.
+function buildSelect(host, options, current, onPick) {
+  host.innerHTML = "";
+  options.forEach((opt, i) => {
+    const o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = opt.label;
+    if (i === current) o.selected = true;
+    host.appendChild(o);
+  });
+  host.addEventListener("change", () => {
+    const i = host.selectedIndex;
+    onPick(i, options[i]);
+  });
+}
+
 function applyAccent() {
   const rgb = accentFor(state.temp);
   const hex = "#" + rgb.map((v) => v.toString(16).padStart(2, "0")).join("");
@@ -577,7 +620,7 @@ function run() {
 }
 
 /* build controls from the actual bundled models */
-buildSeg($("engine"), BURPLE.models.map((m) => ({ label: m.label })), state.engine,
+buildSelect($("engine"), BURPLE.models.map((m) => ({ label: m.label })), state.engine,
   (i) => { state.engine = i; });
 buildSeg($("count"), [6, 12, 24].map((n) => ({ label: String(n), value: n })), 1,
   (i, opt) => { state.count = opt.value; });
