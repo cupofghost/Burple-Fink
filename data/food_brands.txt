@@ -1,0 +1,565 @@
+100 Grand
+3 Musketeers
+5-Hour Energy
+7 Up
+A&W
+A.1.
+Act II
+Activia
+Aero
+Airheads
+Alexia
+All-Bran
+Almond Breeze
+Almond Joy
+Altoids
+Amy's Kitchen
+Annie Chun's
+Apple Jacks
+Applebee's
+Applegate
+Aquafina
+Arby's
+Arizona
+Arnold
+Auntie Anne's
+Baby Ruth
+Babybel
+Bagel Bites
+Ball Park
+Bang
+Banquet
+Barilla
+Barq's
+Basic 4
+Baskin-Robbins
+Bays
+Ben & Jerry's
+Ben's Original
+Bertolli
+Best Foods
+Betty Crocker
+Big Red
+Birds Eye
+Biscoff
+Bisquick
+Bit-O-Honey
+Blow Pops
+Blue Bell
+Blue Bunny
+Blue Diamond
+Blue Moon
+Boar's Head
+Bob's Red Mill
+Bojangles
+Bolthouse Farms
+Borden
+Bosco
+Boulder Canyon
+Brach's
+Breyers
+Bubble Yum
+Bubblicious
+Bubly
+Bud Light
+Budweiser
+Buffalo Wild Wings
+Bugles
+Bull's-Eye
+Bumble Bee
+Burger King
+Busch
+Bush's Best
+Butterball
+Butterfinger
+C&H Sugar
+Cadbury
+Cafe Bustelo
+California Pizza Kitchen
+Campbell's
+Canada Dry
+Cap'n Crunch
+Cape Cod
+Capri Sun
+Caribou Coffee
+Carl's Jr.
+Carvel
+Celeste
+Celsius
+Cento
+Certs
+Charleston Chew
+Cheerios
+Cheetos
+Cheez-It
+Chef Boyardee
+Chex
+Chex Mix
+Chick-fil-A
+Chicken of the Sea
+Chili's
+Chipotle
+Chobani
+Chock Full o'Nuts
+Cholula
+Chuck E. Cheese
+Chuckles
+Church's Chicken
+Cinnabon
+Cinnamon Toast Crunch
+Classico
+Claussen
+Clif Bar
+Coca-Cola
+Cocoa Pebbles
+Cocoa Puffs
+Cold Stone Creamery
+Combos
+Community Coffee
+Cookie Crisp
+Cool Whip
+Coors
+Coors Light
+Corn Flakes
+Corn Pops
+Corona
+Costa Coffee
+Country Time
+Cracker Barrel
+Cracker Jack
+Cream of Wheat
+Crisco
+Crunch
+Crush
+Crystal Hot Sauce
+Crystal Light
+Culver's
+Cup Noodles
+Dairy Queen
+Dannon
+Dasani
+Dave's Killer Bread
+De Cecco
+Deep River Snacks
+Del Monte
+Del Taco
+Denny's
+Diamond Crystal
+Diamond of California
+DiGiorno
+Dinty Moore
+Domino
+Domino's
+Doritos
+Dos Equis
+Doublemint
+Dove
+Dr Pepper
+Drumstick
+Dubble Bubble
+Dum Dums
+Duncan Hines
+Dunkin'
+Dutch Bros
+Eckrich
+Eclipse
+Edy's
+Eggo
+Eight O'Clock Coffee
+El Pato
+El Pollo Loco
+Emerald Nuts
+Equal
+Evian
+Extra Gum
+Fage
+Fairlife
+Fanta
+Farmer John
+Faygo
+Ferrero Rocher
+Fiji Water
+Filippo Berio
+Firehouse Subs
+Fisher
+Five Guys
+Folgers
+Foster Farms
+Frank's RedHot
+Freedent
+French's
+Fresca
+Freschetta
+Fritos
+Froot Loops
+Frosted Flakes
+Frosted Mini-Wheats
+Fruity Pebbles
+Full Throttle
+Funyuns
+Gatorade
+Ghirardelli
+Gobstopper
+Godfather's Pizza
+Godiva
+Gold Medal
+Golden Flake
+Golden Grahams
+Goldfish
+Good & Plenty
+Good Humor
+Gorton's
+Goya
+Grape-Nuts
+Green Giant
+Green Mountain Coffee
+Grey Poupon
+Grillo's Pickles
+Guinness
+Gulden's
+Haagen-Dazs
+Halls
+Hardee's
+Haribo
+Healthy Choice
+Heath
+Hebrew National
+Heineken
+Heinz
+Hellmann's
+Herr's
+Hershey's
+Hi-C
+Hidden Valley
+Hillshire Farm
+Honey Bunches of Oats
+Honey Nut Cheerios
+Honeycomb
+Horizon Organic
+Hormel
+Hot Pockets
+House Foods
+Hunt's
+IBC Root Beer
+Ice Breakers
+Ice Mountain
+IHOP
+Illy
+In-N-Out Burger
+Jack in the Box
+Jack Link's
+Jarritos
+Jersey Mike's
+Jet-Puffed
+Jif
+Jimmy Dean
+Jimmy John's
+Johnsonville
+Jolly Rancher
+Jolly Time
+Jones Soda
+Juicy Fruit
+Junior Mints
+Just Right
+Karo
+Kashi
+KC Masterpiece
+Kellogg's
+Ken's Steak House
+Kettle Brand
+Keystone
+KFC
+Kikkoman
+Kind
+King Arthur
+King's Hawaiian
+Kit Kat
+Kix
+Klondike
+Kool-Aid
+Kraft
+Krispy Kreme
+Krystal
+La Choy
+La Costena
+LaCroix
+Lactaid
+Laffy Taffy
+Land O'Lakes
+Laughing Cow
+Lavazza
+Lawry's
+Lay's
+Lea & Perrins
+Lean Cuisine
+Lean Pockets
+Lee Kum Kee
+Libby's
+Life
+Life Savers
+Lindt
+Litehouse
+Little Caesars
+Log Cabin
+Lucky Charms
+Luna Bar
+M&M's
+Magnum
+Malt-O-Meal
+Marco's Pizza
+Marie Callender's
+Marshmallow Fluff
+Maruchan
+Marzetti
+Maxwell House
+Mazola
+McCormick
+McDonald's
+Mello Yello
+Mentos
+Michelob
+Mike and Ike
+Milk Duds
+Milky Way
+Miller Lite
+Minute Maid
+Miracle Whip
+Miss Vickie's
+Modelo
+Moe's Southwest Grill
+Monster
+Morton
+Mounds
+Mountain Dew
+Mrs. Butterworth's
+Mrs. Dash
+Mrs. Paul's
+Mt. Olive
+Mueller's
+Muesli Fuel
+Mug Root Beer
+Multigrain Cheerios
+Munchos
+Nabisco
+Nathan's Famous
+Natural Light
+Nature Valley
+Nature's Own
+Near East
+Nerds
+Nescafe
+Nesquik
+Nestle Pure Life
+Newman's Own
+Nissin
+Noodles & Company
+Noosa
+NOS
+Now and Later
+Nutella
+Nutri-Grain
+Oatly
+Ocean Spray
+Oikos
+Old Bay
+Old El Paso
+Olive Garden
+Orbit
+Ore-Ida
+Oroweat
+Ortega
+Orville Redenbacher's
+Oscar Mayer
+Outback Steakhouse
+Ovaltine
+Pabst Blue Ribbon
+Pam
+Panda Express
+Panera Bread
+Papa John's
+Papa Murphy's
+PayDay
+Pearl Milling Company
+Peet's Coffee
+Pepperidge Farm
+Pepsi
+Perdue
+Perrier
+Peter Pan
+Pez
+Philadelphia
+Pillsbury
+Pizza Hut
+Planters
+Poland Spring
+Pompeian
+Pop Rocks
+Pop Secret
+Pop-Tarts
+Popchips
+Popeyes
+Popsicle
+Potbelly
+Powerade
+Prego
+Prince
+Pringles
+Product 19
+Progresso
+Propel
+Qdoba
+Quaker
+Quaker Chewy
+Quaker Oats
+Quiznos
+Ragu
+Raisin Bran
+Raising Cane's
+Ranch Style Beans
+RC Cola
+Red Baron
+Red Bull
+Red Lobster
+Reddi-wip
+Reese's
+Reese's Puffs
+Rice Krispies
+Rice-A-Roni
+Ricola
+Ring Pop
+Ritz
+Ro-Tel
+Rockstar
+Rold Gold
+Rolling Rock
+Rolo
+Ronzoni
+Round Table Pizza
+Rudi's
+Ruffles
+Russell Stover
+S&W
+Sam Adams
+San Marzano
+San Pellegrino
+Sapporo Ichiban
+Sara Lee
+Sargento
+Schweppes
+See's Candies
+Shake Shack
+Shasta
+Shredded Wheat
+Sierra Mist
+Siggi's
+Silk
+Simply Orange
+Skinny Pop
+Skippy
+Skittles
+Skor
+Slim Jim
+Smartfood
+Smarties
+Smartwater
+Smithfield
+Smucker's
+Snapple
+Snickers
+Snyder's of Hanover
+Sonic
+Sour Patch Kids
+Spam
+Special K
+Splenda
+Sprite
+Squirt
+Sriracha
+Starbucks
+Starburst
+StarKist
+Stella Artois
+Stevia in the Raw
+Stouffer's
+Stubb's
+Subway
+Success Rice
+Sun Chips
+Sunkist
+Sunny D
+Surge
+Swanson
+Swedish Fish
+Sweet Baby Ray's
+Sweet'N Low
+Symphony
+Tab
+Tabasco
+Taco Bell
+Take 5
+Terra Chips
+Texas Pete
+Texas Roadhouse
+TGI Fridays
+Thomas'
+Tic Tac
+Tillamook
+Tim Hortons
+Toaster Strudel
+Toblerone
+Tombstone
+Tootsie Pop
+Tootsie Roll
+Top Ramen
+Topo Chico
+Tostitos
+Total
+Totino's
+Trident
+Triscuit
+Trix
+Trolli
+Tropicana
+Truvia
+Turkey Hill
+Twix
+Twizzlers
+Tyson
+Utz
+Velveeta
+Vernors
+Vienna Beef
+Vitaminwater
+Vlasic
+Voss
+Waffle House
+Warheads
+Welch's
+Wendy's
+Werther's Original
+Wesson
+Whataburger
+Whatchamacallit
+Wheat Thins
+Wheaties
+Which Wich
+White Castle
+White Lily
+Whoppers
+Wingstop
+Winterfresh
+Wise
+Wish-Bone
+Wonder
+Wonderful Pistachios
+Wrigley's
+Yoo-hoo
+Yoplait
+York
+Yuban
+Yuengling
+Zapp's
+Zatarain's
+Zaxby's
+Zephyrhills
+Zero Bar
