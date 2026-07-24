@@ -204,4 +204,45 @@ differs:
 - **WS-1 (more datasets):** the single biggest quality lever is still more data; the
   fine-tuning machinery is ready for any dataset dropped into `data/` (rebuild the shared
   vocab by deleting `data/shared_vocab.json` and re-running pretrain).
-- **WS-4 (dual-output):** the name+attribute regression head (§9.3) is not yet built.
+- **WS-4 (dual-output):** ✅ done — see §11.6.
+
+### 11.6 Dual-output: name + numeric attribute (WS-4)
+
+Implements the Shane paint-color trick (§9.3): the network emits a name **and**
+regresses a scalar attribute from the same LSTM encoder, trained with a combined loss.
+
+- **`Config.dual_output` / `value_mean` / `value_std` / `value_label`** (`src/config.py`)
+  — four new fields, all defaulting to "off"/neutral, so every existing (non-dual)
+  checkpoint is unaffected. `value_mean`/`value_std` are z-score stats used to
+  denormalize the head's output back to the attribute's real scale; `value_label` is a
+  human string (e.g. `"founding year"`) purely for display.
+- **`CharRNN.value_head`** (`src/model.py`) — an `nn.Linear(hidden_dim, 1)`, created only
+  when `cfg.dual_output=True` (`None` otherwise). `forward(x, hidden)` is byte-for-byte
+  unchanged; a new `encode(x, hidden)` factors out the embedding+LSTM step so the value
+  head can read the per-timestep LSTM output directly, and `predict_value(state)` applies
+  the head to a `(batch, hidden_dim)` summary vector.
+- **`data.load_name_value_pairs(path)`** (`src/data.py`) — reads a `name<TAB>value` file
+  (comments/blank lines skipped), the WS-4 dataset format.
+- **`src/train_dual.py`** (new module) — trains a dual-output model:
+  `combined_loss = ce_loss + value_weight * mse_loss`. The value target for each
+  training example is gathered from the LSTM output at that sequence's own last
+  non-pad timestep (via the batch's `lengths`), so padding never leaks into the
+  regression signal. Kept as its own module (rather than extending `src/train.py`'s
+  `fit()`) to keep the single-output training path untouched.
+- **`sample.generate_one`/`generate_many`** (`src/sample.py`) gained an opt-in
+  `return_value` parameter; default `False` preserves the exact old return type
+  (`str` / `List[str]`). `python -m src.sample` auto-detects `cfg.dual_output` on the
+  loaded checkpoint and prints the denormalized value alongside each name.
+- **Checkpoint format (§2) is unchanged** — no new top-level keys. The dual-output
+  fields all live inside the already-extensible `config` dict, and `model_state` simply
+  contains extra `value_head.*` tensors for dual checkpoints.
+- **Seed dataset:** `data/car_manufacturers_founding_year.tsv` — 66 manufacturers paired
+  with a founding year (sourced from each brand's commonly-cited Wikipedia-infobox
+  founding date, including well-known predecessor-company years, e.g. Suzuki 1909 as a
+  loom maker; ambiguous/contested cases were left out rather than guessed).
+- **Try it:**
+  ```bash
+  python -m src.train_dual --data data/car_manufacturers_founding_year.tsv \
+      --epochs 300 --name manufacturers_founding_year --value-label "founding year"
+  python -m src.sample --checkpoint checkpoints/manufacturers_founding_year.pt --num 10
+  ```

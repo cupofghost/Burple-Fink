@@ -24,10 +24,10 @@ A working character-level LSTM that trains **per-dataset from scratch** and samp
 temperature ("creativity") knob. Verified end-to-end on CPU: loss drops from ~3.7 to
 <1.0 and output matures from noise → plausible names.
 
-On top of that MVP, the fine-tuning core (**WS-2**), evaluation harness (**WS-3**), and both
-serving front-ends (**WS-5**) are now implemented — see the ✅ markers in §3. A `tests/`
-suite (`python -m unittest discover -s tests`) pins the vocab, training, and export
-invariants. Still open: more datasets (**WS-1**) and dual-output (**WS-4**).
+On top of that MVP, the fine-tuning core (**WS-2**), evaluation harness (**WS-3**), both
+serving front-ends (**WS-5**), and the dual-output head (**WS-4**) are now implemented —
+see the ✅ markers in §3. A `tests/` suite (`python -m unittest discover -s tests`) pins
+the vocab, training, export, and dual-output invariants. Still open: more datasets (**WS-1**).
 
 Modules and their responsibilities:
 
@@ -39,6 +39,7 @@ Modules and their responsibilities:
 | `src/train.py` | Training loop, live previews, checkpoint save | Yes |
 | `src/sample.py` | Checkpoint load + temperature generation | Yes |
 | `generate.py` | Friendly one-command wrapper | Yes |
+| `src/train_dual.py` | WS-4: train a name + numeric-attribute (dual-output) model | Yes |
 
 **Checkpoint format** (a single `torch.save` dict) — do not break these keys, other
 stages depend on them:
@@ -51,6 +52,11 @@ stages depend on them:
     "training_names": [<str>, ...],           # used to filter for novelty
 }
 ```
+
+> WS-4's dual-output head (§3) does not add or rename any of these keys — it only adds
+> new `Config` fields (`dual_output`/`value_mean`/`value_std`/`value_label`) inside the
+> existing `config` dict, plus extra `value_head.*` tensors inside `model_state` for
+> checkpoints trained with `src/train_dual.py`. Ordinary checkpoints are unaffected.
 
 ---
 
@@ -99,10 +105,21 @@ Original brief — add `src/evaluate.py` computing, for a checkpoint + its datas
 - **Deliverable:** `python -m src.evaluate --checkpoint … ` prints a metrics table;
   numbers are how WS-2 proves fine-tuning helps.
 
-### WS-4 · Dual-output (name + attribute)
-Implement Shane's name+number trick: a second head that regresses a numeric attribute
-(for cars: horsepower / price tier / a learned "sportiness" score). Requires datasets
-with a value column — coordinate with WS-1 on a `name<TAB>value` format.
+### WS-4 · Dual-output (name + attribute) — ✅ **done** (`claude/scope-vs-please-yrlsll`)
+Implemented: `src/config.py` gained `dual_output`/`value_mean`/`value_std`/`value_label`
+(all default "off", so ordinary checkpoints are unaffected); `src/model.py`'s `CharRNN`
+gained an optional `value_head` plus `encode()`/`predict_value()`; `src/data.py` gained
+`load_name_value_pairs()` for the `name<TAB>value` format; `src/train_dual.py` trains with
+`combined_loss = ce_loss + value_weight * mse_loss`; `src/sample.py`'s
+`generate_one`/`generate_many` gained an opt-in `return_value` param, and
+`python -m src.sample` auto-prints the value for dual checkpoints. Checkpoint format (§2)
+unchanged — the new fields live inside the existing `config` dict. Seed dataset:
+`data/car_manufacturers_founding_year.tsv` (66 manufacturers + founding year). Design
+write-up in `docs/PLAN.md §11.6`.
+
+Original brief — implement Shane's name+number trick: a second head that regresses a
+numeric attribute (for cars: horsepower / price tier / a learned "sportiness" score).
+Requires datasets with a value column — coordinate with WS-1 on a `name<TAB>value` format.
 
 ### WS-5 · Serving — ✅ **done** (`claude/program-development-q4fcp7`)
 Two front-ends, both a mobile-friendly "instrument panel" UI (temperature dial, prefix,
@@ -127,6 +144,7 @@ Keep this in sync with `data/` and the README catalog. One row per dataset file.
 | `car_models.txt` | Car model names | ~250 | seed | Real model names |
 | `english_words.txt` | Common English words | ~8,600 | `claude/plausible-words-dataset-53qyyg` | Frequency-ranked common words (Google Web Trillion Word Corpus via `first20hours/google-10000-english`, MIT). Curated to lowercase a–z, length 3–10, vowel-bearing. Teaches general English spelling → plausible word-shapes; good base-model fuel. |
 | `world_cities.txt` | World city names | ~670 | `claude/scope-vs-please-yrlsll` | Real world cities and capitals spanning every inhabited continent, Title Case, one per line, deduplicated. Smoke-tested: `train --epochs 40` reaches loss ~0.86; samples like "Burake City", "Porto Soredo" stay on-style. |
+| `car_manufacturers_founding_year.tsv` | Manufacturer name + founding year (WS-4 dual-output) | 66 | `claude/scope-vs-please-yrlsll` | `name<TAB>value` format for `src/train_dual.py`. Founding years as commonly cited in each manufacturer's Wikipedia infobox (including well-known predecessor-company years, e.g. Suzuki 1909 as a loom maker); genuinely contested/ambiguous cases (e.g. GMC, Datsun) were left out rather than guessed. |
 
 ---
 
@@ -194,7 +212,7 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
   | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
   | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ⏳ in review |
-  | `claude/scope-vs-please-yrlsll` | WS-1 `world_cities.txt` (world cities dataset) | 2026-07-24 | ⏳ in review |
+  | `claude/scope-vs-please-yrlsll` | WS-1 `world_cities.txt` (world cities dataset); WS-4 dual-output head + `car_manufacturers_founding_year.tsv` | 2026-07-24 | ⏳ in review |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.

@@ -35,12 +35,40 @@ class CharRNN(nn.Module):
         # Projects each LSTM output back to one score per vocabulary character.
         self.head = nn.Linear(cfg.hidden_dim, vocab_size)
 
+        # WS-4 dual-output: an optional second head that regresses one scalar
+        # attribute (e.g. a car brand's founding year) from the same LSTM encoder.
+        # None for every ordinary (non-dual) config, so existing checkpoints and
+        # callers are completely unaffected.
+        self.value_head = nn.Linear(cfg.hidden_dim, 1) if cfg.dual_output else None
+
+    def encode(self, x: torch.Tensor, hidden=None):
+        """Run just the embedding + LSTM, exposing the per-timestep output.
+
+        Factored out of :meth:`forward` so the dual-output value head (which needs
+        each sequence's *last valid* timestep, not just the vocab logits) can read
+        the same LSTM output without duplicating the embedding/LSTM call.
+        """
+        emb = self.embedding(x)                 # (batch, time, embedding_dim)
+        out, hidden = self.lstm(emb, hidden)    # (batch, time, hidden_dim)
+        return out, hidden
+
     def forward(self, x: torch.Tensor, hidden=None):
         """x: (batch, time) integer ids -> logits: (batch, time, vocab_size).
 
         ``hidden`` lets generation carry the LSTM state forward one step at a time.
         """
-        emb = self.embedding(x)                 # (batch, time, embedding_dim)
-        out, hidden = self.lstm(emb, hidden)    # (batch, time, hidden_dim)
+        out, hidden = self.encode(x, hidden)
         logits = self.head(out)                 # (batch, time, vocab_size)
         return logits, hidden
+
+    def predict_value(self, state: torch.Tensor) -> torch.Tensor:
+        """Regress the trained scalar attribute from an LSTM hidden vector.
+
+        ``state`` is (batch, hidden_dim): either the top-layer hidden state after
+        a single generation step, or ``encode()``'s output gathered at each
+        sequence's last non-pad timestep during training. Only valid when this
+        model was built with ``cfg.dual_output=True``.
+        """
+        if self.value_head is None:
+            raise RuntimeError("predict_value() requires a model built with dual_output=True")
+        return self.value_head(state).squeeze(-1)

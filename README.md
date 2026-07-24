@@ -35,7 +35,7 @@ colliding with other agents. Repo-wide conventions and commands for agents also 
 | **1. Dataset library** | Many clean, documented name datasets under a shared convention | ⏳ In progress |
 | **2. Shared base + fine-tuning** | Pretrain one base model on all corpora, then fine-tune per domain (transfer learning) | ✅ Done |
 | **3. Evaluation harness** | Automatic novelty / plausibility / diversity metrics to compare checkpoints | ✅ Done |
-| **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | 🔜 Planned |
+| **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | ✅ Done |
 | **5. Serving** | CLI ✅ → live server ✅ → in-browser web app ✅ | ✅ Done |
 
 The full rationale and design for each stage lives in [`docs/PLAN.md`](docs/PLAN.md).
@@ -98,6 +98,24 @@ python -m src.evaluate --checkpoint checkpoints/car_models_ft.pt --temperature 1
 
 See [`HANDOFF.md §6`](HANDOFF.md#6-key-design-decision-for-fine-tuning-shared-vocabulary)
 for the shared-vocabulary design that makes fine-tuning possible.
+
+### Dual-output: a name *and* an attribute (Shane's paint-color trick)
+
+Give the model a `name<TAB>value` dataset and it learns to emit a name **and** regress a
+numeric attribute (e.g. a car brand's founding year) from the same LSTM encoder:
+
+```bash
+python -m src.train_dual --data data/car_manufacturers_founding_year.tsv \
+    --epochs 300 --name manufacturers_founding_year --value-label "founding year"
+
+python -m src.sample --checkpoint checkpoints/manufacturers_founding_year.pt --num 10
+#   Studeraki  (founding year: 1921.5)
+#   Podes      (founding year: 1973.5)
+```
+
+`python -m src.sample` auto-detects dual-output checkpoints and prints the value inline;
+ordinary checkpoints are unaffected. See [`docs/PLAN.md §11.6`](docs/PLAN.md) for the
+design.
 
 ### The web app (open it on your phone)
 
@@ -162,6 +180,7 @@ Burple-Fink/
 │   ├── pretrain.py           # train one base model on all datasets
 │   ├── finetune.py           # specialize the base onto one dataset
 │   ├── evaluate.py           # novelty / plausibility / diversity metrics
+│   ├── train_dual.py         # dual-output: train a name + numeric-attribute model
 │   ├── export_web.py         # bake a checkpoint into a browser-runnable UI
 │   └── serve.py              # local server wiring the UI to the live model
 ├── web/
@@ -185,6 +204,7 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `car_models.txt` | Car model names | ~250 | ✅ seed |
 | `english_words.txt` | Common English words | ~8,600 | ✅ added |
 | `world_cities.txt` | World city names | ~670 | ✅ added |
+| `car_manufacturers_founding_year.tsv` | Manufacturer name + founding year (WS-4 dual-output) | 66 | ✅ added |
 | _(your dataset here)_ | — | — | 🔜 |
 
 Ideas for future domains (a Shane-style variety): boat & yacht names, motorcycle brands,

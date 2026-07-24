@@ -35,6 +35,12 @@ class Config:
     temperature: float = 0.8    # the "creativity" knob (see docs/PLAN.md)
     max_length: int = 40        # hard cap so a runaway sample can't loop forever
 
+    # --- dual-output (WS-4): name + numeric attribute, see src/train_dual.py ---
+    dual_output: bool = False   # if True, the model also carries a value-regression head
+    value_mean: float = 0.0     # z-score stats for denormalizing the value head's output
+    value_std: float = 1.0
+    value_label: str = ""       # human label for the attribute, e.g. "founding year"
+
     def to_dict(self) -> dict:
         return asdict(self)
 
