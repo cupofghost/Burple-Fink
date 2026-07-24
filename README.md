@@ -206,6 +206,7 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `english_words.txt` | Common English words | ~8,600 | ✅ added |
 | `tech_startups.txt` | Tech company / startup names | 400 | ✅ added |
 | `city_names.txt` | World city names | 1,323 | ✅ added |
+| `motorcycle_brands.txt` | Motorcycle manufacturer and brand names | 63 | ✅ added |
 
 **Dual-output datasets** (`data/dual/*.tsv`, `name<TAB>value`, for WS-4 — see above):
 

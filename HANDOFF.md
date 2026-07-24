@@ -151,6 +151,7 @@ Keep this in sync with `data/` and the README catalog. One row per dataset file.
 | `english_words.txt` | Common English words | ~8,600 | `claude/plausible-words-dataset-53qyyg` | Frequency-ranked common words (Google Web Trillion Word Corpus via `first20hours/google-10000-english`, MIT). Curated to lowercase a–z, length 3–10, vowel-bearing. Teaches general English spelling → plausible word-shapes; good base-model fuel. |
 | `tech_startups.txt` | Tech company / startup names | 400 | `claude/next-task-tnbsmq` | Real technology company/product names (big tech, SaaS, fintech, devtools, AI labs, crypto, dot-com era) compiled from general knowledge, not scraped from one list — many are Shane-style invented-sounding words (Zapier, Notion, Klarna). |
 | `city_names.txt` | World city names | 1,323 | `claude/next-task-tnbsmq` | Real city names from around the world (North America, South America, Europe, Asia, Africa, Australia/Oceania, Middle East) compiled from general geographical knowledge. Consistent Title Case. Cities range from major metropolitan centers to mid-size regional cities. |
+| `motorcycle_brands.txt` | Motorcycle manufacturer brands | 63 | `claude/next-task-tnbsmq` | Real motorcycle manufacturer names compiled from general knowledge. Includes major global brands (Harley-Davidson, Yamaha, Honda, Kawasaki, Suzuki, BMW, Ducati, KTM) and established secondary/regional brands from Europe, Asia, India, and China. |
 
 **WS-4 dual-output datasets** (`data/dual/*.tsv`, `name<TAB>value` — separate from the
 table above so `pretrain.py`'s plain-name `data/*.txt` glob never ingests them):
@@ -226,7 +227,7 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
   | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
   | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ⏳ in review |
-  | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt` + `city_names.txt` + WS-4 dual-output (`DualCharRNN`, `dual_data.py`, `train_dual.py`, `sample_dual.py`, `data/dual/paint_colors.tsv`) | 2026-07-24 | ⏳ in review |
+  | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt` + `city_names.txt` + `motorcycle_brands.txt` + WS-4 dual-output (`DualCharRNN`, `dual_data.py`, `train_dual.py`, `sample_dual.py`, `data/dual/paint_colors.tsv`) | 2026-07-24 | ⏳ in review |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.
