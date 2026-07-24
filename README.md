@@ -35,7 +35,7 @@ colliding with other agents. Repo-wide conventions and commands for agents also 
 | **1. Dataset library** | Many clean, documented name datasets under a shared convention | ⏳ In progress |
 | **2. Shared base + fine-tuning** | Pretrain one base model on all corpora, then fine-tune per domain (transfer learning) | ✅ Done |
 | **3. Evaluation harness** | Automatic novelty / plausibility / diversity metrics to compare checkpoints | ✅ Done |
-| **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | 🔜 Planned |
+| **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | ✅ Done |
 | **5. Serving** | CLI ✅ → live server ✅ → in-browser web app ✅ | ✅ Done |
 
 The full rationale and design for each stage lives in [`docs/PLAN.md`](docs/PLAN.md).
@@ -99,6 +99,24 @@ python -m src.evaluate --checkpoint checkpoints/car_models_ft.pt --temperature 1
 See [`HANDOFF.md §6`](HANDOFF.md#6-key-design-decision-for-fine-tuning-shared-vocabulary)
 for the shared-vocabulary design that makes fine-tuning possible.
 
+### Dual-output: name + numeric attribute (Shane's paint-color trick)
+
+Shane's original char-rnn didn't just name paint colors — it predicted their RGB
+value too. `src/train_dual.py` adds a second regression head so the same network
+learns to spell **and** predict one numeric attribute per name from any
+`name<TAB>value` dataset:
+
+```bash
+# Train on data/paint_colors.tsv: real CSS named colors + their relative luminance
+python -m src.train_dual --data data/paint_colors.tsv --name paint_colors --epochs 250
+
+# Generate invented color names with a predicted lightness value
+python -m src.sample_dual --checkpoint checkpoints/paint_colors.pt --num 10
+#  -> GhostWhite       value=0.94   Chocolate   value=0.19
+```
+
+See [`HANDOFF.md §3 WS-4`](HANDOFF.md#ws-4--dual-output) for the implementation.
+
 ### The web app (open it on your phone)
 
 There are two ways to run the mobile-friendly UI — an instrument panel with a
@@ -152,15 +170,20 @@ Burple-Fink/
 ├── data/                     # training datasets, one name per line
 │   ├── car_manufacturers.txt # ~150 real auto brands
 │   ├── car_models.txt        # ~250 real car model names
+│   ├── paint_colors.tsv      # ~140 CSS named colors + luminance (WS-4 dual-output demo)
 │   └── shared_vocab.json     # fixed char set shared by base + all fine-tunes
+├── scripts/
+│   └── build_paint_colors.py # regenerates data/paint_colors.tsv from its hex source
 ├── src/
 │   ├── config.py             # hyperparameters in one place
 │   ├── data.py               # read names -> vocab -> tensors (+ shared vocab)
-│   ├── model.py              # the char-RNN (LSTM) itself
+│   ├── model.py              # the char-RNN (LSTM) itself (+ optional value head)
 │   ├── train.py              # training loop (reusable `fit`) + checkpointing
 │   ├── sample.py             # load checkpoint, generate names
 │   ├── pretrain.py           # train one base model on all datasets
 │   ├── finetune.py           # specialize the base onto one dataset
+│   ├── train_dual.py         # WS-4: joint name + numeric-attribute training
+│   ├── sample_dual.py        # WS-4: generate names with a predicted attribute
 │   ├── evaluate.py           # novelty / plausibility / diversity metrics
 │   ├── export_web.py         # bake a checkpoint into a browser-runnable UI
 │   └── serve.py              # local server wiring the UI to the live model
@@ -184,11 +207,12 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `car_manufacturers.txt` | Auto brands | ~150 | ✅ seed |
 | `car_models.txt` | Car model names | ~250 | ✅ seed |
 | `english_words.txt` | Common English words | ~8,600 | ✅ added |
+| `paint_colors.tsv` | CSS named colors + luminance (WS-4 dual-output demo) | ~140 | ✅ added |
 | _(your dataset here)_ | — | — | 🔜 |
 
 Ideas for future domains (a Shane-style variety): boat & yacht names, motorcycle brands,
-aircraft, spacecraft, perfumes, craft beers, racehorses, tech startups, paint colors
-(homage), fantasy characters, city names. Claim one in `HANDOFF.md` before you start.
+aircraft, spacecraft, perfumes, craft beers, racehorses, tech startups, fantasy
+characters, city names. Claim one in `HANDOFF.md` before you start.
 
 ---
 

@@ -36,6 +36,29 @@ def load_names(path: str) -> List[str]:
     return names
 
 
+def load_name_value_pairs(path: str) -> List[Tuple[str, float]]:
+    """Read ``name<TAB>value`` rows for dual-output training (WS-4, see src/train_dual.py).
+
+    Same order-preserving, first-occurrence-wins de-dupe as :func:`load_names`.
+    """
+    seen = set()
+    pairs: List[Tuple[str, float]] = []
+    with open(path, "r", encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            name, _, value = line.partition("\t")
+            name = name.strip()
+            if not name or name in seen:
+                continue
+            seen.add(name)
+            pairs.append((name, float(value)))
+    if not pairs:
+        raise ValueError(f"No usable name/value pairs found in {path!r}")
+    return pairs
+
+
 class Vocab:
     """Bidirectional mapping between characters and integer ids.
 

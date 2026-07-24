@@ -24,10 +24,11 @@ A working character-level LSTM that trains **per-dataset from scratch** and samp
 temperature ("creativity") knob. Verified end-to-end on CPU: loss drops from ~3.7 to
 <1.0 and output matures from noise → plausible names.
 
-On top of that MVP, the fine-tuning core (**WS-2**), evaluation harness (**WS-3**), and both
-serving front-ends (**WS-5**) are now implemented — see the ✅ markers in §3. A `tests/`
-suite (`python -m unittest discover -s tests`) pins the vocab, training, and export
-invariants. Still open: more datasets (**WS-1**) and dual-output (**WS-4**).
+On top of that MVP, the fine-tuning core (**WS-2**), evaluation harness (**WS-3**), both
+serving front-ends (**WS-5**), and the dual-output name+attribute head (**WS-4**) are now
+implemented — see the ✅ markers in §3. A `tests/` suite
+(`python -m unittest discover -s tests`) pins the vocab, training, model, and export
+invariants. Still open: more datasets (**WS-1**, always open-ended by design).
 
 Modules and their responsibilities:
 
@@ -35,9 +36,11 @@ Modules and their responsibilities:
 |------|----------------|-----------------|
 | `src/config.py` | All hyperparameters + special tokens (`PAD`/`START`/`END`) | Add fields; keep `from_dict` backward-compatible |
 | `src/data.py` | Name loading, `Vocab`, `(input, target)` next-char pairs, batching | Yes — see the shared-vocab note in §6 |
-| `src/model.py` | `Embedding → LSTM → Linear` char-RNN | Yes — keep the `forward(x, hidden)` signature |
+| `src/model.py` | `Embedding → LSTM → Linear` char-RNN (+ optional value head, WS-4) | Yes — keep the `forward(x, hidden)` signature |
 | `src/train.py` | Training loop, live previews, checkpoint save | Yes |
 | `src/sample.py` | Checkpoint load + temperature generation | Yes |
+| `src/train_dual.py` | WS-4: joint next-char + value-regression training | Yes |
+| `src/sample_dual.py` | WS-4: generate names with a predicted attribute | Yes |
 | `generate.py` | Friendly one-command wrapper | Yes |
 
 **Checkpoint format** (a single `torch.save` dict) — do not break these keys, other
@@ -99,10 +102,33 @@ Original brief — add `src/evaluate.py` computing, for a checkpoint + its datas
 - **Deliverable:** `python -m src.evaluate --checkpoint … ` prints a metrics table;
   numbers are how WS-2 proves fine-tuning helps.
 
-### WS-4 · Dual-output (name + attribute)
-Implement Shane's name+number trick: a second head that regresses a numeric attribute
-(for cars: horsepower / price tier / a learned "sportiness" score). Requires datasets
-with a value column — coordinate with WS-1 on a `name<TAB>value` format.
+### WS-4 · Dual-output (name + attribute) — ✅ **done** (`claude/next-item-v4te8p`)
+Implemented Shane's name+number trick: `src/model.py`'s `CharRNN` takes an optional
+`predict_value=True` flag that adds a second linear head (`value_head`); it's read via
+the new `regress_value(x, lengths)` method off the LSTM's hidden state at each name's
+last real character — `forward(x, hidden)` itself is untouched, so every existing
+caller keeps working unmodified. `src/data.py` gained `load_name_value_pairs()` for
+`name<TAB>value` TSVs. `src/train_dual.py` (`fit_dual`) trains both heads jointly —
+next-char cross-entropy plus a weighted MSE on the value (`Config.value_loss_weight`,
+default 1.0) — and saves through the *same* `save_checkpoint` (contract unchanged;
+`Config.dual_output=True` just marks that the state dict carries a value head).
+`src/sample_dual.py` generates a name and its predicted attribute together.
+
+Demo dataset: `data/paint_colors.tsv` (~140 real CSS/X11 named colors paired with
+relative luminance, computed by `scripts/build_paint_colors.py` from each color's hex
+— a direct homage to Shane's original paint-color + RGB experiment). It's a closed,
+standardized list (not the usual ≥300 target) since CSS only defines that many
+keywords; said so explicitly rather than padding it with invented names.
+
+```bash
+python -m src.train_dual --data data/paint_colors.tsv --name paint_colors --epochs 250
+python -m src.sample_dual --checkpoint checkpoints/paint_colors.pt --num 10
+```
+
+Original brief — turn Shane's name+RGB trick into a general name+number regression:
+1. Add a second head that regresses a numeric attribute (for cars: horsepower / price
+   tier / a learned "sportiness" score). Requires datasets with a value column —
+   coordinate with WS-1 on a `name<TAB>value` format.
 
 ### WS-5 · Serving — ✅ **done** (`claude/program-development-q4fcp7`)
 Two front-ends, both a mobile-friendly "instrument panel" UI (temperature dial, prefix,
@@ -126,6 +152,7 @@ Keep this in sync with `data/` and the README catalog. One row per dataset file.
 | `car_manufacturers.txt` | Auto brands | ~150 | seed | Real worldwide brands |
 | `car_models.txt` | Car model names | ~250 | seed | Real model names |
 | `english_words.txt` | Common English words | ~8,600 | `claude/plausible-words-dataset-53qyyg` | Frequency-ranked common words (Google Web Trillion Word Corpus via `first20hours/google-10000-english`, MIT). Curated to lowercase a–z, length 3–10, vowel-bearing. Teaches general English spelling → plausible word-shapes; good base-model fuel. |
+| `paint_colors.tsv` | CSS/X11 named colors + relative luminance | ~140 | `claude/next-item-v4te8p` | WS-4 dual-output demo, `name<TAB>value` format. Names + hex are the standardized CSS Color Module Level 4 keyword list (source of truth in `scripts/build_paint_colors.py`); value is luminance computed from the hex, not an external fact. Not part of the shared-vocab `.txt` glob (it's `.tsv`, used only by `src.train_dual`). |
 
 ---
 
@@ -193,6 +220,8 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
   | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
   | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ⏳ in review |
+  | `claude/scope-vs-please-yrlsll` | WS-1 `world_cities.txt` (671 world city/capital names) | 2026-07-24 | ⏳ in review (PR #5) |
+  | `claude/next-item-v4te8p` | WS-4 dual-output (value head + `train_dual.py`/`sample_dual.py`) + `paint_colors.tsv` | 2026-07-24 | ⏳ in review |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.

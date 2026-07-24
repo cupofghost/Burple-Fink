@@ -35,6 +35,10 @@ class Config:
     temperature: float = 0.8    # the "creativity" knob (see docs/PLAN.md)
     max_length: int = 40        # hard cap so a runaway sample can't loop forever
 
+    # --- dual output (WS-4: name + numeric attribute, see src/train_dual.py) ---
+    dual_output: bool = False        # whether this checkpoint carries a value head
+    value_loss_weight: float = 1.0   # weight of the value MSE term in the combined loss
+
     def to_dict(self) -> dict:
         return asdict(self)
 

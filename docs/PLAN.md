@@ -111,10 +111,10 @@ Everything is deliberately small so it trains in seconds-to-minutes on a laptop 
 1. **✅ MVP:** names-only char-RNN with temperature sampling. *(this repo)*
 2. **More & cleaner data:** scrape/compile a few thousand real car names; dedupe,
    normalize casing, remove trim levels and years.
-3. **Dual output (the paint-color trick):** have the network emit a name **and** a
-   numeric attribute simultaneously — for paint that was RGB; for cars it could be
-   horsepower, price tier, or a learned "sportiness"/"luxury" score. Implementation:
-   add a second regression head and a combined loss.
+3. **✅ Dual output (the paint-color trick):** the network emits a name **and** a
+   numeric attribute simultaneously — a second regression head trained jointly with a
+   combined loss. Demoed on real paint colors (name + luminance), the same domain Shane
+   used. See §11.6.
 4. **Conditioning:** let the user prime generation ("give me a name starting with 'Za'"
    or "an Italian-sounding sports-car name") via a seed prefix or a country/style tag.
 5. **Packaging:** simple CLI (done) → optional Flask/FastAPI endpoint → tiny web demo.
@@ -203,5 +203,36 @@ differs:
 
 - **WS-1 (more datasets):** the single biggest quality lever is still more data; the
   fine-tuning machinery is ready for any dataset dropped into `data/` (rebuild the shared
-  vocab by deleting `data/shared_vocab.json` and re-running pretrain).
-- **WS-4 (dual-output):** the name+attribute regression head (§9.3) is not yet built.
+  vocab by deleting `data/shared_vocab.json` and re-running pretrain). Always open-ended
+  by design — there's no "done" state, just more domains.
+
+### 11.6 Dual-output: name + numeric attribute (Stage 4, §9.3)
+
+Shane's original char-rnn predicted each paint color's RGB alongside its name. WS-4
+generalizes that to any `name<TAB>value` dataset:
+
+- `src/model.py`'s `CharRNN` takes an optional `predict_value=True` at construction,
+  which adds a second linear head (`value_head: hidden_dim -> 1`). The existing
+  `forward(x, hidden)` is completely unchanged — every caller that only knows the
+  next-character contract keeps working. The new `regress_value(x, lengths)` method
+  runs the LSTM over a full name and reads the value head off each row's hidden state
+  at its *last real character* (`lengths - 1`), so padding never leaks into the
+  prediction.
+- `src/data.py`'s `load_name_value_pairs()` reads `name<TAB>value` TSV rows with the
+  same order-preserving, first-occurrence de-dupe as `load_names`.
+- `src/train_dual.py`'s `fit_dual()` mirrors `src.train.fit`'s optimizer / gradient-
+  clipping / live-preview loop, but each step also computes the value MSE on the same
+  batch and adds it to the char cross-entropy (`loss = ce + cfg.value_loss_weight * mse`)
+  before one shared backward pass — spelling and the attribute are learned together,
+  not as two separate passes.
+- The checkpoint format (§2/HANDOFF §2) is **unchanged**: `Config.dual_output=True` is
+  just a new field marking that the saved `model_state` includes `value_head` weights;
+  `src.sample.load_checkpoint` passes `predict_value=cfg.dual_output` so old checkpoints
+  (where the field defaults to `False`) still rebuild identically to before.
+- `src/sample_dual.py` samples a name the normal way, then feeds it back through
+  `regress_value` to report its predicted attribute — Shane's trick, run in reverse.
+- Demo dataset: `data/paint_colors.tsv`, ~140 real CSS/X11 named colors paired with
+  relative luminance (computed from each color's standardized hex value by
+  `scripts/build_paint_colors.py`, which keeps the name→hex source of truth in one
+  auditable place). Trained samples correlate sensibly — e.g. an invented
+  `GhostWhite`-adjacent name predicts a value near 1.0, `Chocolate`-adjacent near 0.2.

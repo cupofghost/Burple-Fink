@@ -27,7 +27,7 @@ def load_checkpoint(path: str, device: str = "cpu"):
     ckpt = torch.load(path, map_location=device)
     cfg = Config.from_dict(ckpt["config"])
     vocab = Vocab.from_dict(ckpt["vocab"])
-    model = CharRNN(len(vocab), cfg, pad_id=vocab.pad_id).to(device)
+    model = CharRNN(len(vocab), cfg, pad_id=vocab.pad_id, predict_value=cfg.dual_output).to(device)
     model.load_state_dict(ckpt["model_state"])
     model.eval()
     training_names: Set[str] = set(ckpt.get("training_names", []))
