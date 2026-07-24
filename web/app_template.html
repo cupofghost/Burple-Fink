@@ -313,9 +313,77 @@
   }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+  /* --- "compare engines" trigger + modal ---------------------------- */
+  .stats-link {
+    appearance: none; border: 0; background: none; cursor: pointer;
+    align-self: flex-start; margin-top: 1px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.02em;
+    color: var(--muted); text-decoration: underline; text-underline-offset: 2px;
+    padding: 2px 0;
+  }
+  .stats-link:hover { color: var(--accent); }
+  .stats-link:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(8,9,12,0.6);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; z-index: 30;
+    animation: fadeIn 160ms ease both;
+  }
+  .modal-backdrop[hidden] { display: none; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    width: min(500px, 100%);
+    max-height: min(78vh, 640px);
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-head {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: 18px 18px 0;
+  }
+  .modal-head h2 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .modal-close {
+    appearance: none; border: 0; cursor: pointer; background: var(--surface-2);
+    color: var(--muted); width: 30px; height: 30px; border-radius: 50%;
+    font-size: 17px; line-height: 1; flex: none; display: grid; place-items: center;
+  }
+  .modal-close:hover { color: var(--ink); }
+  .modal-close:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+  .modal-sub { margin: 8px 18px 2px; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+  .modal-table-wrap { overflow: auto; padding: 10px 10px 18px; }
+  .modal-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .modal-table th {
+    position: sticky; top: 0; background: var(--surface);
+    text-align: left; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--faint); font-weight: 600;
+    padding: 6px 8px; border-bottom: 1px solid var(--hairline);
+  }
+  .modal-table td { padding: 9px 8px; border-bottom: 1px solid var(--hairline); vertical-align: middle; }
+  .modal-table tr:last-child td { border-bottom: 0; }
+  .mt-name { font-weight: 600; }
+  .mt-size {
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    color: var(--muted); white-space: nowrap;
+  }
+  .mt-strength { min-width: 108px; }
+  .bar-row { display: flex; align-items: center; gap: 8px; }
+  .bar { flex: 1 1 auto; height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--accent); border-radius: 999px; }
+  .bar-val {
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-size: 11.5px; color: var(--muted); width: 32px; text-align: right; flex: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .name { animation: none; }
     body, .go, .seg button, .name { transition: none; }
+    .modal-backdrop { animation: none; }
   }
 </style>
 
@@ -334,6 +402,7 @@
       <div class="select-wrap">
         <select id="engine" class="dropdown" aria-label="Which name generator"></select>
       </div>
+      <button id="statsBtn" class="stats-link" type="button">Compare engines: dataset size &amp; strength</button>
     </div>
 
     <div class="field">
@@ -379,6 +448,23 @@
 </main>
 
 <div class="toast" id="toast" role="status" aria-hidden="true"></div>
+
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h2 id="modalTitle">Engines</h2>
+      <button id="modalClose" class="modal-close" type="button" aria-label="Close">&times;</button>
+    </div>
+    <p class="modal-sub">
+      <b>Trained on</b> is how many real names each engine learned from. <b>Strength</b> is
+      plausibility &mdash; how closely this engine's invented names match the spelling
+      patterns of its real dataset (100% = indistinguishable in style).
+    </p>
+    <div class="modal-table-wrap">
+      <table class="modal-table" id="modalTable"></table>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ==================================================================== *
@@ -554,6 +640,38 @@ function applyAccent() {
   root.style.setProperty("--accent-ink", luminance(rgb) > 0.6 ? "#14161c" : "#fff");
 }
 
+/* ---- "compare engines" modal: dataset size + plausibility-based strength -------- */
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+}
+function renderStatsTable(models) {
+  const rows = models.map((m) => {
+    const stats = m.stats || {};
+    const size = typeof stats.dataset_size === "number" ? stats.dataset_size.toLocaleString() : "—";
+    const ratio = stats.plausibility_ratio;
+    const pct = typeof ratio === "number" ? Math.round(Math.min(1, Math.max(0, ratio)) * 100) : null;
+    const strengthCell = pct === null ? "—" :
+      `<div class="bar-row"><div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>` +
+      `<span class="bar-val">${pct}%</span></div>`;
+    return `<tr><td class="mt-name">${escapeHtml(m.label)}</td>` +
+      `<td class="mt-size">${size}</td>` +
+      `<td class="mt-strength">${strengthCell}</td></tr>`;
+  }).join("");
+  $("modalTable").innerHTML =
+    `<thead><tr><th>Engine</th><th>Trained on</th><th>Strength</th></tr></thead><tbody>${rows}</tbody>`;
+}
+function openStatsModal(models) {
+  renderStatsTable(models);
+  $("modalBackdrop").hidden = false;
+  $("modalClose").focus();
+}
+function closeStatsModal() {
+  $("modalBackdrop").hidden = true;
+  $("statsBtn").focus();
+}
+
 function toast(msg) {
   const t = $("toast");
   t.textContent = msg; t.classList.add("show");
@@ -633,6 +751,11 @@ $("temp").addEventListener("input", (e) => {
 $("prefix").addEventListener("input", (e) => { state.prefix = e.target.value; });
 $("novelOnly").addEventListener("change", (e) => { state.novelOnly = e.target.checked; });
 $("go").addEventListener("click", run);
+
+$("statsBtn").addEventListener("click", () => openStatsModal(BURPLE.models));
+$("modalClose").addEventListener("click", closeStatsModal);
+$("modalBackdrop").addEventListener("click", (e) => { if (e.target === $("modalBackdrop")) closeStatsModal(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("modalBackdrop").hidden) closeStatsModal(); });
 
 document.title = "Burple-Fink — invented car names";
 applyAccent();

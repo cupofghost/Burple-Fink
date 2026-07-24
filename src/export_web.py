@@ -30,6 +30,7 @@ from typing import Dict, List
 import torch
 
 from .data import Vocab
+from .evaluate import evaluate as evaluate_checkpoint
 from .sample import load_checkpoint
 
 # Marker in the HTML template that the model bundle is spliced into.
@@ -82,10 +83,24 @@ def export_model(checkpoint: str, label: str, device: str = "cpu") -> Dict:
         # The training names ride along so the browser can flag which generated names
         # are genuinely novel vs. memorized copies — the WS-3 novelty metric, live.
         "training_names": list(training_names),
+        # Dataset size + plausibility for the "compare engines" button — the same
+        # honest WS-3 metrics the CLI eval harness reports, not a UI-only number.
+        "stats": _model_stats(checkpoint, cfg, training_names, device),
     }
 
     _verify(model_dict, model, vocab, device)
     return model_dict
+
+
+def _model_stats(checkpoint: str, cfg, training_names, device: str) -> Dict:
+    metrics = evaluate_checkpoint(checkpoint, num=150, temperature=cfg.temperature,
+                                   device=device, seed=0)
+    train_ll, gen_ll = metrics["bigram_ll_training"], metrics["bigram_ll_generated"]
+    ratio = (gen_ll / train_ll) if train_ll else None
+    return {
+        "dataset_size": len(training_names),
+        "plausibility_ratio": round(ratio, 4) if ratio is not None else None,
+    }
 
 
 # --- reference forward pass (pure Python) — mirrors the JS engine exactly -------------

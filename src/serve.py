@@ -31,6 +31,7 @@ from urllib.parse import parse_qs, urlparse
 
 import torch
 
+from .evaluate import evaluate as evaluate_checkpoint
 from .sample import generate_one, load_checkpoint
 
 TEMPLATE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web", "app_template.html")
@@ -45,6 +46,22 @@ class Engine:
         self.device = device
         self.model, self.vocab, self.cfg, training = load_checkpoint(path, device)
         self.training: Set[str] = set(training)
+        self.stats = self._compute_stats()
+
+    def _compute_stats(self) -> Dict:
+        """Dataset size + WS-3 plausibility, shown by the "compare engines" UI button.
+
+        Reuses src.evaluate so the "strength" figure is the same honest metric the
+        eval harness reports on the CLI, not a UI-only invention.
+        """
+        metrics = evaluate_checkpoint(self.path, num=150, temperature=self.cfg.temperature,
+                                       device=self.device, seed=0)
+        train_ll, gen_ll = metrics["bigram_ll_training"], metrics["bigram_ll_generated"]
+        ratio = (gen_ll / train_ll) if train_ll else None
+        return {
+            "dataset_size": len(self.training),
+            "plausibility_ratio": round(ratio, 4) if ratio is not None else None,
+        }
 
     def generate(self, count: int, temperature: float, prefix: str,
                  novel_only: bool) -> List[Dict]:
@@ -82,11 +99,11 @@ def discover_checkpoints(checkpoint_dir: str = "checkpoints") -> List[str]:
 
 # --- build the served page from the shared template ---------------------------------
 
-def _live_script(labels: List[str]) -> str:
+def _live_script(models: List[Dict]) -> str:
     """The browser-side script for the *server* build: same UI, but fetches the API."""
-    labels_json = json.dumps(labels)
+    models_json = json.dumps(models)
     return """
-const LABELS = __LABELS__;
+const MODELS = __MODELS__;
 const $ = (id) => document.getElementById(id);
 const root = document.documentElement;
 const state = { engine: 0, temp: 1.0, count: 12, prefix: "", novelOnly: false };
@@ -131,6 +148,24 @@ function buildSelect(host,options,current,onPick){
   });
   host.addEventListener("change",()=>{const i=host.selectedIndex;onPick(i,options[i]);});
 }
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function renderStatsTable(models){
+  const rows=models.map(m=>{
+    const stats=m.stats||{};
+    const size=typeof stats.dataset_size==="number"?stats.dataset_size.toLocaleString():"—";
+    const ratio=stats.plausibility_ratio;
+    const pct=typeof ratio==="number"?Math.round(Math.min(1,Math.max(0,ratio))*100):null;
+    const strengthCell=pct===null?"—":
+      '<div class="bar-row"><div class="bar"><div class="bar-fill" style="width:'+pct+'%"></div></div>'+
+      '<span class="bar-val">'+pct+'%</span></div>';
+    return "<tr><td class=\\"mt-name\\">"+escapeHtml(m.label)+"</td>"+
+      "<td class=\\"mt-size\\">"+size+"</td>"+
+      "<td class=\\"mt-strength\\">"+strengthCell+"</td></tr>";
+  }).join("");
+  $("modalTable").innerHTML="<thead><tr><th>Engine</th><th>Trained on</th><th>Strength</th></tr></thead><tbody>"+rows+"</tbody>";
+}
+function openStatsModal(models){renderStatsTable(models);$("modalBackdrop").hidden=false;$("modalClose").focus();}
+function closeStatsModal(){$("modalBackdrop").hidden=true;$("statsBtn").focus();}
 function render(batch){
   const box=$("results");box.innerHTML="";
   if(!batch.length){box.innerHTML='<p class="empty">The net drew a blank at this setting &mdash; try nudging the dial or clearing the prefix.</p>';$("stat").hidden=true;return;}
@@ -160,25 +195,29 @@ async function run(){
   }
 }
 
-buildSelect($("engine"),LABELS.map(l=>({label:l})),state.engine,(i)=>{state.engine=i;});
+buildSelect($("engine"),MODELS.map(m=>({label:m.label})),state.engine,(i)=>{state.engine=i;});
 buildSeg($("count"),[6,12,24].map(n=>({label:String(n),value:n})),1,(i,opt)=>{state.count=opt.value;});
 $("temp").addEventListener("input",e=>{state.temp=parseFloat(e.target.value);$("tempVal").textContent=state.temp.toFixed(2);applyAccent();});
 $("prefix").addEventListener("input",e=>{state.prefix=e.target.value;});
 $("novelOnly").addEventListener("change",e=>{state.novelOnly=e.target.checked;});
 $("go").addEventListener("click",run);
+$("statsBtn").addEventListener("click",()=>openStatsModal(MODELS));
+$("modalClose").addEventListener("click",closeStatsModal);
+$("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))closeStatsModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("modalBackdrop").hidden)closeStatsModal();});
 document.title="Burple-Fink \\u2014 live model";
 applyAccent();
-""".replace("__LABELS__", labels_json)
+""".replace("__MODELS__", models_json)
 
 
-def build_page(labels: List[str]) -> str:
+def build_page(models: List[Dict]) -> str:
     """Reuse the shared UI's CSS + markup, but swap in the fetch-based script."""
     with open(TEMPLATE, "r", encoding="utf-8") as fh:
         template = fh.read()
     # Everything up to the <script> tag (the <style> block and the markup) is shared
     # verbatim; only the "brain" differs between the static export and the live server.
     head = template.split("<script>", 1)[0]
-    return head + "<script>\n" + _live_script(labels) + "\n</script>\n"
+    return head + "<script>\n" + _live_script(models) + "\n</script>\n"
 
 
 def make_handler(engines: List[Engine], page: str):
@@ -195,7 +234,9 @@ def make_handler(engines: List[Engine], page: str):
             if parsed.path in ("/", "/index.html"):
                 self._send(200, page.encode("utf-8"), "text/html; charset=utf-8")
             elif parsed.path == "/api/models":
-                body = json.dumps({"models": [e.label for e in engines]}).encode()
+                body = json.dumps(
+                    {"models": [{"label": e.label, "stats": e.stats} for e in engines]}
+                ).encode()
                 self._send(200, body, "application/json")
             elif parsed.path == "/api/generate":
                 self._generate(parse_qs(parsed.query))
@@ -238,7 +279,7 @@ def serve(checkpoints: List[str], host: str = "0.0.0.0", port: int = 8000,
     if not engines:
         raise SystemExit("No checkpoints to serve. Train one first (see README).")
 
-    page = build_page([e.label for e in engines])
+    page = build_page([{"label": e.label, "stats": e.stats} for e in engines])
     httpd = ThreadingHTTPServer((host, port), make_handler(engines, page))
     shown = "localhost" if host in ("0.0.0.0", "") else host
     print(f"\nBurple-Fink is live → http://{shown}:{port}")
