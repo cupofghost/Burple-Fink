@@ -253,6 +253,16 @@ segments predicts high brightness; "Dark..." ones predict low).
 samples are filtered out as non-novel); temperature ≳1.0 is needed to see fresh
 names, same data-size reality check as §8.
 
+**Second dataset:** `data/dual/periodic_elements.tsv` — all 118 IUPAC-confirmed
+chemical elements paired with their atomic number (1–118). Picked specifically
+because the value has zero recall risk: it's a fixed integer position in a closed,
+universally-agreed list, not a historical or measured figure that could be
+misremembered. Same convergence pattern as paint colors (char loss ~3.7→0.55,
+attribute MSE →~0.001 by 300 epochs); a corrupted reconstruction of a real name
+(e.g. "Protastinium" near "Protactinium") predicts an atomic number close to the
+real element's, a good sign the attribute head learned a real correlation rather
+than memorizing lookup pairs verbatim.
+
 ### 11.7 What's still open
 
 - **WS-1 (more datasets):** the single biggest quality lever is still more data; the

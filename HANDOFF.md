@@ -158,6 +158,7 @@ table above so `pretrain.py`'s plain-name `data/*.txt` glob never ingests them):
 | File | Domain | Value column | Count | Owner (branch) | Notes |
 |------|--------|---------------|-------|-----------------|-------|
 | `dual/paint_colors.tsv` | CSS/X11 named colors | Perceived brightness, `(0.299R+0.587G+0.114B)/255` from each color's real spec RGB | 141 | `claude/next-task-tnbsmq` | Standard CSS3/X11 color keywords; the value is computed (not hand-entered) from RGB hex so it's exact given the hex, not a recalled number. |
+| `dual/periodic_elements.tsv` | Chemical element names | Atomic number | 118 | `claude/next-task-tnbsmq` | The complete, closed set of 118 IUPAC-confirmed elements — chosen because atomic number has zero ambiguity (a fixed integer position in an agreed-on list), unlike attributes that require recalling a historical or measured real-world figure. |
 
 ---
 

@@ -212,6 +212,7 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | Dataset file | Domain | Value | Count |
 |--------------|--------|-------|-------|
 | `dual/paint_colors.tsv` | CSS/X11 color names | Perceived brightness (0–1 luminance), computed from each color's real RGB | 141 |
+| `dual/periodic_elements.tsv` | Chemical element names | Atomic number (1–118, the complete confirmed periodic table) | 118 |
 
 Ideas for future domains (a Shane-style variety): boat & yacht names, motorcycle brands,
 aircraft, spacecraft, perfumes, craft beers, racehorses, fantasy characters. Claim one
