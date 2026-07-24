@@ -1,0 +1,359 @@
+Aero
+Aprilia
+Aprilia Dorsoduro
+Aprilia Mana 850
+Aprilia RS
+Aprilia RS660
+Aprilia SR
+Aprilia SXV 450
+Aprilia SXV 550
+Aprilia Shiver
+Aprilia Tuono
+Aprilia Tuono 660
+Aprilia Tuono V4
+BMW
+BMW F800
+BMW F850
+BMW F900
+BMW F900GS
+BMW F900XR
+BMW G310
+BMW G310GS
+BMW K1600
+BMW R1150
+BMW R1200
+BMW R1200GS
+BMW R1250
+BMW R1250GS
+BMW S1000
+BMW S1000RR
+BMW S1000XR
+Bajaj
+Bajaj Avenger
+Bajaj CT100
+Bajaj Caliber
+Bajaj Discover
+Bajaj Discover 110
+Bajaj Discover 125
+Bajaj Dominar
+Bajaj Dominar 250
+Bajaj Dominar 400
+Bajaj Platina
+Bajaj Pulsar
+Bajaj Pulsar AS 150
+Bajaj Pulsar AS 200
+Bajaj Pulsar NS 125
+Bajaj Pulsar NS 200
+Bajaj Pulsar RS 200
+Benelli
+Benelli BN 302
+Benelli BN251
+Benelli BN600
+Benelli BN600i
+Benelli Leoncino
+Benelli Leoncino 250
+Benelli Leoncino 500
+Benelli TNT
+Benelli TRK
+Benelli TRK 251
+Benelli TRK 502
+Benelli Tornado
+Bolt
+Bullet
+CB Hness
+CBR Fireblade
+CCM
+CFMoto 250NK
+CFMoto 300NK
+CFMoto 650NK
+CFMoto 700CL-X
+Civic
+Concours
+Cruiser
+Diver
+Ducati
+Ducati 1299 Panigale
+Ducati 959 Panigale
+Ducati DesertX
+Ducati Diavel
+Ducati Hyperstrada
+Ducati Monster
+Ducati Monster 797
+Ducati Monster 821
+Ducati Multistrada
+Ducati Multistrada 1200
+Ducati Multistrada 1260
+Ducati Panigale
+Ducati ST2
+Ducati ST3
+Ducati ST4
+Ducati ST4S
+Ducati Scrambler
+Ducati Streetfighter
+Ducati SuperSport
+Ducati XDiavel
+Dyna
+Fat Boy
+Forty-Eight
+Fury
+Gas Gas
+Gas Gas EC
+Gas Gas ES
+Gas Gas MC
+Gold Wing
+Harley Forty-Eight
+Harley Iron 1200
+Harley Iron 883
+Harley Low Rider
+Harley Street Bob
+Harley Super Glide
+Harley Wide Glide
+Harley-Davidson
+Harley-Davidson Street 1200
+Harley-Davidson Street 350
+Harley-Davidson Street 500
+Harley-Davidson Street 750
+Heritage Softail
+Hero HF Deluxe
+Hero MotoCorp
+Hero Passion
+Hero Splendor
+Hero Splendor Plus
+Hero Splendor iSmart
+Hero XPulse
+Hero XPulse 200
+Hero XPulse 200T
+Hero Xtreme
+Hero Xtreme 160R
+Hero Xtreme Sports
+Himalayan
+Honda
+Honda ADV
+Honda CB
+Honda CB Dazzler
+Honda CB Shine
+Honda CB Shine SP
+Honda CB Twister
+Honda CB Unicorn
+Honda CB Unicorn 160
+Honda CB1000R
+Honda CB500F
+Honda CB650R
+Honda CRF
+Honda CTX
+Honda F6B
+Honda Fury
+Honda Gold Wing Tour
+Honda Goldwing
+Honda Rebel
+Honda Trail
+Honda Valkyrie
+Honda XR
+Hunk
+Husqvarna
+Husqvarna 401 Supermoto
+Husqvarna 401 Svartpilen
+Husqvarna 401 Vitpilen
+Husqvarna 701
+Husqvarna 701 Supermoto
+Husqvarna 701 Svartpilen
+Husqvarna 701 Vitpilen
+Husqvarna Nuda
+Husqvarna Svartpilen
+Husqvarna Vitpilen
+Hyosung
+Hyosung Aquila
+Hyosung GD
+Hyosung GT
+Hyosung GV
+Hyosung RX
+Interceptor
+KLR
+KTM
+KTM 1290 Adventure
+KTM 1290 Super Adventure
+KTM 1290 Super Duke
+KTM 250 Adventure
+KTM 390 Adventure
+KTM 390 Duke
+KTM 690 Duke
+KTM 790 Adventure
+KTM 790 Duke
+KTM Duke
+KTM EXC
+KTM RC
+KTM SX
+KTM XC
+KTM XCW
+Kawasaki
+Kawasaki Concours
+Kawasaki KLR
+Kawasaki KLX
+Kawasaki Ninja
+Kawasaki Ninja 1000
+Kawasaki Ninja 400
+Kawasaki Ninja 650
+Kawasaki Rouser
+Kawasaki Rouser NS 110
+Kawasaki Rouser NS 200
+Kawasaki Versys
+Kawasaki Versys 1000
+Kawasaki Vulcan
+Kawasaki Vulcan 500
+Kawasaki Vulcan 750
+Kawasaki Vulcan 800
+Kawasaki Vulcan S
+Kawasaki W
+Kawasaki Z
+Kawasaki Z125
+Kawasaki Z250
+Kawasaki Z50
+Kawasaki Z650
+Kawasaki Z900
+Low Rider
+MV Agusta
+MV Agusta Brutale
+MV Agusta Brutale 800
+MV Agusta Brutale 910
+MV Agusta Brutale 989
+MV Agusta F3
+MV Agusta F4
+MV Agusta F4RR
+MV Agusta F4S
+MV Agusta Rivale
+MV Agusta Rivale 800
+MV Agusta Stradale
+MV Agusta Turismo
+MV Agusta Turismo Veloce
+Mahindra Mojo
+Mahindra Mojo XT
+Moto Guzzi
+Moto Guzzi Audace
+Moto Guzzi Bellagio
+Moto Guzzi Breva
+Moto Guzzi California
+Moto Guzzi Daytona
+Moto Guzzi Eldorado
+Moto Guzzi Griso
+Moto Guzzi Quota
+Moto Guzzi Scura
+Moto Guzzi Stelvio
+Moto Guzzi V7
+Moto Guzzi V9
+Night Rod
+Ninja
+Ninja 400
+Ninja 650
+Ninja H2
+Ninja ZX-10R
+Norton
+Norton Atlas
+Norton Commando
+Passion Pro
+Piaggio
+Piaggio Liberty
+Piaggio Medley
+Raider
+Rebel
+Road King
+Royal Enfield
+Royal Enfield Bullet
+Royal Enfield Classic
+Royal Enfield Classic 350
+Royal Enfield Classic Chrome
+Royal Enfield Classic Desert
+Royal Enfield Himalayan
+Royal Enfield Hunter
+Royal Enfield Interceptor
+Royal Enfield Meteor 350
+Royal Enfield Meteor Fireball
+Royal Enfield Scram
+Shadow
+Skoda Octavia
+Softail
+Sportster
+Star Eluder
+Stratoliner
+Street Glide
+Stryker
+Suzuki
+Suzuki Access 125
+Suzuki Bandit
+Suzuki Boulevard
+Suzuki GSX
+Suzuki GSX-S1000
+Suzuki Gixxer
+Suzuki Gixxer SF
+Suzuki Gixxer SP
+Suzuki Hayabusa
+Suzuki Intruder
+Suzuki Katana
+Suzuki SV
+Suzuki V-Strom
+Suzuki V-Strom 1050
+Suzuki V-Strom 650
+Svartpilen 401
+Svartpilen 701
+Svartpilen 801
+TVS Apache RTR 160
+TVS Apache RTR 200
+TVS Ntorq 125
+Triumph
+Triumph Bonneville
+Triumph Rocket III
+Triumph Speed Twin
+Triumph Speedmaster
+Triumph Street Scrambler
+Triumph Street Triple
+Triumph Street Twin
+Triumph Thruxton
+Triumph Tiger
+Triumph Tiger 1200
+Triumph Tiger 1200 XRx
+Triumph Tiger 800
+Triumph Tiger Sport
+Triumph Trident
+V-Star
+VF Magna
+VTX
+Valkyrie
+Versys
+Vespa
+Vespa LX
+Vespa Primavera
+Vespa S
+Vespa Sprint
+Vitpilen
+Vitpilen 701
+Vitpilen 801
+Vulcan
+W800
+Yamaha
+Yamaha FJR1300
+Yamaha FZ
+Yamaha FZ-S
+Yamaha FZ-S Fi
+Yamaha FZ16
+Yamaha FZX
+Yamaha Fazer
+Yamaha MT
+Yamaha N-Max
+Yamaha Niken
+Yamaha R1
+Yamaha R15
+Yamaha R3
+Yamaha R6
+Yamaha SZ-RR
+Yamaha SZR
+Yamaha T-Max
+Yamaha Tenere 700
+Yamaha Tracer
+Yamaha Tracer 700
+Yamaha Tracer 900
+Yamaha XMAX
+Yamaha XSR
+Yamaha YZF
+Yamaha YZF-R1
+Yamaha YZF-R15
+Yamaha YZF-R3
+Yamaha YZF-R6

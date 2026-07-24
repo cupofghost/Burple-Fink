@@ -5,7 +5,8 @@ Last consolidation: 2026-07-24 — Signed: Claude Code | Sonnet 5 | high
 ## Active work
 | Date | Area / files | Task & state (≤3 lines) | Signature |
 |------|--------------|-------------------------|-----------|
-|      |              |                         |           |
+| 2026-07-24 | data/ | ✅ WS-1 batch 1: Added 3 datasets (racehorses 355, spacecraft 270, paint_colors 391). Smoke-tested; registered. | Signed: Claude Code \| Haiku 4.5 \| low |
+| 2026-07-24 | data/ | ✅ WS-1 batch 2: Added 3 datasets (motorcycles 359, craft_beers 398, aircraft 435). All ≥300 entries. Smoke-tested; registered. | Signed: Claude Code \| Haiku 4.5 \| low |
 
 ## Shared-file touches
 - `src/model.py`, `src/config.py`, `src/data.py`, `src/sample.py`: now carry the WS-4 dual-output implementation chosen during consolidation (originally from `claude/scope-vs-please-yrlsll`) — `value_head`/`encode()`/`predict_value()` on `CharRNN`, `dual_output`/`value_mean`/`value_std`/`value_label` on `Config`, `load_name_value_pairs()` on data, opt-in `return_value` on `sample.generate_one`/`generate_many`. All additive/backward-compatible; `forward(x, hidden)` unchanged. — Claude Code | Sonnet 5 | high

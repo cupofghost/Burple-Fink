@@ -179,7 +179,13 @@ Burple-Fink/
 │   ├── english_words.txt     # ~8,600 common English words (base-model fuel)
 │   ├── world_cities.txt      # ~1,690 real world city/capital names
 │   ├── tech_startups.txt     # ~400 real tech company/startup names
-│   ├── motorcycle_brands.txt # ~60 real motorcycle manufacturers
+│   ├── motorcycle_brands.txt # ~60 real motorcycle manufacturers (brands only)
+│   ├── motorcycles.txt       # 359 real motorcycle brands & models
+│   ├── racehorses.txt        # 355 real thoroughbred racehorse names
+│   ├── spacecraft.txt        # 270 real NASA/ESA/JAXA/CNSA spacecraft & satellites
+│   ├── craft_beers.txt       # 398 real craft brewery & beer names
+│   ├── aircraft.txt          # 435 real aircraft & helicopter models
+│   ├── paint_colors.txt      # 391 real/whimsical paint color names (plain list)
 │   ├── car_manufacturers_founding_year.tsv # WS-4 demo: brand + founding year
 │   ├── paint_colors.tsv      # WS-4 demo: ~140 CSS named colors + luminance
 │   ├── periodic_elements.tsv # WS-4 demo: 118 elements + atomic number
@@ -221,14 +227,19 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `world_cities.txt` | World city/capital names | ~1,690 | ✅ added |
 | `tech_startups.txt` | Tech company/startup names | ~400 | ✅ added |
 | `motorcycle_brands.txt` | Motorcycle manufacturers | ~60 | ✅ added |
+| `motorcycles.txt` | Motorcycle brands & models | 359 | ✅ added |
+| `racehorses.txt` | Racehorse names | 355 | ✅ added |
+| `spacecraft.txt` | NASA/ESA spacecraft & satellites | 270 | ✅ added |
+| `craft_beers.txt` | Craft brewery & beer names | 398 | ✅ added |
+| `aircraft.txt` | Aircraft models | 435 | ✅ added |
 | `car_manufacturers_founding_year.tsv` | Car brands + founding year (WS-4 demo) | 66 | ✅ added |
 | `paint_colors.tsv` | CSS named colors + luminance (WS-4 demo) | ~140 | ✅ added |
+| `paint_colors.txt` | Paint color names, plain list (WS-1) | 391 | ✅ added |
 | `periodic_elements.tsv` | Chemical elements + atomic number (WS-4 demo) | 118 | ✅ added |
 | _(your dataset here)_ | — | — | 🔜 |
 
-Ideas for future domains (a Shane-style variety): boat & yacht names, aircraft,
-spacecraft, perfumes, craft beers, racehorses, fantasy characters. Claim one in
-`HANDOFF.md` before you start.
+Ideas for future domains (a Shane-style variety): boat & yacht names, perfumes,
+fantasy characters. Claim one in `HANDOFF.md` before you start.
 
 ---
 
