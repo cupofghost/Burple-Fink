@@ -214,8 +214,8 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `dual/paint_colors.tsv` | CSS/X11 color names | Perceived brightness (0–1 luminance), computed from each color's real RGB | 141 |
 
 Ideas for future domains (a Shane-style variety): boat & yacht names, motorcycle brands,
-aircraft, spacecraft, perfumes, craft beers, racehorses, tech startups, paint colors
-(homage), fantasy characters, city names. Claim one in `HANDOFF.md` before you start.
+aircraft, spacecraft, perfumes, craft beers, racehorses, fantasy characters. Claim one
+in `HANDOFF.md` before you start.
 
 ---
 

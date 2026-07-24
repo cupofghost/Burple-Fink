@@ -18,7 +18,7 @@ outward — the way Janelle Shane's char-rnn generated paint colors.
 
 ---
 
-## 2. Current state (Stages 0, 2, 3, 5 complete)
+## 2. Current state (Stages 0, 2, 3, 4, 5 complete)
 
 A working character-level LSTM that trains **per-dataset from scratch** and samples with a
 temperature ("creativity") knob. Verified end-to-end on CPU: loss drops from ~3.7 to
@@ -225,7 +225,7 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
   | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
   | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ⏳ in review |
-  | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt` + WS-4 dual-output (`DualCharRNN`, `dual_data.py`, `train_dual.py`, `sample_dual.py`, `data/dual/paint_colors.tsv`) | 2026-07-24 | ⏳ in review |
+  | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt` + `city_names.txt` + WS-4 dual-output (`DualCharRNN`, `dual_data.py`, `train_dual.py`, `sample_dual.py`, `data/dual/paint_colors.tsv`) | 2026-07-24 | ⏳ in review |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.
