@@ -187,6 +187,9 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `racehorses.txt` | Racehorse names | 355 | ✅ added |
 | `spacecraft.txt` | NASA/ESA spacecraft & satellites | 270 | ✅ added |
 | `paint_colors.txt` | Paint color names | 391 | ✅ added |
+| `motorcycles.txt` | Motorcycle brands & models | 359 | ✅ added |
+| `craft_beers.txt` | Craft brewery & beer names | 398 | ✅ added |
+| `aircraft.txt` | Aircraft models | 435 | ✅ added |
 | _(your dataset here)_ | — | — | 🔜 |
 
 Ideas for future domains (a Shane-style variety): boat & yacht names, motorcycle brands,
