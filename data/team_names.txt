@@ -1,0 +1,427 @@
+Aberdeen
+AC Milan
+Ajax
+Alabama Crimson Tide
+Alaves
+Anaheim Ducks
+Anderlecht
+Angel City FC
+Angers
+Arizona Cardinals
+Arizona Diamondbacks
+Arizona State Sun Devils
+Arizona Wildcats
+Arkansas Razorbacks
+Arsenal
+AS Roma
+Aston Villa
+Atalanta
+Athletic Bilbao
+Athletics
+Atlanta Braves
+Atlanta Dream
+Atlanta Falcons
+Atlanta Hawks
+Atlanta United FC
+Atletico Madrid
+Atletico Mineiro
+Auburn Tigers
+Austin FC
+Auxerre
+AZ Alkmaar
+Baltimore Orioles
+Baltimore Ravens
+Barcelona
+Bay FC
+Bayer Leverkusen
+Bayern Munich
+Baylor Bears
+BC Lions
+Benfica
+Besiktas
+Birmingham City
+Boca Juniors
+Bologna
+Borussia Dortmund
+Borussia Monchengladbach
+Boston Bruins
+Boston Celtics
+Boston College Eagles
+Boston Red Sox
+Botafogo
+Bournemouth
+Braga
+Brentford
+Brest
+Brighton & Hove Albion
+Brooklyn Nets
+Buffalo Bills
+Buffalo Sabres
+Burnley
+Butler Bulldogs
+BYU Cougars
+Cagliari
+Calgary Flames
+Calgary Stampeders
+California Golden Bears
+Carolina Hurricanes
+Carolina Panthers
+Celta Vigo
+Celtic
+CF Montreal
+Charlotte FC
+Charlotte Hornets
+Chelsea
+Chicago Bears
+Chicago Blackhawks
+Chicago Bulls
+Chicago Cubs
+Chicago Fire FC
+Chicago Sky
+Chicago Stars FC
+Chicago White Sox
+Chivas Guadalajara
+Cincinnati Bearcats
+Cincinnati Bengals
+Cincinnati Reds
+Clemson Tigers
+Cleveland Browns
+Cleveland Cavaliers
+Cleveland Guardians
+Club America
+Club Brugge
+Colorado Avalanche
+Colorado Buffaloes
+Colorado Rapids
+Colorado Rockies
+Columbus Blue Jackets
+Columbus Crew
+Como
+Connecticut Huskies
+Connecticut Sun
+Corinthians
+Coventry City
+Creighton Bluejays
+Cremonese
+Cruz Azul
+Cruzeiro
+Crystal Palace
+D.C. United
+Dallas Cowboys
+Dallas Mavericks
+Dallas Stars
+Dallas Wings
+Denver Broncos
+Denver Nuggets
+Detroit Lions
+Detroit Pistons
+Detroit Red Wings
+Detroit Tigers
+Duke Blue Devils
+Dundee United
+Edmonton Elks
+Edmonton Oilers
+Eintracht Frankfurt
+Elche
+Espanyol
+Estudiantes
+Everton
+FC Augsburg
+FC Cincinnati
+FC Dallas
+FC Koln
+FC St. Pauli
+Fenerbahce
+Feyenoord
+Fiorentina
+Flamengo
+Florida Gators
+Florida Panthers
+Florida State Seminoles
+Fluminense
+Fulham
+Galatasaray
+Genoa
+Georgia Bulldogs
+Georgia Tech Yellow Jackets
+Getafe
+Girona
+Golden State Valkyries
+Golden State Warriors
+Gonzaga Bulldogs
+Gotham FC
+Green Bay Packers
+Gremio
+Hamburger SV
+Hamilton Tiger-Cats
+Hearts
+Heidenheim
+Hellas Verona
+Hibernian
+Hoffenheim
+Houston Astros
+Houston Cougars
+Houston Dash
+Houston Dynamo FC
+Houston Rockets
+Houston Texans
+Hull City
+Illinois Fighting Illini
+Independiente
+Indiana Fever
+Indiana Hoosiers
+Indiana Pacers
+Indianapolis Colts
+Inter Miami CF
+Inter Milan
+Internacional
+Iowa Hawkeyes
+Iowa State Cyclones
+Ipswich Town
+Jacksonville Jaguars
+Juventus
+Kansas City Chiefs
+Kansas City Current
+Kansas City Royals
+Kansas Jayhawks
+Kansas State Wildcats
+Kentucky Wildcats
+LA Galaxy
+Las Vegas Aces
+Las Vegas Raiders
+Lazio
+Le Havre
+Lecce
+Leeds United
+Leicester City
+Lens
+Leon
+Levante
+Lille
+Liverpool
+Lorient
+Los Angeles Angels
+Los Angeles Chargers
+Los Angeles Clippers
+Los Angeles Dodgers
+Los Angeles FC
+Los Angeles Kings
+Los Angeles Lakers
+Los Angeles Rams
+Los Angeles Sparks
+Louisville Cardinals
+LSU Tigers
+Lyon
+Mainz 05
+Mallorca
+Manchester City
+Manchester United
+Marquette Golden Eagles
+Marseille
+Maryland Terrapins
+Memphis Grizzlies
+Memphis Tigers
+Metz
+Miami Dolphins
+Miami Heat
+Miami Hurricanes
+Miami Marlins
+Michigan State Spartans
+Michigan Wolverines
+Middlesbrough
+Millwall
+Milwaukee Brewers
+Milwaukee Bucks
+Minnesota Golden Gophers
+Minnesota Lynx
+Minnesota Timberwolves
+Minnesota Twins
+Minnesota United FC
+Minnesota Vikings
+Minnesota Wild
+Mississippi Rebels
+Mississippi State Bulldogs
+Missouri Tigers
+Monaco
+Monterrey
+Montreal Alouettes
+Montreal Canadiens
+Nantes
+Napoli
+Nashville Predators
+Nashville SC
+NC State Wolfpack
+Nebraska Cornhuskers
+New England Patriots
+New England Revolution
+New Jersey Devils
+New Orleans Pelicans
+New Orleans Saints
+New York City FC
+New York Giants
+New York Islanders
+New York Jets
+New York Knicks
+New York Liberty
+New York Mets
+New York Rangers
+New York Red Bulls
+New York Yankees
+Newcastle United
+Nice
+North Carolina Courage
+North Carolina Tar Heels
+Northwestern Wildcats
+Norwich City
+Notre Dame Fighting Irish
+Nottingham Forest
+Ohio State Buckeyes
+Oklahoma City Thunder
+Oklahoma Sooners
+Oklahoma State Cowboys
+Oregon Ducks
+Oregon State Beavers
+Orlando City SC
+Orlando Magic
+Orlando Pride
+Osasuna
+Ottawa Redblacks
+Ottawa Senators
+Palmeiras
+Paris FC
+Paris Saint-Germain
+Parma
+Penn State Nittany Lions
+Philadelphia 76ers
+Philadelphia Eagles
+Philadelphia Flyers
+Philadelphia Phillies
+Philadelphia Union
+Phoenix Mercury
+Phoenix Suns
+Pisa
+Pittsburgh Panthers
+Pittsburgh Penguins
+Pittsburgh Pirates
+Pittsburgh Steelers
+Portland Fire
+Portland Thorns FC
+Portland Timbers
+Portland Trail Blazers
+Porto
+Preston North End
+PSV Eindhoven
+Pumas UNAM
+Purdue Boilermakers
+Queens Park Rangers
+Racing Club
+Racing Louisville FC
+Rangers
+Rayo Vallecano
+RB Leipzig
+Real Betis
+Real Madrid
+Real Oviedo
+Real Salt Lake
+Real Sociedad
+Rennes
+River Plate
+Rutgers Scarlet Knights
+Sacramento Kings
+San Antonio Spurs
+San Diego FC
+San Diego Padres
+San Diego State Aztecs
+San Diego Wave FC
+San Francisco 49ers
+San Francisco Giants
+San Jose Earthquakes
+San Jose Sharks
+San Lorenzo
+Santos
+Sao Paulo
+Saskatchewan Roughriders
+Sassuolo
+SC Freiburg
+Seattle Kraken
+Seattle Mariners
+Seattle Reign FC
+Seattle Seahawks
+Seattle Sounders FC
+Seattle Storm
+Sevilla
+Sheffield United
+Sheffield Wednesday
+South Carolina Gamecocks
+Southampton
+Sporting CP
+Sporting Kansas City
+St. Louis Blues
+St. Louis Cardinals
+St. Louis City SC
+Stanford Cardinal
+Stoke City
+Strasbourg
+Sunderland
+Syracuse Orange
+Tampa Bay Buccaneers
+Tampa Bay Lightning
+Tampa Bay Rays
+TCU Horned Frogs
+Tennessee Titans
+Tennessee Volunteers
+Texas A&M Aggies
+Texas Longhorns
+Texas Rangers
+Tigres UANL
+Toluca
+Torino
+Toronto Argonauts
+Toronto Blue Jays
+Toronto FC
+Toronto Maple Leafs
+Toronto Raptors
+Toronto Tempo
+Tottenham Hotspur
+Toulouse
+UCF Knights
+UCLA Bruins
+Udinese
+Union Berlin
+USC Trojans
+Utah Jazz
+Utah Mammoth
+Utah Royals FC
+Utah Utes
+Valencia
+Vancouver Canucks
+Vancouver Whitecaps FC
+Vasco da Gama
+Vegas Golden Knights
+VfB Stuttgart
+VfL Wolfsburg
+Villanova Wildcats
+Villarreal
+Virginia Cavaliers
+Virginia Tech Hokies
+Vitoria de Guimaraes
+Wake Forest Demon Deacons
+Washington Capitals
+Washington Commanders
+Washington Huskies
+Washington Mystics
+Washington Nationals
+Washington Spirit
+Washington State Cougars
+Washington Wizards
+Watford
+Werder Bremen
+West Bromwich Albion
+West Ham United
+West Virginia Mountaineers
+Wichita State Shockers
+Winnipeg Blue Bombers
+Winnipeg Jets
+Wisconsin Badgers
+Wolverhampton Wanderers
+Xavier Musketeers
