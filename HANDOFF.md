@@ -24,10 +24,11 @@ A working character-level LSTM that trains **per-dataset from scratch** and samp
 temperature ("creativity") knob. Verified end-to-end on CPU: loss drops from ~3.7 to
 <1.0 and output matures from noise → plausible names.
 
-On top of that MVP, the fine-tuning core (**WS-2**), evaluation harness (**WS-3**), and both
-serving front-ends (**WS-5**) are now implemented — see the ✅ markers in §3. A `tests/`
-suite (`python -m unittest discover -s tests`) pins the vocab, training, and export
-invariants. Still open: more datasets (**WS-1**) and dual-output (**WS-4**).
+On top of that MVP, the fine-tuning core (**WS-2**), evaluation harness (**WS-3**), both
+serving front-ends (**WS-5**), and the dual-output name+attribute head (**WS-4**) are now
+implemented — see the ✅ markers in §3. A `tests/` suite
+(`python -m unittest discover -s tests`) pins the vocab, training, model, and export
+invariants. Still open: more datasets (**WS-1**, always open-ended by design).
 
 Modules and their responsibilities:
 
@@ -35,9 +36,10 @@ Modules and their responsibilities:
 |------|----------------|-----------------|
 | `src/config.py` | All hyperparameters + special tokens (`PAD`/`START`/`END`) | Add fields; keep `from_dict` backward-compatible |
 | `src/data.py` | Name loading, `Vocab`, `(input, target)` next-char pairs, batching | Yes — see the shared-vocab note in §6 |
-| `src/model.py` | `Embedding → LSTM → Linear` char-RNN | Yes — keep the `forward(x, hidden)` signature |
+| `src/model.py` | `Embedding → LSTM → Linear` char-RNN (+ optional value head, WS-4) | Yes — keep the `forward(x, hidden)` signature |
 | `src/train.py` | Training loop, live previews, checkpoint save | Yes |
-| `src/sample.py` | Checkpoint load + temperature generation | Yes |
+| `src/sample.py` | Checkpoint load + temperature generation (+ predicted value for dual checkpoints) | Yes |
+| `src/train_dual.py` | WS-4: joint next-char + value-regression training | Yes |
 | `generate.py` | Friendly one-command wrapper | Yes |
 
 **Checkpoint format** (a single `torch.save` dict) — do not break these keys, other
@@ -51,6 +53,11 @@ stages depend on them:
     "training_names": [<str>, ...],           # used to filter for novelty
 }
 ```
+
+> WS-4's dual-output head (§3) does not add or rename any of these keys — it only adds
+> new `Config` fields (`dual_output`/`value_mean`/`value_std`/`value_label`) inside the
+> existing `config` dict, plus extra `value_head.*` tensors inside `model_state` for
+> checkpoints trained with `src/train_dual.py`. Ordinary checkpoints are unaffected.
 
 ---
 
@@ -99,10 +106,47 @@ Original brief — add `src/evaluate.py` computing, for a checkpoint + its datas
 - **Deliverable:** `python -m src.evaluate --checkpoint … ` prints a metrics table;
   numbers are how WS-2 proves fine-tuning helps.
 
-### WS-4 · Dual-output (name + attribute)
-Implement Shane's name+number trick: a second head that regresses a numeric attribute
-(for cars: horsepower / price tier / a learned "sportiness" score). Requires datasets
-with a value column — coordinate with WS-1 on a `name<TAB>value` format.
+### WS-4 · Dual-output (name + attribute) — ✅ **done** (`claude/scope-vs-please-yrlsll`, consolidated onto `claude/next-item-v4te8p`)
+> **Consolidation note (2026-07-24):** three sessions independently built this workstream
+> on separate branches (`claude/next-item-v4te8p`, `claude/scope-vs-please-yrlsll`,
+> `claude/next-task-tnbsmq`) without seeing each other's work — an unavoidable risk of
+> the git-branch-per-agent setup, since STATUS.md claims on one branch aren't visible to
+> a session working from another. The owner picked this branch's design (see STATUS.md
+> Archive for why); the other two implementations were discarded, but their **datasets**
+> were kept and repointed at this API — no dataset work was thrown away, only the
+> duplicate model/training code.
+
+Implemented Shane's name+number trick: `src/config.py` gained `dual_output` /
+`value_mean` / `value_std` / `value_label` (all default "off", so ordinary checkpoints
+are unaffected); `src/model.py`'s `CharRNN` gained an optional `value_head` (`None`
+unless `cfg.dual_output`) plus `encode()` (embedding+LSTM, factored out of `forward`)
+and `predict_value(state)`; `forward(x, hidden)` itself is unchanged. `src/data.py`
+gained `load_name_value_pairs()` for `name<TAB>value` TSVs (`#`-comments and blank
+lines skipped). `src/train_dual.py` z-scores the raw values (`value_mean`/`value_std`
+saved to the checkpoint) and trains `combined_loss = ce_loss + value_weight * mse_loss`
+jointly on one shared LSTM. `src/sample.py`'s `generate_one`/`generate_many` gained an
+opt-in `return_value` param (default `False` = old behavior/return type exactly), and
+`python -m src.sample` auto-prints the denormalized value for dual checkpoints.
+Checkpoint format (§2) unchanged.
+
+Demo datasets (`name<TAB>value`, not part of the shared-vocab `*.txt` glob):
+- `data/car_manufacturers_founding_year.tsv` — 66 real car brands + founding year.
+- `data/paint_colors.tsv` — ~140 real CSS/X11 named colors + relative luminance
+  (computed by `scripts/build_paint_colors.py` from each color's hex — a direct homage
+  to Shane's original paint-color + RGB experiment). Closed, standardized list (CSS only
+  defines that many keywords), so it's smaller than the usual ≥300 target on purpose.
+- `data/periodic_elements.tsv` — all 118 IUPAC chemical elements + atomic number.
+
+```bash
+python -m src.train_dual --data data/car_manufacturers_founding_year.tsv \
+    --name manufacturers_founding_year --epochs 300 --value-label "founding year"
+python -m src.sample --checkpoint checkpoints/manufacturers_founding_year.pt --num 10
+```
+
+Original brief — turn Shane's name+RGB trick into a general name+number regression:
+1. Add a second head that regresses a numeric attribute (for cars: horsepower / price
+   tier / a learned "sportiness" score). Requires datasets with a value column —
+   coordinate with WS-1 on a `name<TAB>value` format.
 
 ### WS-5 · Serving — ✅ **done** (`claude/program-development-q4fcp7`)
 Two front-ends, both a mobile-friendly "instrument panel" UI (temperature dial, prefix,
@@ -126,12 +170,21 @@ Keep this in sync with `data/` and the README catalog. One row per dataset file.
 | `car_manufacturers.txt` | Auto brands | ~150 | seed | Real worldwide brands |
 | `car_models.txt` | Car model names | ~250 | seed | Real model names |
 | `english_words.txt` | Common English words | ~8,600 | `claude/plausible-words-dataset-53qyyg` | Frequency-ranked common words (Google Web Trillion Word Corpus via `first20hours/google-10000-english`, MIT). Curated to lowercase a–z, length 3–10, vowel-bearing. Teaches general English spelling → plausible word-shapes; good base-model fuel. |
+| `world_cities.txt` | World city/capital names | ~1,690 | `claude/scope-vs-please-yrlsll` + `claude/next-task-tnbsmq` | Consolidated (2026-07-24) from two independently-built city lists (671 + 1,323 real names, ~45% overlap) into one case-insensitive-deduped, alphabetized file — no real names lost from either. |
+| `tech_startups.txt` | Real tech company/startup names | ~400 | `claude/next-task-tnbsmq` | Well-known startups/tech companies. |
+| `motorcycle_brands.txt` | Real motorcycle manufacturers | ~60 | `claude/next-task-tnbsmq` | Harley-Davidson through Zongshen, globally sourced. |
+| `motorcycles.txt` | Motorcycle brands & models | 359 | `claude/next-three-items-nj7dyj` | Real motorcycle and brand names from Honda, Yamaha, Kawasaki, Harley-Davidson, Ducati, BMW, KTM, Royal Enfield, and others — broader scope than `motorcycle_brands.txt` (brands only), includes model names (Rebel, Street Glide, Ninja). Both kept; not merged, since they cover different scopes. |
 | `racehorses.txt` | Racehorse names | 355 | `claude/next-three-items-nj7dyj` | Real thoroughbred racehorse names spanning classic legends (Secretariat, Man O' War) to modern winners. Creative, varied naming patterns; good for testing diverse English word-building. |
 | `spacecraft.txt` | NASA/ESA spacecraft & satellites | 270 | `claude/next-three-items-nj7dyj` | Real spacecraft, satellites, and mission names from NASA, ESA, JAXA, CNSA. Includes rovers, orbiters, landers, and space stations. Mix of acronyms (GOES, TESS) and full names (Voyager, Cassini). |
-| `paint_colors.txt` | Paint color names | 391 | `claude/next-three-items-nj7dyj` | Real and whimsical paint color names from major manufacturers. Ranges from descriptive (Alabaster, Apricot) to poetic (Aurora Red, Crystal Clear). Homage to Janelle Shane's original neural-network paint-color project. |
-| `motorcycles.txt` | Motorcycle brands & models | 359 | `claude/next-three-items-nj7dyj` | Real motorcycle and brand names from Honda, Yamaha, Kawasaki, Harley-Davidson, Ducati, BMW, KTM, Royal Enfield, and others. Mix of short punchy names (Rebel, Shadow, Ninja) and compound names (Street Glide, Fat Boy). |
 | `craft_beers.txt` | Craft brewery & beer names | 398 | `claude/next-three-items-nj7dyj` | Creative beer names from US and international craft breweries. Includes descriptive names (IPA, Porter, Stout), whimsical names (Hoppy Beer, Belly Dance), and branded brewery ales (Stone IPA, Founders All Day). |
 | `aircraft.txt` | Aircraft models | 435 | `claude/next-three-items-nj7dyj` | Real aircraft and helicopter model names from Boeing, Airbus, Bombardier, Embraer, Gulfstream, Cessna, Piper, Learjet, Saab, Dassault, and others. Mix of alphanumeric (Boeing 737, A320) and named models (Dreamliner, Super King Air). |
+| `car_manufacturers_founding_year.tsv` | Car brands + founding year | 66 | `claude/scope-vs-please-yrlsll` | WS-4 dual-output demo, `name<TAB>value`. Founding years sourced from each brand's commonly-cited history; treat as approximate. |
+| `paint_colors.tsv` | CSS/X11 named colors + relative luminance | ~140 | `claude/next-item-v4te8p` | WS-4 dual-output demo, `name<TAB>value` format. Names + hex are the standardized CSS Color Module Level 4 keyword list (source of truth in `scripts/build_paint_colors.py`); value is luminance computed from the hex, not an external fact. **Not the same file as** `paint_colors.txt` below (WS-1, plain name list, no values) — kept both; extension disambiguates. |
+| `paint_colors.txt` | Paint color names | 391 | `claude/next-three-items-nj7dyj` | Real and whimsical paint color names from major manufacturers. Ranges from descriptive (Alabaster, Apricot) to poetic (Aurora Red, Crystal Clear). Homage to Janelle Shane's original neural-network paint-color project. WS-1 plain-name-list sibling of the `.tsv` WS-4 demo above. |
+| `periodic_elements.tsv` | Chemical elements + atomic number | 118 | `claude/next-task-tnbsmq` | WS-4 dual-output demo, `name<TAB>value`. All 118 IUPAC elements — a closed, exactly-verifiable list. |
+
+None of the `.tsv` dual-output datasets are part of the shared-vocab `*.txt` glob (§6);
+they're only consumed by `src.train_dual`.
 
 ---
 
@@ -199,6 +252,9 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
   | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
   | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ⏳ in review |
+  | `claude/next-item-v4te8p` | **Consolidated PR**: WS-4 dual-output (chosen implementation, originally from `scope-vs-please-yrlsll`) + all salvaged WS-1/WS-4 datasets from the three parallel branches below | 2026-07-24 | ⏳ in review |
+  | `claude/scope-vs-please-yrlsll` | WS-1 `world_cities.txt` (superseded by the merged file) + WS-4 dual-output (chosen implementation, ported to `next-item-v4te8p`) | 2026-07-24 | ⚠️ superseded by consolidation, PR #5 to be closed |
+  | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt`/`motorcycle_brands.txt`/`city_names.txt` (superseded by the merged file) + WS-4 dual-output (discarded design, its `periodic_elements.tsv`/`paint_colors.tsv` ported to `next-item-v4te8p`) | 2026-07-24 | ⚠️ superseded by consolidation |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.

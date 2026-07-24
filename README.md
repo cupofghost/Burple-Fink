@@ -35,7 +35,7 @@ colliding with other agents. Repo-wide conventions and commands for agents also 
 | **1. Dataset library** | Many clean, documented name datasets under a shared convention | ⏳ In progress |
 | **2. Shared base + fine-tuning** | Pretrain one base model on all corpora, then fine-tune per domain (transfer learning) | ✅ Done |
 | **3. Evaluation harness** | Automatic novelty / plausibility / diversity metrics to compare checkpoints | ✅ Done |
-| **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | 🔜 Planned |
+| **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | ✅ Done |
 | **5. Serving** | CLI ✅ → live server ✅ → in-browser web app ✅ | ✅ Done |
 
 The full rationale and design for each stage lives in [`docs/PLAN.md`](docs/PLAN.md).
@@ -99,6 +99,30 @@ python -m src.evaluate --checkpoint checkpoints/car_models_ft.pt --temperature 1
 See [`HANDOFF.md §6`](HANDOFF.md#6-key-design-decision-for-fine-tuning-shared-vocabulary)
 for the shared-vocabulary design that makes fine-tuning possible.
 
+### Dual-output: name + numeric attribute (Shane's paint-color trick)
+
+Shane's original char-rnn didn't just name paint colors — it predicted their RGB
+value too. `CharRNN` gains an optional second head (`value_head`, only present when
+`cfg.dual_output=True`) that regresses one numeric attribute per name, trained
+jointly with the usual next-character loss via `src/train_dual.py`. The value is
+z-scored internally (`Config.value_mean`/`value_std`) so it works for any scale —
+a 0–1 color brightness or a four-digit founding year — and `python -m src.sample`
+auto-prints the (denormalized) predicted value for dual checkpoints:
+
+```bash
+# Train on real car brands + their founding year
+python -m src.train_dual --data data/car_manufacturers_founding_year.tsv \
+    --name manufacturers_founding_year --epochs 300 --value-label "founding year"
+
+# Generate invented brand names with a predicted founding year
+python -m src.sample --checkpoint checkpoints/manufacturers_founding_year.pt --num 10
+#  -> Fordia  (founding year: 1921.4)   Motoza  (founding year: 1998.7)
+```
+
+Also demoed on `data/paint_colors.tsv` (CSS named colors + luminance) and
+`data/periodic_elements.tsv` (elements + atomic number). See
+[`HANDOFF.md §3 WS-4`](HANDOFF.md#ws-4--dual-output-name--attribute) for the design.
+
 ### The web app (open it on your phone)
 
 There are two ways to run the mobile-friendly UI — an instrument panel with a
@@ -149,25 +173,41 @@ Burple-Fink/
 ├── requirements.txt
 ├── docs/
 │   └── PLAN.md               # full design rationale, pipelines, and roadmap
-├── data/                     # training datasets, one name per line
+├── data/                     # training datasets, one name per line (or name<TAB>value)
 │   ├── car_manufacturers.txt # ~150 real auto brands
 │   ├── car_models.txt        # ~250 real car model names
+│   ├── english_words.txt     # ~8,600 common English words (base-model fuel)
+│   ├── world_cities.txt      # ~1,690 real world city/capital names
+│   ├── tech_startups.txt     # ~400 real tech company/startup names
+│   ├── motorcycle_brands.txt # ~60 real motorcycle manufacturers (brands only)
+│   ├── motorcycles.txt       # 359 real motorcycle brands & models
+│   ├── racehorses.txt        # 355 real thoroughbred racehorse names
+│   ├── spacecraft.txt        # 270 real NASA/ESA/JAXA/CNSA spacecraft & satellites
+│   ├── craft_beers.txt       # 398 real craft brewery & beer names
+│   ├── aircraft.txt          # 435 real aircraft & helicopter models
+│   ├── paint_colors.txt      # 391 real/whimsical paint color names (plain list)
+│   ├── car_manufacturers_founding_year.tsv # WS-4 demo: brand + founding year
+│   ├── paint_colors.tsv      # WS-4 demo: ~140 CSS named colors + luminance
+│   ├── periodic_elements.tsv # WS-4 demo: 118 elements + atomic number
 │   └── shared_vocab.json     # fixed char set shared by base + all fine-tunes
+├── scripts/
+│   └── build_paint_colors.py # regenerates data/paint_colors.tsv from its hex source
 ├── src/
 │   ├── config.py             # hyperparameters in one place
 │   ├── data.py               # read names -> vocab -> tensors (+ shared vocab)
-│   ├── model.py              # the char-RNN (LSTM) itself
+│   ├── model.py              # the char-RNN (LSTM) itself (+ optional value head)
 │   ├── train.py              # training loop (reusable `fit`) + checkpointing
-│   ├── sample.py             # load checkpoint, generate names
+│   ├── sample.py             # load checkpoint, generate names (+ predicted value)
 │   ├── pretrain.py           # train one base model on all datasets
 │   ├── finetune.py           # specialize the base onto one dataset
+│   ├── train_dual.py         # WS-4: joint name + numeric-attribute training
 │   ├── evaluate.py           # novelty / plausibility / diversity metrics
 │   ├── export_web.py         # bake a checkpoint into a browser-runnable UI
 │   └── serve.py              # local server wiring the UI to the live model
 ├── web/
 │   ├── app_template.html     # the UI (CSS + markup + in-browser char-RNN)
 │   └── burple-fink.html      # built self-contained app (open on a phone)
-├── tests/                    # unittest suite (vocab, training, export)
+├── tests/                    # unittest suite (vocab, training, dual-output, export)
 └── generate.py               # one-command train-and-generate wrapper
 ```
 
@@ -184,17 +224,22 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `car_manufacturers.txt` | Auto brands | ~150 | ✅ seed |
 | `car_models.txt` | Car model names | ~250 | ✅ seed |
 | `english_words.txt` | Common English words | ~8,600 | ✅ added |
+| `world_cities.txt` | World city/capital names | ~1,690 | ✅ added |
+| `tech_startups.txt` | Tech company/startup names | ~400 | ✅ added |
+| `motorcycle_brands.txt` | Motorcycle manufacturers | ~60 | ✅ added |
+| `motorcycles.txt` | Motorcycle brands & models | 359 | ✅ added |
 | `racehorses.txt` | Racehorse names | 355 | ✅ added |
 | `spacecraft.txt` | NASA/ESA spacecraft & satellites | 270 | ✅ added |
-| `paint_colors.txt` | Paint color names | 391 | ✅ added |
-| `motorcycles.txt` | Motorcycle brands & models | 359 | ✅ added |
 | `craft_beers.txt` | Craft brewery & beer names | 398 | ✅ added |
 | `aircraft.txt` | Aircraft models | 435 | ✅ added |
+| `car_manufacturers_founding_year.tsv` | Car brands + founding year (WS-4 demo) | 66 | ✅ added |
+| `paint_colors.tsv` | CSS named colors + luminance (WS-4 demo) | ~140 | ✅ added |
+| `paint_colors.txt` | Paint color names, plain list (WS-1) | 391 | ✅ added |
+| `periodic_elements.tsv` | Chemical elements + atomic number (WS-4 demo) | 118 | ✅ added |
 | _(your dataset here)_ | — | — | 🔜 |
 
-Ideas for future domains (a Shane-style variety): boat & yacht names, motorcycle brands,
-aircraft, spacecraft, perfumes, craft beers, racehorses, tech startups, paint colors
-(homage), fantasy characters, city names. Claim one in `HANDOFF.md` before you start.
+Ideas for future domains (a Shane-style variety): boat & yacht names, perfumes,
+fantasy characters. Claim one in `HANDOFF.md` before you start.
 
 ---
 

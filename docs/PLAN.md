@@ -111,10 +111,10 @@ Everything is deliberately small so it trains in seconds-to-minutes on a laptop 
 1. **✅ MVP:** names-only char-RNN with temperature sampling. *(this repo)*
 2. **More & cleaner data:** scrape/compile a few thousand real car names; dedupe,
    normalize casing, remove trim levels and years.
-3. **Dual output (the paint-color trick):** have the network emit a name **and** a
-   numeric attribute simultaneously — for paint that was RGB; for cars it could be
-   horsepower, price tier, or a learned "sportiness"/"luxury" score. Implementation:
-   add a second regression head and a combined loss.
+3. **✅ Dual output (the paint-color trick):** the network emits a name **and** a
+   numeric attribute simultaneously — a second regression head trained jointly with a
+   combined loss. Demoed on real paint colors (name + luminance), the same domain Shane
+   used. See §11.6.
 4. **Conditioning:** let the user prime generation ("give me a name starting with 'Za'"
    or "an Italian-sounding sports-car name") via a seed prefix or a country/style tag.
 5. **Packaging:** simple CLI (done) → optional Flask/FastAPI endpoint → tiny web demo.
@@ -203,5 +203,50 @@ differs:
 
 - **WS-1 (more datasets):** the single biggest quality lever is still more data; the
   fine-tuning machinery is ready for any dataset dropped into `data/` (rebuild the shared
-  vocab by deleting `data/shared_vocab.json` and re-running pretrain).
-- **WS-4 (dual-output):** the name+attribute regression head (§9.3) is not yet built.
+  vocab by deleting `data/shared_vocab.json` and re-running pretrain). Always open-ended
+  by design — there's no "done" state, just more domains.
+
+### 11.6 Dual-output: name + numeric attribute (Stage 4, §9.3)
+
+> **Consolidation note (2026-07-24):** three parallel sessions each built this
+> workstream independently (see HANDOFF §7 for the branch history). All three worked
+> and were tested; this section documents the one the owner chose to keep. The other
+> two implementations were discarded, but their demo datasets were kept and pointed at
+> this API — see below.
+
+Shane's original char-rnn predicted each paint color's RGB alongside its name. WS-4
+generalizes that to any `name<TAB>value` dataset:
+
+- `src/config.py` gains `dual_output` (default `False`), `value_mean`, `value_std`,
+  and `value_label` — all backward-compatible defaults, so `Config.from_dict` on an
+  old checkpoint is unaffected.
+- `src/model.py`'s `CharRNN` gains an optional `value_head` (`None` unless
+  `cfg.dual_output`), a new `encode()` method (embedding + LSTM, factored out of
+  `forward` so both the char logits and the value head can read the same LSTM output
+  without a duplicate pass), and `predict_value(state)` which regresses one scalar from
+  an LSTM hidden vector. `forward(x, hidden)` itself is byte-for-byte unchanged.
+- `src/data.py`'s `load_name_value_pairs()` reads `name<TAB>value` TSV rows (`#`
+  comments and blank lines skipped), same order-preserving, first-occurrence de-dupe as
+  `load_names`.
+- `src/train_dual.py` z-scores the raw values first (`value_mean`/`value_std`, saved to
+  the checkpoint) so the regression target is well-scaled regardless of the attribute's
+  natural range — a 0–1 color brightness and a four-digit founding year both train the
+  same way. Each step computes `combined_loss = ce_loss + value_weight * mse_loss` on
+  one shared LSTM pass (via `encode()`) and backpropagates once.
+- The checkpoint format (§2/HANDOFF §2) is **unchanged**: the new fields live inside the
+  existing `config` dict, and `model_state` just carries extra `value_head.*` tensors
+  for dual checkpoints.
+- `src/sample.py`'s `generate_one`/`generate_many` gained an opt-in `return_value`
+  parameter (default `False` = exactly the old behavior and return type); when set, a
+  sampled name's predicted value is denormalized (`* value_std + value_mean`) and
+  returned alongside it. `python -m src.sample` auto-prints it for dual checkpoints.
+
+Demo datasets (`name<TAB>value`, all outside the shared-vocab `*.txt` glob):
+- `data/car_manufacturers_founding_year.tsv` — 66 real car brands + founding year.
+- `data/paint_colors.tsv` — ~140 real CSS/X11 named colors + relative luminance
+  (computed from each color's standardized hex value by `scripts/build_paint_colors.py`,
+  which keeps the name→hex source of truth in one auditable place). Trained samples
+  correlate sensibly — an invented `GhostWhite`-adjacent name predicts a value near 1.0,
+  `Chocolate`-adjacent near 0.2.
+- `data/periodic_elements.tsv` — all 118 IUPAC chemical elements + atomic number, a
+  closed and exactly verifiable list.
