@@ -1,0 +1,1649 @@
+New York
+Los Angeles
+Chicago
+Houston
+Phoenix
+Philadelphia
+San Antonio
+San Diego
+Dallas
+San Jose
+Austin
+Jacksonville
+Kansas City
+Denver
+Miami
+Seattle
+Boston
+Portland
+Las Vegas
+Minneapolis
+New Orleans
+Memphis
+Detroit
+Washington
+Atlanta
+Baltimore
+Pittsburgh
+Buffalo
+Rochester
+Syracuse
+Providence
+Hartford
+Bridgeport
+Newark
+Jersey City
+Paterson
+Elizabeth
+Trenton
+Allentown
+Erie
+Reading
+Scranton
+Harrisburg
+Albuquerque
+Santa Fe
+Las Cruces
+Rio Rancho
+Tucson
+Mesa
+Glendale
+Chandler
+Scottsdale
+Gilbert
+Tempe
+Peoria
+Surprise
+Fontana
+Rialto
+Moreno Valley
+Ontario
+San Bernardino
+Riverside
+Corona
+Murrieta
+Temecula
+Hemet
+Barstow
+Victorville
+Needles
+Palm Springs
+Indio
+Santa Barbara
+Ventura
+Oxnard
+Malibu
+Santa Monica
+Beverly Hills
+Long Beach
+Anaheim
+Orange
+Santa Ana
+Garden Grove
+Huntington Beach
+Newport Beach
+Laguna Beach
+Dana Point
+San Clemente
+Oceanside
+Carlsbad
+Encinitas
+Del Mar
+La Jolla
+Coronado
+Imperial Beach
+Chula Vista
+El Centro
+Stockton
+Modesto
+Fresno
+Visalia
+Bakersfield
+Merced
+Turlock
+Lodi
+Manteca
+Vallejo
+Fairfield
+Vacaville
+Davis
+Sacramento
+Folsom
+Rancho Cordova
+Roseville
+Rocklin
+Auburn
+Placerville
+South Lake Tahoe
+Truckee
+Eureka
+Arcata
+Fortuna
+Trinidad
+Mendocino
+Ukiah
+Willows
+Red Bluff
+Redding
+Chico
+Oroville
+Paradise
+Yuba City
+Marysville
+Grass Valley
+Nevada City
+Auburn
+Placerville
+Jackson
+Amador City
+Sutter Creek
+Volcano
+Ione
+Mokelumne Hill
+Arnold
+Murphys
+Angels Camp
+San Andreas
+Copperopolis
+Sonora
+Jamestown
+Tuolumne
+Coulterville
+Mariposa
+Yosemite
+Big Oak Flat
+Modesto
+Stockton
+Lodi
+Tracy
+Manteca
+Turlock
+Merced
+Atwater
+Livingston
+Delhi
+Gustine
+San Luis Obispo
+Paso Robles
+Salinas
+Monterey
+Pacific Grove
+Carmel
+Seaside
+Castroville
+Santa Cruz
+Capitola
+Watsonville
+Hollister
+Gilroy
+Morgan Hill
+San Jose
+San Francisco
+Oakland
+Berkeley
+Alameda
+Hayward
+Fremont
+Newark
+Union City
+Daly City
+San Leandro
+Walnut Creek
+Concord
+Pleasant Hill
+Lafayette
+Orinda
+Moraga
+Danville
+Alamo
+San Ramon
+Livermore
+Tracy
+Stockton
+Manteca
+Lodi
+Sacramento
+Folsom
+Rancho Cordova
+Roseville
+Rocklin
+Auburn
+Carmichael
+Fair Oaks
+Citrus Heights
+Ranchero Cordova
+Arden Arcade
+Foothill Farms
+Vineyard
+Gold River
+Rancho Murieta
+Placerville
+El Dorado
+Georgetown
+Coloma
+Pilot Hill
+Cool
+Camino
+Eldorado
+Pollock Pines
+Diamond Springs
+Rescue
+Shingle Springs
+Sly Park
+Kyburz
+Tragedy Springs
+Mokelumne Hill
+Jackson
+Volcano
+Ione
+Amador City
+Sutter Creek
+Pioneer
+Argonaut
+Plymouth
+Butte Valley
+Fiddletown
+Ione
+Jackson
+Mokelumne Hill
+Volcano
+Amador City
+Sutter Creek
+Copperopolis
+Sonora
+Jamestown
+Tuolumne
+Coulterville
+Mariposa
+Yosemite
+Wawona
+El Portal
+Merced
+Atwater
+Livingston
+Delhi
+Gustine
+Los Banos
+Firebaugh
+Coalinga
+Avenal
+Lemoore
+Kettleman City
+Hanford
+Delano
+Shafter
+Wasco
+McFarland
+Tehachapi
+Mojave
+Lancaster
+Palmdale
+Ridgecrest
+Randsburg
+Trona
+Searles Valley
+Boron
+Kramer Junction
+Barstow
+Needles
+Twentynine Palms
+Joshua Tree
+Yucca Valley
+Victorville
+Apple Valley
+Adelanto
+Hesperia
+Fontana
+Rialto
+San Bernardino
+Moreno Valley
+Ontario
+Riverside
+Chino
+Chino Hills
+Upland
+Rancho Cucamonga
+Fontana
+Rialto
+San Bernardino
+Riverside
+Moreno Valley
+Ontario
+Victorville
+Hesperia
+Adelanto
+Barstow
+Needles
+Twentynine Palms
+Yucca Valley
+Joshua Tree
+Palm Springs
+Cathedral City
+Desert Hot Springs
+Indio
+Thermal
+Coachella
+Mecca
+Westmorland
+Calipatria
+Niland
+Salton City
+Brawley
+El Centro
+Calexico
+Yuma
+Somerton
+San Luis
+Sonoita
+Puerto Penasco
+Caborca
+Altar
+Sasabe
+Nogales
+Ajo
+Why
+Lukeville
+Gila Bend
+Tonopah
+Buckeye
+Goodyear
+Avondale
+Litchfield Park
+Phoenix
+Mesa
+Chandler
+Scottsdale
+Gilbert
+Tempe
+Peoria
+Surprise
+Glendale
+Avondale
+Goodyear
+Litchfield Park
+Sun City
+Sun City West
+Wickenburg
+Prescott
+Prescott Valley
+Camp Verde
+Cottonwood
+Clarkdale
+Jerome
+Dewey
+Humboldt
+Chino Valley
+Williams
+Flagstaff
+Winslow
+Holbrook
+Show Low
+Lakeside
+Pinetop
+Springerville
+Eagar
+Concho
+St. Johns
+Alpine
+Vernon
+Greer
+Nutrioso
+Tucson
+Oro Valley
+Sahuarita
+Vail
+Sierra Vista
+Bisbee
+Tombstone
+Douglas
+Willcox
+Cochise
+Dragoon
+Benson
+St. David
+Huachuca City
+Fort Huachuca
+Naco
+Sonora
+Nogales
+Rio Rico
+Patagonia
+Tubac
+Green Valley
+Amado
+Arivaca
+Ajo
+Why
+Gila Bend
+Casa Grande
+Eloy
+Coolidge
+Florence
+Kearny
+Winkelman
+Hayden
+Superior
+Globe
+Miami
+Claypool
+Carrizo
+Holbrook
+Snowflake
+Taylor
+Heber
+Overgaard
+Pinedale
+Payson
+Strawberry
+Rye
+Pine
+Showlow
+Pinetop
+Lakeside
+Winslow
+Flagstaff
+Williams
+Ashfork
+Seligman
+Peach Springs
+Truxton
+Valentine
+Drake
+Meadview
+Littlefield
+Fredonia
+Marble Canyon
+Jacob Lake
+Tuba City
+Kayenta
+Dennehotso
+Mexican Water
+Sanostee
+Lechee
+Red Lake
+Shonto
+Teec Nos Pos
+Shiprock
+Fruitland
+Aztec
+Farmington
+Galena
+Bead Lake
+Navajo
+Lukachukai
+Window Rock
+St. Michaels
+Fort Defiance
+Wheatfields
+Pinedale
+Holbrook
+Snowflake
+Taylor
+Heber
+Overgaard
+Pinedale
+Payson
+Strawberry
+Rye
+Pine
+Showlow
+Pinetop
+Lakeside
+Greer
+Eagar
+Springerville
+Alpine
+Vernon
+Nutrioso
+Concho
+Holbrook
+Snowflake
+Taylor
+Show Low
+Pinetop
+Lakeside
+Pinedale
+Overgaard
+Heber
+Payson
+Strawberry
+Rye
+Pine
+Winslow
+Flagstaff
+Williams
+Jerome
+Clarkdale
+Cottonwood
+Dewey
+Humboldt
+Chino Valley
+Prescott
+Prescott Valley
+Wickenburg
+Cordes Junction
+Mayer
+Crown King
+Bumble Bee
+New River
+Anthem
+Phoenix
+Peoria
+Glendale
+Chandler
+Gilbert
+Tempe
+Mesa
+Ahwatukee
+Toronto
+Vancouver
+Montreal
+Calgary
+Edmonton
+Winnipeg
+Quebec City
+Ottawa
+Hamilton
+London
+Kitchener
+Waterloo
+Halifax
+Saskatoon
+Regina
+Lethbridge
+Barrie
+Brampton
+Mississauga
+Vaughan
+Thunder Bay
+Windsor
+Sudbury
+Guelph
+Cambridge
+Kingston
+Brantford
+Peterborough
+Niagara Falls
+St. Catharines
+Orillia
+Collingwood
+Owen Sound
+Sarnia
+Chatham
+Goderich
+Stratford
+Woodstock
+Ingersoll
+St. Thomas
+Belleville
+Oshawa
+Markham
+Richmond Hill
+Aurora
+Newmarket
+Oakville
+Burlington
+Grimsby
+Beamsville
+Lincoln
+Niagara-On-The-Lake
+Welland
+Dunville
+Haldimand
+Caledonia
+Cayuga
+Mexico City
+Guadalajara
+Cancun
+Monterrey
+Puebla
+Merida
+Ciudad Juarez
+Leon
+Salamanca
+San Miguel De Allende
+Puerto Vallarta
+Acapulco
+Playa Del Carmen
+Tulum
+Cozumel
+Cabo San Lucas
+Los Cabos
+La Paz
+Culiacan
+Durango
+Torreon
+Chihuahua
+Hermosillo
+Xalapa
+Vera Cruz
+Tampico
+Matamoros
+Nuevo Laredo
+Laredo
+Saltillo
+Torreon
+Aguascalientes
+San Luis Potosi
+Zacatecas
+Guanajuato
+Irapuato
+Celaya
+Querétaro
+Toluca
+Rio de Janeiro
+Sao Paulo
+Brasilia
+Salvador
+Fortaleza
+Belo Horizonte
+Manaus
+Recife
+Goiania
+Curitiba
+Belém
+Maceió
+Teresina
+João Pessoa
+Aracaju
+Macapá
+Boa Vista
+Palmas
+Porto Velho
+Rio Branco
+Cuiabá
+Goiânia
+Brasília
+Tocantins
+Piripiri
+Teresina
+Parnaíba
+Florianópolis
+Santa Catarina
+Blumenau
+Joinville
+Lages
+Tubarão
+Criciúma
+Itajai
+Navegantes
+Araquari
+Bom Jesus
+Ituporanga
+Brusque
+Camboriú
+Balneário
+Bombinhas
+Governador Celso Ramos
+Tijucas
+Penha
+Piçarras
+Corupá
+Garuva
+Itapoá
+Guaramirim
+Schroeder
+Massaranduba
+Barra Velha
+Luiz Alves
+Bombas
+Bombinhas
+Porto Belo
+Puert Nueva
+Bristol
+Boletá
+Escada
+Ouro Preto
+Mariana
+Congonhas
+Tiradentes
+São João Del Rey
+Lavras
+Viçosa
+Juiz De Fora
+Ubá
+Uberlândia
+Araxá
+Divinópolis
+Itabira
+Sete Lagoas
+Barbacena
+Santos Dumont
+Teófilo Otoni
+Montes Claros
+Januária
+Bocaiúva
+Pirapora
+Conceição Do Mato Dentro
+Almenara
+Teixeira De Freitas
+Vitória
+Cachoeiro De Itapemirim
+Aracruz
+São Mateus
+Linhares
+Colatina
+Guarapari
+Anchieta
+Piúma
+Iconha
+Rio Novo Do Sul
+Itapemirim
+Marataízes
+Presidente Kennedy
+Atílio Vivácqua
+Muqui
+Mimoso Do Sul
+Alegre
+Dores Do Rio Preto
+Castelo
+Conceição Da Barra
+São Mateus
+Linhares
+Conceição Da Barra
+Aracruz
+Fundão
+Ibiraçu
+Serra
+Cariacica
+Viana
+Vila Velha
+Guarapari
+Anchieta
+Piúma
+Iconha
+Rio Novo Do Sul
+Itapemirim
+Marataízes
+Presidente Kennedy
+Atílio Vivácqua
+Muqui
+Mimoso Do Sul
+Alegre
+Dores Do Rio Preto
+Castelo
+Conceição Da Barra
+Ecoporanga
+Pinheiros
+São Mateus
+Pedro Canário
+Jaguaré
+Linhares
+Colatina
+Governador Lindemberg
+Pancas
+Baixo Guandu
+Afonso Cláudio
+Santa Tereza
+São Roque Do Cânion
+Laranja Da Terra
+Itaguaçu
+Fundão
+Ibiraçu
+Serra
+Cariacica
+Viana
+Vila Velha
+Vitória
+Buenos Aires
+Rosario
+Cordoba
+Mendoza
+Tucuman
+Salta
+San Juan
+La Plata
+Mar Del Plata
+Bahi Blanca
+Santa Fe
+Paraná
+Corrientes
+Misiones
+Posadas
+Puerto Iguazú
+Oberá
+Eldorado
+Iguazú Falls
+Concordia
+Paso De Los Libres
+Bella Vista
+San Miguel
+San Ignacio
+Lima
+Arequipa
+Cusco
+Trujillo
+Chiclayo
+Iquitos
+Ayacucho
+Huancayo
+Huánuco
+Cerro De Pasco
+Pucallpa
+Nazca
+Ica
+Chincha
+Pisco
+Atico
+Mollendo
+Moquegua
+Tacna
+Arica
+Puno
+Juliaca
+Quito
+Guayaquil
+Cuenca
+Ibarra
+Riobamba
+Latacunga
+Quevedo
+Santo Domingo
+Manta
+Puerto López
+Salinas
+Guayaquil
+Guaranda
+Azogues
+Machala
+Loja
+Zamora
+Tena
+Puyo
+Santiago
+Valparaiso
+Concepcion
+Temuco
+Puerto Montt
+Osorno
+Puerto Varas
+Punta Arenas
+La Serena
+Coquimbo
+Vallenar
+Copiapo
+Iquique
+Arica
+Antofagasta
+Calama
+San Pedro De Atacama
+Copiapó
+La Serena
+Coquimbo
+Ovalle
+La Calera
+Viña Del Mar
+Valparaíso
+Quilpué
+Villa Alemana
+Limache
+Quillota
+Caleta Rotella
+Papudo
+Zapallar
+Quintero
+Puchuncavi
+Concón
+Valparaíso
+Viña Del Mar
+Casablanca
+San Antonio
+Algarrobo
+Cartagena
+Isla Negra
+El Quisco
+El Tabo
+Santo Domingo
+Maipú
+Ñuñoa
+San Isidro
+Santiago
+Providencia
+Las Condes
+Vitacura
+Lo Barnechea
+La Reina
+Peñalolén
+San Joaquín
+Maipú
+Ñuñoa
+San Isidro
+Santiago
+Providencia
+Las Condes
+Peñalolén
+La Florida
+Pirque
+San José De Maipo
+Pomaire
+Curacaví
+Melipilla
+Talagante
+Paine
+Puente Alto
+San Bernardo
+Calera De Tango
+Buin
+El Monte
+Isla De Maipo
+Padre Hurtado
+Renca
+Estación Central
+San Ramón
+La Granja
+Conchalí
+Recoleta
+San Miguel
+Macul
+Santa Bárbara
+Bucalemu
+Rauco
+Pichilemu
+Santa Cruz
+Talca
+Linares
+Parral
+Chillan
+Bulnes
+Los Angeles
+Temuco
+Villarrica
+Pucon
+Puerto Varas
+Puerto Montt
+Osorno
+Puerto Varas
+Cariblanco
+Pucón
+Villarrica
+Curarrehue
+Conguillio
+Licanray
+Lican Ray
+Llafquén
+Manzano
+Maquehue
+Panjachoque
+Pichilafquén
+Puente Eltit
+Puerto Nuevo
+Pucón
+Quinchol
+Radal
+Rayes
+Reyrehue
+Rocatransporte
+Rucatué
+Rucatué Sur
+Rucu-Hueico
+Rudán
+San Martin De Los Andes
+Villarrica
+Villarrica Sector
+Villarrica Sector
+Villarrica Sector
+Yani
+Maqui
+Malalcahuello
+Galletué
+Lonquimay
+Melipeuco
+Araucanía
+Temuco
+Araucanía
+Pucón
+Villarrica
+Curarrehue
+Licanray
+London
+Paris
+Berlin
+Madrid
+Barcelona
+Valencia
+Seville
+Bilbao
+Rome
+Milan
+Naples
+Venice
+Florence
+Turin
+Amsterdam
+Brussels
+Antwerp
+Rotterdam
+Vienna
+Budapest
+Prague
+Warsaw
+Krakow
+Wroclaw
+Gdansk
+Athens
+Istanbul
+Sofia
+Bucharest
+Bratislava
+Zagreb
+Sarajevo
+Dublin
+Belfast
+Cardiff
+Edinburgh
+Glasgow
+Manchester
+Liverpool
+Birmingham
+Leeds
+Bristol
+Leicester
+Coventry
+Cambridge
+Oxford
+Nottingham
+Southampton
+Portsmouth
+York
+Durham
+Newcastle
+Bath
+Wells
+Salisbury
+Exeter
+Plymouth
+Dorchester
+Weymouth
+Bridport
+Lyme Regis
+Axmouth
+Seaton
+Sidmouth
+Exmouth
+Teignmouth
+Torquay
+Paignton
+Brixham
+Dart­mouth
+Totnes
+Ivybridge
+Plymouth
+Tavistock
+Okehampton
+Moretonhampstead
+Bovey Tracey
+Newton Abbot
+Teignmouth
+Dawlish
+Exmouth
+Sidmouth
+Axminster
+Honiton
+Ottery St Mary
+Exeter
+Crediton
+Copplestone
+Cheriton Bishop
+Tiverton
+Cullompton
+Wellington
+Taunton
+Minehead
+Dunster
+Dulverton
+Wiveliscombe
+Bishop Lydeard
+Lydeard St Lawrence
+Crowcombe
+Stogumber
+Watchet
+Clevedon
+Yatton
+Weston Super Mare
+Burnham On Sea
+Brean
+Highbridge
+Burnham On Sea
+Wedmore
+Glastonbury
+Street
+Somerton
+Castle Cary
+Wincanton
+Mere
+Frome
+Radstock
+Midsomer Norton
+Bath
+Wells
+Shepton Mallet
+Keynsham
+Clevedon
+Portbury
+Portishead
+Nailsea
+Bristol
+Keynsham
+Clevedon
+Portbury
+Portishead
+Nailsea
+Bath
+Batheaston
+Bathford
+Larkhall
+Weston
+Keynsham
+Saltford
+Compton Dando
+Marksbury
+Pensford
+Clutton
+Farrington Gurney
+Timsbury
+Midsomer Norton
+Radstock
+Frome
+Warminster
+Westbury
+Trowbridge
+Bradford On Avon
+Melksham
+Devizes
+Swindon
+Highworth
+Wantage
+Kingston Bagpuize
+Abingdon
+Oxford
+Banbury
+Bicester
+Kidlington
+Chipping Norton
+Burford
+Witney
+Carterton
+Eynsham
+Woodstock
+Thame
+Henley On Thames
+Marlow
+High Wycombe
+Beaconsfield
+Amersham
+Uxbridge
+Slough
+Windsor
+Ascot
+Maidenhead
+Wokingham
+Reading
+Basingstoke
+Odiham
+Farnham
+Aldershot
+Guildford
+Woking
+Bracknell
+Wallingford
+Abingdon
+Wantage
+Kingston Bagpuize
+Wallingford
+Henley On Thames
+Marlow
+Reading
+Basingstoke
+Winchester
+Southampton
+Bournemouth
+Poole
+Dorchester
+Weymouth
+Bridport
+Lyme Regis
+Axmouth
+Seaton
+Sidmouth
+Exmouth
+Teignmouth
+Torquay
+Paignton
+Brixham
+Dartmouth
+Totnes
+Ivybridge
+Plymouth
+Lisbon
+Porto
+Covilhã
+Guarda
+Castelo Branco
+Proença-A-Nova
+Penamacor
+Pinhel
+Trancoso
+Almeida
+Sabugal
+Gouveia
+Seia
+Covilhã
+Belmonte
+Belmonte
+Centeno
+Fundão
+Idanha-A-Nova
+Penamacor
+Proença-A-Nova
+Castelo Branco
+Oleiros
+Sortelha
+Monsanto
+Idanha-A-Nova
+Marvão
+Portalegre
+Nisa
+Gavião
+Crato
+Castelo De Vide
+Portalegre
+Portalegre
+Alandroal
+Reguengos De Monsaraz
+Évoramonte
+Arraiolos
+Montemor-O-Novo
+Estremoz
+Borba
+Vila Viçosa
+Évora
+Alcácer Do Sal
+Alvalade
+Santiago Do Cacém
+Sines
+Odemira
+Beja
+Serpa
+Moura
+Barrancos
+Mertola
+Serpa
+Alcoutim
+Tavira
+São Brás De Alportel
+Loulé
+Albufeira
+Armação De Pêra
+Silves
+Lagoa
+Carmo
+Estombar
+São Brás De Alportel
+Faro
+Olhão
+Tavira
+Alcoutim
+Loulé
+Albufeira
+Silves
+Lagoa
+Portimão
+Alvor
+Praia Da Rocha
+Ferragudo
+Silves
+Lagos
+Portimão
+Alvor
+Praia Da Rocha
+Lagos
+Vila Do Bispo
+Sagres
+Raposeira
+Aljezur
+Monchique
+Caldas De Monchique
+Odemira
+Beja
+Serpa
+Moura
+Barrancos
+Mertola
+Ourique
+São Teotonio
+Odemira
+Zambujeira Do Mar
+Tokyo
+Osaka
+Kyoto
+Yokohama
+Nagoya
+Fukuoka
+Sapporo
+Kobe
+Kawasaki
+Saitama
+Chiba
+Shizuoka
+Hamamatsu
+Ibaraki
+Mito
+Utsunomiya
+Gunma
+Maebashi
+Tochigi
+Kanagawa
+Matsudo
+Kashiwa
+Ichikawa
+Yamanashi
+Kofu
+Nagano
+Matsumoto
+Kamakura
+Enoshima
+Hakone
+Kawaguchiko
+Nikko
+Atami
+Izu
+Shimizu
+Gotemba
+Numazu
+Yaizu
+Okitsu
+Shimada
+Sakura
+Tsu
+Toyohashi
+Okazaki
+Kariya
+Anjo
+Chiryu
+Tahara
+Akita
+Aomori
+Hirosaki
+Hachinohe
+Iwate
+Morioka
+Kamaishi
+Kuji
+Miyagi
+Sendai
+Ishinomaki
+Kesennuma
+Fukushima
+Fukushima
+Koriyama
+Aizuwakamatsu
+Niigata
+Nagaoka
+Kashiwazaki
+Joetsu
+Myoko
+Saito
+Beijing
+Shanghai
+Guangzhou
+Shenzhen
+Chongqing
+Wuhan
+Nanjing
+Xi'an
+Chengdu
+Wuhan
+Hangzhou
+Harbin
+Shenyang
+Jinan
+Qingdao
+Dalian
+Chaoyang
+Tianjin
+Suzhou
+Changsha
+Nanchang
+Taiyuan
+Lanzhou
+Yinchuan
+Xining
+Lhasa
+Urumqi
+Hohhot
+Hong Kong
+Macau
+Singapore
+Bangkok
+Phuket
+Chiang Mai
+Hanoi
+Ho Chi Minh City
+Da Nang
+Hai Phong
+Manila
+Cebu
+Davao
+Quezon City
+Makati
+Jakarta
+Surabaya
+Bandung
+Medan
+Semarang
+Palembang
+Kuala Lumpur
+George Town
+Johor Bahru
+Seoul
+Busan
+Daegu
+Incheon
+Daejeon
+Gwangju
+Ulsan
+Taipei
+Kaohsiung
+Taichung
+Tainan
+Mumbai
+Delhi
+Bangalore
+Hyderabad
+Chennai
+Kolkata
+Ahmedabad
+Pune
+Jaipur
+Lucknow
+Chandigarh
+Indore
+Thane
+Bhopal
+Visakhapatnam
+Patna
+Vadodara
+Ghaziabad
+Ludhiana
+Nagpur
+Kanpur
+Kochi
+Coimbatore
+Surat
+Varanasi
+Pimpri
+Nashik
+Aurangabad
+Dhanbad
+Amritsar
+Navi Mumbai
+Kalyan
+Mira
+Bhiwandi
+Rajkot
+Jamshedpur
+Bhilai
+Durg
+Warangal
+Guwahati
+Vijayawada
+Jodhpur
+Madurai
+Jabalpur
+Ranchi
+Raipur
+Kota
+Thiruvananthapuram
+Erode
+Bikaner
+Udaipur
+Firozabad
+Patiala
+Gwalior
+Meerut
+Bulandshahr
+Moradabad
+Aligarh
+Bareilly
+Mathura
+Agra
+Ghaziabad
+Meerut
+Noida
+Greater Noida
+Gurgaon
+Faridabad
+Panipat
+Karnal
+Sonipat
+Rohtak
+Hisar
+Bhiwani
+Fatehabad
+Sirsa
+Yamunanagar
+Ambala
+Panchkula
+Chandigarh
+Mohali
+Kharar
+Zirakpur
+Derabassi
+Bharua
+Rupnagar
+Nangal
+Anandpur Sahib
+Hoshiarpur
+Mukerian
+Sujanpur
+Phagwara
+Jalandhar
+Kapurthala
+Sultanpur Lodhi
+Okara
+Jhang
+Gujrat
+Gujranwala
+Sialkot
+Hafizabad
+Mandi Bahauddin
+Sheikhupura
+Kasur
+Okara
+Multan
+Bahawalpur
+Rahim Yar Khan
+Bahawalnagar
+Sahiwal
+Khanewal
+Jhang
+Faisalabad
+Sargodha
+Mianwali
+Khushab
+Chakwal
+Rawalpindi
+Islamabad
+Jhelum
+Gujrat
+Gujranwala
+Sialkot
+Hafizabad
+Mandi Bahauddin
+Sheikhupura
+Kasur
+Lahore
+Gujranwala
+Faisalabad
+Multan
+Hyderabad
+Karachi
+Peshawar
+Quetta
+Dubai
+Abu Dhabi
+Doha
+Riyadh
+Jeddah
+Mecca
+Medina
+Dammam
+Cairo
+Alexandria
+Giza
+Aswan
+Luxor
+Tel Aviv
+Jerusalem
+Haifa
+Be'Er Sheva
+Amman
+Zarqa
+Irbid
+Beirut
+Tripoli
+Sidon
+Tyre
+Damascus
+Aleppo
+Homs
+Latakia
+Lagos
+Ibadan
+Kano
+Abeokuta
+Accra
+Kumasi
+Addis Ababa
+Dire Dawa
+Johannesburg
+Cape Town
+Durban
+Pretoria
+Bloemfontein
+Port Elizabeth
+Nairobi
+Mombasa
+Kisumu
+Nakuru
+Sydney
+Melbourne
+Brisbane
+Perth
+Adelaide
+Canberra
+Hobart
+Darwin
+Gold Coast
+Newcastle
+Wollongong
+Logan City
+Manukau
+Christchurch
+Wellington
+Hamilton
+Tauranga
+Dunedin
+Palmerston North
+Auckland
+Waitakere

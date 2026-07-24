@@ -205,7 +205,7 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `car_models.txt` | Car model names | ~250 | ✅ seed |
 | `english_words.txt` | Common English words | ~8,600 | ✅ added |
 | `tech_startups.txt` | Tech company / startup names | 400 | ✅ added |
-| _(your dataset here)_ | — | — | 🔜 |
+| `city_names.txt` | World city names | 1,323 | ✅ added |
 
 **Dual-output datasets** (`data/dual/*.tsv`, `name<TAB>value`, for WS-4 — see above):
 
