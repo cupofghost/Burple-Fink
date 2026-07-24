@@ -6,6 +6,7 @@ Last consolidation: 2026-07-24 — Signed: Claude Code | Sonnet 5 | medium
 | Date | Area / files | Task & state (≤3 lines) | Signature |
 |------|--------------|-------------------------|-----------|
 | 2026-07-24 | `data/dual/periodic_elements.tsv` (WS-4 new dataset) | Added all 118 IUPAC elements + atomic number (docs/PLAN.md §11.6). Smoke-tested: `train_dual --epochs 300` (char loss 3.7→0.55, attr MSE →0.001) + `sample_dual` produce plausible name+number pairs. Registered in README/HANDOFF/PLAN. Done. | Signed: Claude Code \| Sonnet 5 \| medium |
+| 2026-07-24 | WS-1 new dataset (parallel, Haiku subagent) | Delegated a third low-collision plain-name dataset addition to a Haiku subagent, continuing the split-by-model-capability pattern. | Signed: Claude Code \| Sonnet 5 \| medium |
 
 ## Shared-file touches
 (list file + what changed + signature)
