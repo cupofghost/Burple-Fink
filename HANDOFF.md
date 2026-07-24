@@ -126,6 +126,7 @@ Keep this in sync with `data/` and the README catalog. One row per dataset file.
 | `car_manufacturers.txt` | Auto brands | ~150 | seed | Real worldwide brands |
 | `car_models.txt` | Car model names | ~250 | seed | Real model names |
 | `english_words.txt` | Common English words | ~8,600 | `claude/plausible-words-dataset-53qyyg` | Frequency-ranked common words (Google Web Trillion Word Corpus via `first20hours/google-10000-english`, MIT). Curated to lowercase a–z, length 3–10, vowel-bearing. Teaches general English spelling → plausible word-shapes; good base-model fuel. |
+| `tech_startups.txt` | Tech company / startup names | 400 | `claude/next-task-tnbsmq` | Real technology company/product names (big tech, SaaS, fintech, devtools, AI labs, crypto, dot-com era) compiled from general knowledge, not scraped from one list — many are Shane-style invented-sounding words (Zapier, Notion, Klarna). |
 
 ---
 

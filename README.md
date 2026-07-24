@@ -184,6 +184,7 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `car_manufacturers.txt` | Auto brands | ~150 | ✅ seed |
 | `car_models.txt` | Car model names | ~250 | ✅ seed |
 | `english_words.txt` | Common English words | ~8,600 | ✅ added |
+| `tech_startups.txt` | Tech company / startup names | 400 | ✅ added |
 | _(your dataset here)_ | — | — | 🔜 |
 
 Ideas for future domains (a Shane-style variety): boat & yacht names, motorcycle brands,
