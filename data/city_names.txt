@@ -132,8 +132,6 @@ Yuba City
 Marysville
 Grass Valley
 Nevada City
-Auburn
-Placerville
 Jackson
 Amador City
 Sutter Creek
@@ -152,13 +150,7 @@ Coulterville
 Mariposa
 Yosemite
 Big Oak Flat
-Modesto
-Stockton
-Lodi
 Tracy
-Manteca
-Turlock
-Merced
 Atwater
 Livingston
 Delhi
@@ -177,14 +169,12 @@ Watsonville
 Hollister
 Gilroy
 Morgan Hill
-San Jose
 San Francisco
 Oakland
 Berkeley
 Alameda
 Hayward
 Fremont
-Newark
 Union City
 Daly City
 San Leandro
@@ -198,16 +188,6 @@ Danville
 Alamo
 San Ramon
 Livermore
-Tracy
-Stockton
-Manteca
-Lodi
-Sacramento
-Folsom
-Rancho Cordova
-Roseville
-Rocklin
-Auburn
 Carmichael
 Fair Oaks
 Citrus Heights
@@ -217,7 +197,6 @@ Foothill Farms
 Vineyard
 Gold River
 Rancho Murieta
-Placerville
 El Dorado
 Georgetown
 Coloma
@@ -232,37 +211,13 @@ Shingle Springs
 Sly Park
 Kyburz
 Tragedy Springs
-Mokelumne Hill
-Jackson
-Volcano
-Ione
-Amador City
-Sutter Creek
 Pioneer
 Argonaut
 Plymouth
 Butte Valley
 Fiddletown
-Ione
-Jackson
-Mokelumne Hill
-Volcano
-Amador City
-Sutter Creek
-Copperopolis
-Sonora
-Jamestown
-Tuolumne
-Coulterville
-Mariposa
-Yosemite
 Wawona
 El Portal
-Merced
-Atwater
-Livingston
-Delhi
-Gustine
 Los Banos
 Firebaugh
 Coalinga
@@ -284,43 +239,18 @@ Trona
 Searles Valley
 Boron
 Kramer Junction
-Barstow
-Needles
 Twentynine Palms
 Joshua Tree
 Yucca Valley
-Victorville
 Apple Valley
 Adelanto
 Hesperia
-Fontana
-Rialto
-San Bernardino
-Moreno Valley
-Ontario
-Riverside
 Chino
 Chino Hills
 Upland
 Rancho Cucamonga
-Fontana
-Rialto
-San Bernardino
-Riverside
-Moreno Valley
-Ontario
-Victorville
-Hesperia
-Adelanto
-Barstow
-Needles
-Twentynine Palms
-Yucca Valley
-Joshua Tree
-Palm Springs
 Cathedral City
 Desert Hot Springs
-Indio
 Thermal
 Coachella
 Mecca
@@ -329,7 +259,6 @@ Calipatria
 Niland
 Salton City
 Brawley
-El Centro
 Calexico
 Yuma
 Somerton
@@ -348,18 +277,6 @@ Tonopah
 Buckeye
 Goodyear
 Avondale
-Litchfield Park
-Phoenix
-Mesa
-Chandler
-Scottsdale
-Gilbert
-Tempe
-Peoria
-Surprise
-Glendale
-Avondale
-Goodyear
 Litchfield Park
 Sun City
 Sun City West
@@ -388,7 +305,6 @@ Alpine
 Vernon
 Greer
 Nutrioso
-Tucson
 Oro Valley
 Sahuarita
 Vail
@@ -404,17 +320,12 @@ St. David
 Huachuca City
 Fort Huachuca
 Naco
-Sonora
-Nogales
 Rio Rico
 Patagonia
 Tubac
 Green Valley
 Amado
 Arivaca
-Ajo
-Why
-Gila Bend
 Casa Grande
 Eloy
 Coolidge
@@ -424,10 +335,8 @@ Winkelman
 Hayden
 Superior
 Globe
-Miami
 Claypool
 Carrizo
-Holbrook
 Snowflake
 Taylor
 Heber
@@ -438,11 +347,6 @@ Strawberry
 Rye
 Pine
 Showlow
-Pinetop
-Lakeside
-Winslow
-Flagstaff
-Williams
 Ashfork
 Seligman
 Peach Springs
@@ -475,65 +379,12 @@ Window Rock
 St. Michaels
 Fort Defiance
 Wheatfields
-Pinedale
-Holbrook
-Snowflake
-Taylor
-Heber
-Overgaard
-Pinedale
-Payson
-Strawberry
-Rye
-Pine
-Showlow
-Pinetop
-Lakeside
-Greer
-Eagar
-Springerville
-Alpine
-Vernon
-Nutrioso
-Concho
-Holbrook
-Snowflake
-Taylor
-Show Low
-Pinetop
-Lakeside
-Pinedale
-Overgaard
-Heber
-Payson
-Strawberry
-Rye
-Pine
-Winslow
-Flagstaff
-Williams
-Jerome
-Clarkdale
-Cottonwood
-Dewey
-Humboldt
-Chino Valley
-Prescott
-Prescott Valley
-Wickenburg
 Cordes Junction
 Mayer
 Crown King
 Bumble Bee
 New River
 Anthem
-Phoenix
-Peoria
-Glendale
-Chandler
-Gilbert
-Tempe
-Mesa
 Ahwatukee
 Toronto
 Vancouver
@@ -622,7 +473,6 @@ Matamoros
 Nuevo Laredo
 Laredo
 Saltillo
-Torreon
 Aguascalientes
 San Luis Potosi
 Zacatecas
@@ -656,7 +506,6 @@ Goiânia
 Brasília
 Tocantins
 Piripiri
-Teresina
 Parnaíba
 Florianópolis
 Santa Catarina
@@ -687,7 +536,6 @@ Massaranduba
 Barra Velha
 Luiz Alves
 Bombas
-Bombinhas
 Porto Belo
 Puert Nueva
 Bristol
@@ -738,38 +586,16 @@ Alegre
 Dores Do Rio Preto
 Castelo
 Conceição Da Barra
-São Mateus
-Linhares
-Conceição Da Barra
-Aracruz
 Fundão
 Ibiraçu
 Serra
 Cariacica
 Viana
 Vila Velha
-Guarapari
-Anchieta
-Piúma
-Iconha
-Rio Novo Do Sul
-Itapemirim
-Marataízes
-Presidente Kennedy
-Atílio Vivácqua
-Muqui
-Mimoso Do Sul
-Alegre
-Dores Do Rio Preto
-Castelo
-Conceição Da Barra
 Ecoporanga
 Pinheiros
-São Mateus
 Pedro Canário
 Jaguaré
-Linhares
-Colatina
 Governador Lindemberg
 Pancas
 Baixo Guandu
@@ -778,13 +604,6 @@ Santa Tereza
 São Roque Do Cânion
 Laranja Da Terra
 Itaguaçu
-Fundão
-Ibiraçu
-Serra
-Cariacica
-Viana
-Vila Velha
-Vitória
 Buenos Aires
 Rosario
 Cordoba
@@ -795,14 +614,12 @@ San Juan
 La Plata
 Mar Del Plata
 Bahi Blanca
-Santa Fe
 Paraná
 Corrientes
 Misiones
 Posadas
 Puerto Iguazú
 Oberá
-Eldorado
 Iguazú Falls
 Concordia
 Paso De Los Libres
@@ -841,8 +658,6 @@ Quevedo
 Santo Domingo
 Manta
 Puerto López
-Salinas
-Guayaquil
 Guaranda
 Azogues
 Machala
@@ -863,13 +678,10 @@ Coquimbo
 Vallenar
 Copiapo
 Iquique
-Arica
 Antofagasta
 Calama
 San Pedro De Atacama
 Copiapó
-La Serena
-Coquimbo
 Ovalle
 La Calera
 Viña Del Mar
@@ -884,20 +696,15 @@ Zapallar
 Quintero
 Puchuncavi
 Concón
-Valparaíso
-Viña Del Mar
 Casablanca
-San Antonio
 Algarrobo
 Cartagena
 Isla Negra
 El Quisco
 El Tabo
-Santo Domingo
 Maipú
 Ñuñoa
 San Isidro
-Santiago
 Providencia
 Las Condes
 Vitacura
@@ -905,13 +712,6 @@ Lo Barnechea
 La Reina
 Peñalolén
 San Joaquín
-Maipú
-Ñuñoa
-San Isidro
-Santiago
-Providencia
-Las Condes
-Peñalolén
 La Florida
 Pirque
 San José De Maipo
@@ -933,29 +733,20 @@ San Ramón
 La Granja
 Conchalí
 Recoleta
-San Miguel
 Macul
 Santa Bárbara
 Bucalemu
 Rauco
 Pichilemu
-Santa Cruz
 Talca
 Linares
 Parral
 Chillan
 Bulnes
-Los Angeles
-Temuco
 Villarrica
 Pucon
-Puerto Varas
-Puerto Montt
-Osorno
-Puerto Varas
 Cariblanco
 Pucón
-Villarrica
 Curarrehue
 Conguillio
 Licanray
@@ -967,7 +758,6 @@ Panjachoque
 Pichilafquén
 Puente Eltit
 Puerto Nuevo
-Pucón
 Quinchol
 Radal
 Rayes
@@ -978,9 +768,6 @@ Rucatué Sur
 Rucu-Hueico
 Rudán
 San Martin De Los Andes
-Villarrica
-Villarrica Sector
-Villarrica Sector
 Villarrica Sector
 Yani
 Maqui
@@ -989,13 +776,6 @@ Galletué
 Lonquimay
 Melipeuco
 Araucanía
-Temuco
-Araucanía
-Pucón
-Villarrica
-Curarrehue
-Licanray
-London
 Paris
 Berlin
 Madrid
@@ -1007,7 +787,6 @@ Rome
 Milan
 Naples
 Venice
-Florence
 Turin
 Amsterdam
 Brussels
@@ -1036,10 +815,8 @@ Manchester
 Liverpool
 Birmingham
 Leeds
-Bristol
 Leicester
 Coventry
-Cambridge
 Oxford
 Nottingham
 Southampton
@@ -1051,7 +828,6 @@ Bath
 Wells
 Salisbury
 Exeter
-Plymouth
 Dorchester
 Weymouth
 Bridport
@@ -1067,20 +843,15 @@ Brixham
 Dart­mouth
 Totnes
 Ivybridge
-Plymouth
 Tavistock
 Okehampton
 Moretonhampstead
 Bovey Tracey
 Newton Abbot
-Teignmouth
 Dawlish
-Exmouth
-Sidmouth
 Axminster
 Honiton
 Ottery St Mary
-Exeter
 Crediton
 Copplestone
 Cheriton Bishop
@@ -1103,37 +874,24 @@ Weston Super Mare
 Burnham On Sea
 Brean
 Highbridge
-Burnham On Sea
 Wedmore
 Glastonbury
 Street
-Somerton
 Castle Cary
 Wincanton
 Mere
 Frome
 Radstock
 Midsomer Norton
-Bath
-Wells
 Shepton Mallet
 Keynsham
-Clevedon
 Portbury
 Portishead
 Nailsea
-Bristol
-Keynsham
-Clevedon
-Portbury
-Portishead
-Nailsea
-Bath
 Batheaston
 Bathford
 Larkhall
 Weston
-Keynsham
 Saltford
 Compton Dando
 Marksbury
@@ -1141,9 +899,6 @@ Pensford
 Clutton
 Farrington Gurney
 Timsbury
-Midsomer Norton
-Radstock
-Frome
 Warminster
 Westbury
 Trowbridge
@@ -1155,7 +910,6 @@ Highworth
 Wantage
 Kingston Bagpuize
 Abingdon
-Oxford
 Banbury
 Bicester
 Kidlington
@@ -1164,7 +918,6 @@ Burford
 Witney
 Carterton
 Eynsham
-Woodstock
 Thame
 Henley On Thames
 Marlow
@@ -1173,11 +926,9 @@ Beaconsfield
 Amersham
 Uxbridge
 Slough
-Windsor
 Ascot
 Maidenhead
 Wokingham
-Reading
 Basingstoke
 Odiham
 Farnham
@@ -1186,34 +937,10 @@ Guildford
 Woking
 Bracknell
 Wallingford
-Abingdon
-Wantage
-Kingston Bagpuize
-Wallingford
-Henley On Thames
-Marlow
-Reading
-Basingstoke
 Winchester
-Southampton
 Bournemouth
 Poole
-Dorchester
-Weymouth
-Bridport
-Lyme Regis
-Axmouth
-Seaton
-Sidmouth
-Exmouth
-Teignmouth
-Torquay
-Paignton
-Brixham
 Dartmouth
-Totnes
-Ivybridge
-Plymouth
 Lisbon
 Porto
 Covilhã
@@ -1227,27 +954,18 @@ Almeida
 Sabugal
 Gouveia
 Seia
-Covilhã
-Belmonte
 Belmonte
 Centeno
-Fundão
 Idanha-A-Nova
-Penamacor
-Proença-A-Nova
-Castelo Branco
 Oleiros
 Sortelha
 Monsanto
-Idanha-A-Nova
 Marvão
 Portalegre
 Nisa
 Gavião
 Crato
 Castelo De Vide
-Portalegre
-Portalegre
 Alandroal
 Reguengos De Monsaraz
 Évoramonte
@@ -1267,7 +985,6 @@ Serpa
 Moura
 Barrancos
 Mertola
-Serpa
 Alcoutim
 Tavira
 São Brás De Alportel
@@ -1278,24 +995,12 @@ Silves
 Lagoa
 Carmo
 Estombar
-São Brás De Alportel
 Faro
 Olhão
-Tavira
-Alcoutim
-Loulé
-Albufeira
-Silves
-Lagoa
 Portimão
 Alvor
 Praia Da Rocha
 Ferragudo
-Silves
-Lagos
-Portimão
-Alvor
-Praia Da Rocha
 Lagos
 Vila Do Bispo
 Sagres
@@ -1303,15 +1008,8 @@ Raposeira
 Aljezur
 Monchique
 Caldas De Monchique
-Odemira
-Beja
-Serpa
-Moura
-Barrancos
-Mertola
 Ourique
 São Teotonio
-Odemira
 Zambujeira Do Mar
 Tokyo
 Osaka
@@ -1374,7 +1072,6 @@ Sendai
 Ishinomaki
 Kesennuma
 Fukushima
-Fukushima
 Koriyama
 Aizuwakamatsu
 Niigata
@@ -1392,7 +1089,6 @@ Wuhan
 Nanjing
 Xi'an
 Chengdu
-Wuhan
 Hangzhou
 Harbin
 Shenyang
@@ -1447,7 +1143,6 @@ Kaohsiung
 Taichung
 Tainan
 Mumbai
-Delhi
 Bangalore
 Hyderabad
 Chennai
@@ -1507,8 +1202,6 @@ Aligarh
 Bareilly
 Mathura
 Agra
-Ghaziabad
-Meerut
 Noida
 Greater Noida
 Gurgaon
@@ -1524,7 +1217,6 @@ Sirsa
 Yamunanagar
 Ambala
 Panchkula
-Chandigarh
 Mohali
 Kharar
 Zirakpur
@@ -1549,14 +1241,12 @@ Hafizabad
 Mandi Bahauddin
 Sheikhupura
 Kasur
-Okara
 Multan
 Bahawalpur
 Rahim Yar Khan
 Bahawalnagar
 Sahiwal
 Khanewal
-Jhang
 Faisalabad
 Sargodha
 Mianwali
@@ -1565,18 +1255,7 @@ Chakwal
 Rawalpindi
 Islamabad
 Jhelum
-Gujrat
-Gujranwala
-Sialkot
-Hafizabad
-Mandi Bahauddin
-Sheikhupura
-Kasur
 Lahore
-Gujranwala
-Faisalabad
-Multan
-Hyderabad
 Karachi
 Peshawar
 Quetta
@@ -1585,7 +1264,6 @@ Abu Dhabi
 Doha
 Riyadh
 Jeddah
-Mecca
 Medina
 Dammam
 Cairo
@@ -1608,7 +1286,6 @@ Damascus
 Aleppo
 Homs
 Latakia
-Lagos
 Ibadan
 Kano
 Abeokuta
@@ -1635,13 +1312,10 @@ Canberra
 Hobart
 Darwin
 Gold Coast
-Newcastle
 Wollongong
 Logan City
 Manukau
 Christchurch
-Wellington
-Hamilton
 Tauranga
 Dunedin
 Palmerston North
