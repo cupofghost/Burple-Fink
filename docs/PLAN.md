@@ -111,10 +111,11 @@ Everything is deliberately small so it trains in seconds-to-minutes on a laptop 
 1. **✅ MVP:** names-only char-RNN with temperature sampling. *(this repo)*
 2. **More & cleaner data:** scrape/compile a few thousand real car names; dedupe,
    normalize casing, remove trim levels and years.
-3. **Dual output (the paint-color trick):** have the network emit a name **and** a
+3. **✅ Dual output (the paint-color trick):** have the network emit a name **and** a
    numeric attribute simultaneously — for paint that was RGB; for cars it could be
    horsepower, price tier, or a learned "sportiness"/"luxury" score. Implementation:
-   add a second regression head and a combined loss.
+   a second regression head and a combined loss. *(§11.6 — `DualCharRNN`, seeded with
+   a paint-color + luminance dataset)*
 4. **Conditioning:** let the user prime generation ("give me a name starting with 'Za'"
    or "an Italian-sounding sports-car name") via a seed prefix or a country/style tag.
 5. **Packaging:** simple CLI (done) → optional Flask/FastAPI endpoint → tiny web demo.
@@ -199,9 +200,63 @@ differs:
   phone on the same network can reach it, and swapping in a newly trained checkpoint
   changes the output with no re-export.
 
-### 11.5 What's still open
+### 11.6 Dual output: name + numeric attribute (WS-4)
+
+Shane's original char-rnn learned paint names *and* their RGB values from one network.
+§9.3 sketched this as a second regression head; here's the implementation.
+
+**Model.** `src/model.py` adds `DualCharRNN(CharRNN)`. It does not override `forward`,
+so the existing generation path (`src.sample.generate_one` / `generate_many`, which
+only ever calls `model(x, hidden)`) works on a `DualCharRNN` with no changes — the
+dual model is a strict superset of the plain one. It adds one method:
+`forward_attr(x, lengths)`, which re-uses the same embedding + LSTM, then reads the
+LSTM's output at each sequence's last real position (`lengths - 1`) — the hidden state
+right after the LSTM has processed the whole name — through a `Linear(hidden_dim, 1)`
+head to predict a single scalar.
+
+**Data.** `src/dual_data.py` is a new, separate module (not an extension of
+`data.py`) that reads `name<TAB>value` files, de-duplicates by name, and z-score
+normalizes the value column (mean/std saved in the checkpoint) so the MSE loss trains
+on a well-scaled target regardless of the attribute's native units. Its own
+`make_dual_batches` pads names and carries the per-row value/length alongside, mirroring
+`data.make_batches`'s shape without touching that shared function.
+
+Datasets live under `data/dual/*.tsv`, not `data/*.txt`, specifically so
+`list_dataset_files`'s non-recursive glob (`pretrain.py`'s "every dataset" corpus)
+never mistakes a tab-separated value file for a plain name list.
+
+**Training.** `src/train_dual.py`'s `fit_dual` is a self-contained loop (not a
+refactor of `train.fit`, since the loss shape differs): each step computes the usual
+next-character cross-entropy *and* `forward_attr`'s MSE against the normalized value,
+sums them (`char_loss + attr_loss_weight * attr_loss`), and backprops once. The loss
+weight is a plain function/CLI argument — not a new `Config` field — so `config.py`
+stays untouched.
+
+**Checkpoint format.** `save_dual_checkpoint` writes the same four keys as the base
+format (§2) plus `value_mean`, `value_std`, `attr_label` (a human-readable description
+of what the number means). Because it's a superset, anything that only reads the
+original four keys keeps working unmodified.
+
+**Sampling.** `src/sample_dual.py` generates names via the unmodified
+`sample.generate_many`, then calls `predict_attr` (re-running the input through
+`forward_attr` and mapping the normalized output back to the original scale via the
+saved mean/std) for each one.
+
+**Seed dataset:** `data/dual/paint_colors.tsv` — 141 standard CSS3/X11 named colors
+paired with perceived brightness (`(0.299R + 0.587G + 0.114B) / 255`), computed from
+each color's real spec RGB hex. Verified end-to-end: char loss and attribute MSE both
+converge (e.g. 200 epochs: char loss ~3.8→0.51, attribute MSE ~0.99→0.001), and
+sampled names come with plausible predicted brightness (a name built from "Light..."
+segments predicts high brightness; "Dark..." ones predict low).
+
+**Caveat:** at 141 examples the model memorizes readily at low temperature (most
+samples are filtered out as non-novel); temperature ≳1.0 is needed to see fresh
+names, same data-size reality check as §8.
+
+### 11.7 What's still open
 
 - **WS-1 (more datasets):** the single biggest quality lever is still more data; the
   fine-tuning machinery is ready for any dataset dropped into `data/` (rebuild the shared
   vocab by deleting `data/shared_vocab.json` and re-running pretrain).
-- **WS-4 (dual-output):** the name+attribute regression head (§9.3) is not yet built.
+- **WS-4 (more dual-output domains):** the regression head is built (§11.6); adding more
+  `data/dual/*.tsv` datasets (e.g. real car horsepower/price) is now just data work.

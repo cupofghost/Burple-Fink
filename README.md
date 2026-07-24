@@ -35,7 +35,7 @@ colliding with other agents. Repo-wide conventions and commands for agents also 
 | **1. Dataset library** | Many clean, documented name datasets under a shared convention | ⏳ In progress |
 | **2. Shared base + fine-tuning** | Pretrain one base model on all corpora, then fine-tune per domain (transfer learning) | ✅ Done |
 | **3. Evaluation harness** | Automatic novelty / plausibility / diversity metrics to compare checkpoints | ✅ Done |
-| **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | 🔜 Planned |
+| **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | ✅ Done |
 | **5. Serving** | CLI ✅ → live server ✅ → in-browser web app ✅ | ✅ Done |
 
 The full rationale and design for each stage lives in [`docs/PLAN.md`](docs/PLAN.md).
@@ -96,6 +96,21 @@ python -m src.finetune --base checkpoints/base.pt --data data/car_models.txt --n
 python -m src.evaluate --checkpoint checkpoints/car_models_ft.pt --temperature 1.0
 ```
 
+### Dual output: a name *and* a number (Shane's paint-color trick)
+
+`src/train_dual.py` / `src/sample_dual.py` train and sample a second, small
+regression head alongside the usual char generator, so a checkpoint predicts a
+numeric attribute for every name it invents — exactly Shane's name+RGB pairing,
+generalized to any scalar. See `data/dual/` for the value-column dataset format.
+
+```bash
+python -m src.train_dual --data data/dual/paint_colors.tsv --epochs 300 --name paint_colors \
+    --attr-label "perceived brightness (0-1 luminance)"
+
+python -m src.sample_dual --checkpoint checkpoints/paint_colors.pt --num 10 --temperature 1.0
+#   -> e.g. "Rhsyooron   perceived brightness (0-1 luminance): 0.828"
+```
+
 See [`HANDOFF.md §6`](HANDOFF.md#6-key-design-decision-for-fine-tuning-shared-vocabulary)
 for the shared-vocabulary design that makes fine-tuning possible.
 
@@ -152,16 +167,21 @@ Burple-Fink/
 ├── data/                     # training datasets, one name per line
 │   ├── car_manufacturers.txt # ~150 real auto brands
 │   ├── car_models.txt        # ~250 real car model names
+│   ├── dual/                 # name<TAB>value datasets for WS-4 (dual output)
+│   │   └── paint_colors.tsv  # CSS/X11 color names + real computed luminance
 │   └── shared_vocab.json     # fixed char set shared by base + all fine-tunes
 ├── src/
 │   ├── config.py             # hyperparameters in one place
 │   ├── data.py               # read names -> vocab -> tensors (+ shared vocab)
-│   ├── model.py              # the char-RNN (LSTM) itself
+│   ├── model.py              # the char-RNN (LSTM), + DualCharRNN (WS-4)
 │   ├── train.py              # training loop (reusable `fit`) + checkpointing
 │   ├── sample.py             # load checkpoint, generate names
 │   ├── pretrain.py           # train one base model on all datasets
 │   ├── finetune.py           # specialize the base onto one dataset
 │   ├── evaluate.py           # novelty / plausibility / diversity metrics
+│   ├── dual_data.py          # name<TAB>value loading + batching (WS-4)
+│   ├── train_dual.py         # combined char + attribute loss training (WS-4)
+│   ├── sample_dual.py        # generate names + predicted attribute (WS-4)
 │   ├── export_web.py         # bake a checkpoint into a browser-runnable UI
 │   └── serve.py              # local server wiring the UI to the live model
 ├── web/
@@ -186,6 +206,12 @@ lives in `data/` as a newline-separated `.txt` file and follows the conventions 
 | `english_words.txt` | Common English words | ~8,600 | ✅ added |
 | `tech_startups.txt` | Tech company / startup names | 400 | ✅ added |
 | _(your dataset here)_ | — | — | 🔜 |
+
+**Dual-output datasets** (`data/dual/*.tsv`, `name<TAB>value`, for WS-4 — see above):
+
+| Dataset file | Domain | Value | Count |
+|--------------|--------|-------|-------|
+| `dual/paint_colors.tsv` | CSS/X11 color names | Perceived brightness (0–1 luminance), computed from each color's real RGB | 141 |
 
 Ideas for future domains (a Shane-style variety): boat & yacht names, motorcycle brands,
 aircraft, spacecraft, perfumes, craft beers, racehorses, tech startups, paint colors

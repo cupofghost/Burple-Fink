@@ -24,10 +24,12 @@ A working character-level LSTM that trains **per-dataset from scratch** and samp
 temperature ("creativity") knob. Verified end-to-end on CPU: loss drops from ~3.7 to
 <1.0 and output matures from noise → plausible names.
 
-On top of that MVP, the fine-tuning core (**WS-2**), evaluation harness (**WS-3**), and both
-serving front-ends (**WS-5**) are now implemented — see the ✅ markers in §3. A `tests/`
-suite (`python -m unittest discover -s tests`) pins the vocab, training, and export
-invariants. Still open: more datasets (**WS-1**) and dual-output (**WS-4**).
+On top of that MVP, the fine-tuning core (**WS-2**), evaluation harness (**WS-3**), both
+serving front-ends (**WS-5**), and the dual-output regression head (**WS-4**) are now
+implemented — see the ✅ markers in §3. A `tests/` suite
+(`python -m unittest discover -s tests`) pins the vocab, training, and export
+invariants. Still open: more datasets (**WS-1**, always open — see §5) and more
+dual-output datasets/domains under `data/dual/`.
 
 Modules and their responsibilities:
 
@@ -99,10 +101,31 @@ Original brief — add `src/evaluate.py` computing, for a checkpoint + its datas
 - **Deliverable:** `python -m src.evaluate --checkpoint … ` prints a metrics table;
   numbers are how WS-2 proves fine-tuning helps.
 
-### WS-4 · Dual-output (name + attribute)
-Implement Shane's name+number trick: a second head that regresses a numeric attribute
-(for cars: horsepower / price tier / a learned "sportiness" score). Requires datasets
-with a value column — coordinate with WS-1 on a `name<TAB>value` format.
+### WS-4 · Dual-output (name + attribute) — ✅ **done** (`claude/next-task-tnbsmq`)
+Implemented Shane's name+number trick as a *superset*, not a fork, of the existing
+pipeline: `src/model.py` gained `DualCharRNN(CharRNN)` — `CharRNN.forward` is
+untouched, so anything that only needs character generation (`src.sample`'s
+`generate_one`/`generate_many`) works on a `DualCharRNN` unmodified; the class adds
+`forward_attr(x, lengths)`, a small regression head on the LSTM's final-real-position
+output. `src/dual_data.py` (new module — `data.py` untouched) loads
+`name<TAB>value` files, z-score normalizes the value, and batches
+(inputs, targets, values, lengths). `src/train_dual.py` trains a combined
+char-CE + attribute-MSE loss; `src/sample_dual.py` generates names (reusing
+`src.sample.generate_many`) and predicts each one's attribute, denormalized back to
+the original scale. The checkpoint format is a strict **superset** of §2 — the
+original four keys are unchanged, plus `value_mean`/`value_std`/`attr_label` — so
+nothing that reads the base format breaks. `config.py` was **not** touched; the
+attribute loss weight is a plain function/CLI argument, not a `Config` field.
+Dataset: `data/dual/paint_colors.tsv` (141 CSS/X11 color names + real computed
+luminance) — kept under `data/dual/` specifically so `list_dataset_files`'s
+non-recursive `data/*.txt` glob (used by `pretrain.py`) never ingests a
+tab-separated file as if it were a plain name list. Design write-up in
+`docs/PLAN.md §11.6`.
+
+Original brief — implement Shane's name+number trick: a second head that regresses a
+numeric attribute (for cars: horsepower / price tier / a learned "sportiness" score).
+Requires datasets with a value column — coordinate with WS-1 on a `name<TAB>value`
+format.
 
 ### WS-5 · Serving — ✅ **done** (`claude/program-development-q4fcp7`)
 Two front-ends, both a mobile-friendly "instrument panel" UI (temperature dial, prefix,
@@ -127,6 +150,13 @@ Keep this in sync with `data/` and the README catalog. One row per dataset file.
 | `car_models.txt` | Car model names | ~250 | seed | Real model names |
 | `english_words.txt` | Common English words | ~8,600 | `claude/plausible-words-dataset-53qyyg` | Frequency-ranked common words (Google Web Trillion Word Corpus via `first20hours/google-10000-english`, MIT). Curated to lowercase a–z, length 3–10, vowel-bearing. Teaches general English spelling → plausible word-shapes; good base-model fuel. |
 | `tech_startups.txt` | Tech company / startup names | 400 | `claude/next-task-tnbsmq` | Real technology company/product names (big tech, SaaS, fintech, devtools, AI labs, crypto, dot-com era) compiled from general knowledge, not scraped from one list — many are Shane-style invented-sounding words (Zapier, Notion, Klarna). |
+
+**WS-4 dual-output datasets** (`data/dual/*.tsv`, `name<TAB>value` — separate from the
+table above so `pretrain.py`'s plain-name `data/*.txt` glob never ingests them):
+
+| File | Domain | Value column | Count | Owner (branch) | Notes |
+|------|--------|---------------|-------|-----------------|-------|
+| `dual/paint_colors.tsv` | CSS/X11 named colors | Perceived brightness, `(0.299R+0.587G+0.114B)/255` from each color's real spec RGB | 141 | `claude/next-task-tnbsmq` | Standard CSS3/X11 color keywords; the value is computed (not hand-entered) from RGB hex so it's exact given the hex, not a recalled number. |
 
 ---
 
@@ -194,6 +224,7 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
   | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
   | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ⏳ in review |
+  | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt` + WS-4 dual-output (`DualCharRNN`, `dual_data.py`, `train_dual.py`, `sample_dual.py`, `data/dual/paint_colors.tsv`) | 2026-07-24 | ⏳ in review |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.

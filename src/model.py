@@ -44,3 +44,32 @@ class CharRNN(nn.Module):
         out, hidden = self.lstm(emb, hidden)    # (batch, time, hidden_dim)
         logits = self.head(out)                 # (batch, time, vocab_size)
         return logits, hidden
+
+
+class DualCharRNN(CharRNN):
+    """CharRNN plus a second head that regresses a numeric attribute from a name.
+
+    This is Shane's name+RGB trick, generalized to any scalar attribute (WS-4):
+    the same LSTM encoding that learns to *spell* a name also learns to predict a
+    *number* associated with it (e.g. a paint color's perceived brightness).
+    ``forward`` is inherited unchanged, so this class is a drop-in replacement for
+    ``CharRNN`` wherever only character generation is needed (e.g. ``src.sample``'s
+    ``generate_one``/``generate_many``).
+    """
+
+    def __init__(self, vocab_size: int, cfg: Config, pad_id: int = 0):
+        super().__init__(vocab_size, cfg, pad_id=pad_id)
+        self.attr_head = nn.Linear(cfg.hidden_dim, 1)
+
+    def forward_attr(self, x: torch.Tensor, lengths: torch.Tensor) -> torch.Tensor:
+        """x: (batch, time) ids, lengths: (batch,) -> (batch,) predicted attribute.
+
+        ``x`` is expected in the same ``[START, ...chars]`` shape ``data.make_pairs``
+        produces as its input side. The output at position ``lengths - 1`` is the
+        LSTM's state right after reading START and every character of the name, so
+        the attribute head predicts from a representation of the whole name.
+        """
+        emb = self.embedding(x)
+        out, _ = self.lstm(emb)                            # (batch, time, hidden_dim)
+        last = out[torch.arange(out.size(0)), lengths - 1]  # (batch, hidden_dim)
+        return self.attr_head(last).squeeze(-1)
