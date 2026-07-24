@@ -27,7 +27,7 @@ def load_checkpoint(path: str, device: str = "cpu"):
     ckpt = torch.load(path, map_location=device)
     cfg = Config.from_dict(ckpt["config"])
     vocab = Vocab.from_dict(ckpt["vocab"])
-    model = CharRNN(len(vocab), cfg, pad_id=vocab.pad_id, predict_value=cfg.dual_output).to(device)
+    model = CharRNN(len(vocab), cfg, pad_id=vocab.pad_id).to(device)
     model.load_state_dict(ckpt["model_state"])
     model.eval()
     training_names: Set[str] = set(ckpt.get("training_names", []))
@@ -42,8 +42,15 @@ def generate_one(
     max_length: int,
     prefix: str = "",
     device: str = "cpu",
-) -> str:
-    """Sample a single name, optionally forced to start with ``prefix``."""
+    return_value: bool = False,
+):
+    """Sample a single name, optionally forced to start with ``prefix``.
+
+    When ``return_value`` is True, returns ``(name, value)`` instead of just
+    ``name``: ``value`` is the dual-output model's (WS-4) regressed scalar
+    attribute, denormalized via the checkpoint's config, or ``None`` for an
+    ordinary (non-dual) model. Default behavior/return type is unchanged.
+    """
     model.eval()
 
     # Prime the LSTM with START (+ any requested prefix characters).
@@ -70,7 +77,14 @@ def generate_one(
         logits, hidden = model(nxt, hidden)
         next_logits = logits[:, -1, :]
 
-    return vocab.decode(out_ids)
+    name = vocab.decode(out_ids)
+    if not return_value:
+        return name
+    if not model.cfg.dual_output:
+        return name, None
+    value = model.predict_value(hidden[0][-1]).item()
+    value = value * model.cfg.value_std + model.cfg.value_mean
+    return name, value
 
 
 def generate_many(
@@ -85,17 +99,26 @@ def generate_many(
     prefix: str = "",
     device: str = "cpu",
     max_attempts_factor: int = 40,
-) -> List[str]:
-    """Return ``num`` names, de-duplicated and (optionally) novel vs the training set."""
+    return_value: bool = False,
+) -> List:
+    """Return ``num`` names, de-duplicated and (optionally) novel vs the training set.
+
+    With ``return_value=True`` each result is a ``(name, value)`` tuple (WS-4
+    dual-output); default is unchanged, a plain list of name strings.
+    """
     training_names = training_names or set()
-    results: List[str] = []
+    results: List = []
     seen: Set[str] = set()
     attempts = 0
     cap = num * max_attempts_factor
 
     while len(results) < num and attempts < cap:
         attempts += 1
-        name = generate_one(model, vocab, temperature, cfg.max_length, prefix, device)
+        sample = generate_one(
+            model, vocab, temperature, cfg.max_length, prefix, device,
+            return_value=return_value,
+        )
+        name = sample[0] if return_value else sample
         if len(name) < min_length:
             continue
         if name in seen:
@@ -103,7 +126,7 @@ def generate_many(
         if only_novel and name in training_names:
             continue
         seen.add(name)
-        results.append(name)
+        results.append(sample)
 
     return results
 
@@ -133,11 +156,17 @@ def main() -> None:
         training_names=training_names,
         only_novel=not args.allow_existing,
         prefix=args.prefix,
+        return_value=cfg.dual_output,
     )
 
     print(f"\n=== {len(names)} names @ temperature {temperature} ===")
-    for name in names:
-        print(f"  {name}")
+    if cfg.dual_output:
+        label = cfg.value_label or "value"
+        for name, value in names:
+            print(f"  {name}  ({label}: {value:.1f})")
+    else:
+        for name in names:
+            print(f"  {name}")
 
 
 if __name__ == "__main__":

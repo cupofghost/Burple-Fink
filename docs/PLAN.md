@@ -208,31 +208,45 @@ differs:
 
 ### 11.6 Dual-output: name + numeric attribute (Stage 4, §9.3)
 
+> **Consolidation note (2026-07-24):** three parallel sessions each built this
+> workstream independently (see HANDOFF §7 for the branch history). All three worked
+> and were tested; this section documents the one the owner chose to keep. The other
+> two implementations were discarded, but their demo datasets were kept and pointed at
+> this API — see below.
+
 Shane's original char-rnn predicted each paint color's RGB alongside its name. WS-4
 generalizes that to any `name<TAB>value` dataset:
 
-- `src/model.py`'s `CharRNN` takes an optional `predict_value=True` at construction,
-  which adds a second linear head (`value_head: hidden_dim -> 1`). The existing
-  `forward(x, hidden)` is completely unchanged — every caller that only knows the
-  next-character contract keeps working. The new `regress_value(x, lengths)` method
-  runs the LSTM over a full name and reads the value head off each row's hidden state
-  at its *last real character* (`lengths - 1`), so padding never leaks into the
-  prediction.
-- `src/data.py`'s `load_name_value_pairs()` reads `name<TAB>value` TSV rows with the
-  same order-preserving, first-occurrence de-dupe as `load_names`.
-- `src/train_dual.py`'s `fit_dual()` mirrors `src.train.fit`'s optimizer / gradient-
-  clipping / live-preview loop, but each step also computes the value MSE on the same
-  batch and adds it to the char cross-entropy (`loss = ce + cfg.value_loss_weight * mse`)
-  before one shared backward pass — spelling and the attribute are learned together,
-  not as two separate passes.
-- The checkpoint format (§2/HANDOFF §2) is **unchanged**: `Config.dual_output=True` is
-  just a new field marking that the saved `model_state` includes `value_head` weights;
-  `src.sample.load_checkpoint` passes `predict_value=cfg.dual_output` so old checkpoints
-  (where the field defaults to `False`) still rebuild identically to before.
-- `src/sample_dual.py` samples a name the normal way, then feeds it back through
-  `regress_value` to report its predicted attribute — Shane's trick, run in reverse.
-- Demo dataset: `data/paint_colors.tsv`, ~140 real CSS/X11 named colors paired with
-  relative luminance (computed from each color's standardized hex value by
-  `scripts/build_paint_colors.py`, which keeps the name→hex source of truth in one
-  auditable place). Trained samples correlate sensibly — e.g. an invented
-  `GhostWhite`-adjacent name predicts a value near 1.0, `Chocolate`-adjacent near 0.2.
+- `src/config.py` gains `dual_output` (default `False`), `value_mean`, `value_std`,
+  and `value_label` — all backward-compatible defaults, so `Config.from_dict` on an
+  old checkpoint is unaffected.
+- `src/model.py`'s `CharRNN` gains an optional `value_head` (`None` unless
+  `cfg.dual_output`), a new `encode()` method (embedding + LSTM, factored out of
+  `forward` so both the char logits and the value head can read the same LSTM output
+  without a duplicate pass), and `predict_value(state)` which regresses one scalar from
+  an LSTM hidden vector. `forward(x, hidden)` itself is byte-for-byte unchanged.
+- `src/data.py`'s `load_name_value_pairs()` reads `name<TAB>value` TSV rows (`#`
+  comments and blank lines skipped), same order-preserving, first-occurrence de-dupe as
+  `load_names`.
+- `src/train_dual.py` z-scores the raw values first (`value_mean`/`value_std`, saved to
+  the checkpoint) so the regression target is well-scaled regardless of the attribute's
+  natural range — a 0–1 color brightness and a four-digit founding year both train the
+  same way. Each step computes `combined_loss = ce_loss + value_weight * mse_loss` on
+  one shared LSTM pass (via `encode()`) and backpropagates once.
+- The checkpoint format (§2/HANDOFF §2) is **unchanged**: the new fields live inside the
+  existing `config` dict, and `model_state` just carries extra `value_head.*` tensors
+  for dual checkpoints.
+- `src/sample.py`'s `generate_one`/`generate_many` gained an opt-in `return_value`
+  parameter (default `False` = exactly the old behavior and return type); when set, a
+  sampled name's predicted value is denormalized (`* value_std + value_mean`) and
+  returned alongside it. `python -m src.sample` auto-prints it for dual checkpoints.
+
+Demo datasets (`name<TAB>value`, all outside the shared-vocab `*.txt` glob):
+- `data/car_manufacturers_founding_year.tsv` — 66 real car brands + founding year.
+- `data/paint_colors.tsv` — ~140 real CSS/X11 named colors + relative luminance
+  (computed from each color's standardized hex value by `scripts/build_paint_colors.py`,
+  which keeps the name→hex source of truth in one auditable place). Trained samples
+  correlate sensibly — an invented `GhostWhite`-adjacent name predicts a value near 1.0,
+  `Chocolate`-adjacent near 0.2.
+- `data/periodic_elements.tsv` — all 118 IUPAC chemical elements + atomic number, a
+  closed and exactly verifiable list.

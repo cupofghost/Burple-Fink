@@ -38,9 +38,8 @@ Modules and their responsibilities:
 | `src/data.py` | Name loading, `Vocab`, `(input, target)` next-char pairs, batching | Yes — see the shared-vocab note in §6 |
 | `src/model.py` | `Embedding → LSTM → Linear` char-RNN (+ optional value head, WS-4) | Yes — keep the `forward(x, hidden)` signature |
 | `src/train.py` | Training loop, live previews, checkpoint save | Yes |
-| `src/sample.py` | Checkpoint load + temperature generation | Yes |
+| `src/sample.py` | Checkpoint load + temperature generation (+ predicted value for dual checkpoints) | Yes |
 | `src/train_dual.py` | WS-4: joint next-char + value-regression training | Yes |
-| `src/sample_dual.py` | WS-4: generate names with a predicted attribute | Yes |
 | `generate.py` | Friendly one-command wrapper | Yes |
 
 **Checkpoint format** (a single `torch.save` dict) — do not break these keys, other
@@ -54,6 +53,11 @@ stages depend on them:
     "training_names": [<str>, ...],           # used to filter for novelty
 }
 ```
+
+> WS-4's dual-output head (§3) does not add or rename any of these keys — it only adds
+> new `Config` fields (`dual_output`/`value_mean`/`value_std`/`value_label`) inside the
+> existing `config` dict, plus extra `value_head.*` tensors inside `model_state` for
+> checkpoints trained with `src/train_dual.py`. Ordinary checkpoints are unaffected.
 
 ---
 
@@ -102,27 +106,41 @@ Original brief — add `src/evaluate.py` computing, for a checkpoint + its datas
 - **Deliverable:** `python -m src.evaluate --checkpoint … ` prints a metrics table;
   numbers are how WS-2 proves fine-tuning helps.
 
-### WS-4 · Dual-output (name + attribute) — ✅ **done** (`claude/next-item-v4te8p`)
-Implemented Shane's name+number trick: `src/model.py`'s `CharRNN` takes an optional
-`predict_value=True` flag that adds a second linear head (`value_head`); it's read via
-the new `regress_value(x, lengths)` method off the LSTM's hidden state at each name's
-last real character — `forward(x, hidden)` itself is untouched, so every existing
-caller keeps working unmodified. `src/data.py` gained `load_name_value_pairs()` for
-`name<TAB>value` TSVs. `src/train_dual.py` (`fit_dual`) trains both heads jointly —
-next-char cross-entropy plus a weighted MSE on the value (`Config.value_loss_weight`,
-default 1.0) — and saves through the *same* `save_checkpoint` (contract unchanged;
-`Config.dual_output=True` just marks that the state dict carries a value head).
-`src/sample_dual.py` generates a name and its predicted attribute together.
+### WS-4 · Dual-output (name + attribute) — ✅ **done** (`claude/scope-vs-please-yrlsll`, consolidated onto `claude/next-item-v4te8p`)
+> **Consolidation note (2026-07-24):** three sessions independently built this workstream
+> on separate branches (`claude/next-item-v4te8p`, `claude/scope-vs-please-yrlsll`,
+> `claude/next-task-tnbsmq`) without seeing each other's work — an unavoidable risk of
+> the git-branch-per-agent setup, since STATUS.md claims on one branch aren't visible to
+> a session working from another. The owner picked this branch's design (see STATUS.md
+> Archive for why); the other two implementations were discarded, but their **datasets**
+> were kept and repointed at this API — no dataset work was thrown away, only the
+> duplicate model/training code.
 
-Demo dataset: `data/paint_colors.tsv` (~140 real CSS/X11 named colors paired with
-relative luminance, computed by `scripts/build_paint_colors.py` from each color's hex
-— a direct homage to Shane's original paint-color + RGB experiment). It's a closed,
-standardized list (not the usual ≥300 target) since CSS only defines that many
-keywords; said so explicitly rather than padding it with invented names.
+Implemented Shane's name+number trick: `src/config.py` gained `dual_output` /
+`value_mean` / `value_std` / `value_label` (all default "off", so ordinary checkpoints
+are unaffected); `src/model.py`'s `CharRNN` gained an optional `value_head` (`None`
+unless `cfg.dual_output`) plus `encode()` (embedding+LSTM, factored out of `forward`)
+and `predict_value(state)`; `forward(x, hidden)` itself is unchanged. `src/data.py`
+gained `load_name_value_pairs()` for `name<TAB>value` TSVs (`#`-comments and blank
+lines skipped). `src/train_dual.py` z-scores the raw values (`value_mean`/`value_std`
+saved to the checkpoint) and trains `combined_loss = ce_loss + value_weight * mse_loss`
+jointly on one shared LSTM. `src/sample.py`'s `generate_one`/`generate_many` gained an
+opt-in `return_value` param (default `False` = old behavior/return type exactly), and
+`python -m src.sample` auto-prints the denormalized value for dual checkpoints.
+Checkpoint format (§2) unchanged.
+
+Demo datasets (`name<TAB>value`, not part of the shared-vocab `*.txt` glob):
+- `data/car_manufacturers_founding_year.tsv` — 66 real car brands + founding year.
+- `data/paint_colors.tsv` — ~140 real CSS/X11 named colors + relative luminance
+  (computed by `scripts/build_paint_colors.py` from each color's hex — a direct homage
+  to Shane's original paint-color + RGB experiment). Closed, standardized list (CSS only
+  defines that many keywords), so it's smaller than the usual ≥300 target on purpose.
+- `data/periodic_elements.tsv` — all 118 IUPAC chemical elements + atomic number.
 
 ```bash
-python -m src.train_dual --data data/paint_colors.tsv --name paint_colors --epochs 250
-python -m src.sample_dual --checkpoint checkpoints/paint_colors.pt --num 10
+python -m src.train_dual --data data/car_manufacturers_founding_year.tsv \
+    --name manufacturers_founding_year --epochs 300 --value-label "founding year"
+python -m src.sample --checkpoint checkpoints/manufacturers_founding_year.pt --num 10
 ```
 
 Original brief — turn Shane's name+RGB trick into a general name+number regression:
@@ -152,7 +170,15 @@ Keep this in sync with `data/` and the README catalog. One row per dataset file.
 | `car_manufacturers.txt` | Auto brands | ~150 | seed | Real worldwide brands |
 | `car_models.txt` | Car model names | ~250 | seed | Real model names |
 | `english_words.txt` | Common English words | ~8,600 | `claude/plausible-words-dataset-53qyyg` | Frequency-ranked common words (Google Web Trillion Word Corpus via `first20hours/google-10000-english`, MIT). Curated to lowercase a–z, length 3–10, vowel-bearing. Teaches general English spelling → plausible word-shapes; good base-model fuel. |
-| `paint_colors.tsv` | CSS/X11 named colors + relative luminance | ~140 | `claude/next-item-v4te8p` | WS-4 dual-output demo, `name<TAB>value` format. Names + hex are the standardized CSS Color Module Level 4 keyword list (source of truth in `scripts/build_paint_colors.py`); value is luminance computed from the hex, not an external fact. Not part of the shared-vocab `.txt` glob (it's `.tsv`, used only by `src.train_dual`). |
+| `world_cities.txt` | World city/capital names | ~1,690 | `claude/scope-vs-please-yrlsll` + `claude/next-task-tnbsmq` | Consolidated (2026-07-24) from two independently-built city lists (671 + 1,323 real names, ~45% overlap) into one case-insensitive-deduped, alphabetized file — no real names lost from either. |
+| `tech_startups.txt` | Real tech company/startup names | ~400 | `claude/next-task-tnbsmq` | Well-known startups/tech companies. |
+| `motorcycle_brands.txt` | Real motorcycle manufacturers | ~60 | `claude/next-task-tnbsmq` | Harley-Davidson through Zongshen, globally sourced. |
+| `car_manufacturers_founding_year.tsv` | Car brands + founding year | 66 | `claude/scope-vs-please-yrlsll` | WS-4 dual-output demo, `name<TAB>value`. Founding years sourced from each brand's commonly-cited history; treat as approximate. |
+| `paint_colors.tsv` | CSS/X11 named colors + relative luminance | ~140 | `claude/next-item-v4te8p` | WS-4 dual-output demo, `name<TAB>value` format. Names + hex are the standardized CSS Color Module Level 4 keyword list (source of truth in `scripts/build_paint_colors.py`); value is luminance computed from the hex, not an external fact. |
+| `periodic_elements.tsv` | Chemical elements + atomic number | 118 | `claude/next-task-tnbsmq` | WS-4 dual-output demo, `name<TAB>value`. All 118 IUPAC elements — a closed, exactly-verifiable list. |
+
+None of the `.tsv` dual-output datasets are part of the shared-vocab `*.txt` glob (§6);
+they're only consumed by `src.train_dual`.
 
 ---
 
@@ -220,8 +246,9 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
   | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
   | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ⏳ in review |
-  | `claude/scope-vs-please-yrlsll` | WS-1 `world_cities.txt` (671 world city/capital names) | 2026-07-24 | ⏳ in review (PR #5) |
-  | `claude/next-item-v4te8p` | WS-4 dual-output (value head + `train_dual.py`/`sample_dual.py`) + `paint_colors.tsv` | 2026-07-24 | ⏳ in review |
+  | `claude/next-item-v4te8p` | **Consolidated PR**: WS-4 dual-output (chosen implementation, originally from `scope-vs-please-yrlsll`) + all salvaged WS-1/WS-4 datasets from the three parallel branches below | 2026-07-24 | ⏳ in review |
+  | `claude/scope-vs-please-yrlsll` | WS-1 `world_cities.txt` (superseded by the merged file) + WS-4 dual-output (chosen implementation, ported to `next-item-v4te8p`) | 2026-07-24 | ⚠️ superseded by consolidation, PR #5 to be closed |
+  | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt`/`motorcycle_brands.txt`/`city_names.txt` (superseded by the merged file) + WS-4 dual-output (discarded design, its `periodic_elements.tsv`/`paint_colors.tsv` ported to `next-item-v4te8p`) | 2026-07-24 | ⚠️ superseded by consolidation |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.

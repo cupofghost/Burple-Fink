@@ -14,11 +14,10 @@ from .config import Config
 
 
 class CharRNN(nn.Module):
-    def __init__(self, vocab_size: int, cfg: Config, pad_id: int = 0, predict_value: bool = False):
+    def __init__(self, vocab_size: int, cfg: Config, pad_id: int = 0):
         super().__init__()
         self.cfg = cfg
         self.vocab_size = vocab_size
-        self.predict_value = predict_value
 
         # Each character id -> a small learned vector. padding_idx keeps PAD's
         # embedding fixed at zero and out of the gradient.
@@ -36,34 +35,40 @@ class CharRNN(nn.Module):
         # Projects each LSTM output back to one score per vocabulary character.
         self.head = nn.Linear(cfg.hidden_dim, vocab_size)
 
-        # Optional second head (WS-4): regresses one scalar attribute per name,
-        # e.g. Shane's paint-color RGB trick generalized to any numeric attribute.
-        # Kept separate from `forward` so the existing (logits, hidden) contract
-        # every caller relies on never changes shape.
-        if predict_value:
-            self.value_head = nn.Linear(cfg.hidden_dim, 1)
+        # WS-4 dual-output: an optional second head that regresses one scalar
+        # attribute (e.g. a car brand's founding year) from the same LSTM encoder.
+        # None for every ordinary (non-dual) config, so existing checkpoints and
+        # callers are completely unaffected.
+        self.value_head = nn.Linear(cfg.hidden_dim, 1) if cfg.dual_output else None
+
+    def encode(self, x: torch.Tensor, hidden=None):
+        """Run just the embedding + LSTM, exposing the per-timestep output.
+
+        Factored out of :meth:`forward` so the dual-output value head (which needs
+        each sequence's *last valid* timestep, not just the vocab logits) can read
+        the same LSTM output without duplicating the embedding/LSTM call.
+        """
+        emb = self.embedding(x)                 # (batch, time, embedding_dim)
+        out, hidden = self.lstm(emb, hidden)    # (batch, time, hidden_dim)
+        return out, hidden
 
     def forward(self, x: torch.Tensor, hidden=None):
         """x: (batch, time) integer ids -> logits: (batch, time, vocab_size).
 
         ``hidden`` lets generation carry the LSTM state forward one step at a time.
         """
-        emb = self.embedding(x)                 # (batch, time, embedding_dim)
-        out, hidden = self.lstm(emb, hidden)    # (batch, time, hidden_dim)
+        out, hidden = self.encode(x, hidden)
         logits = self.head(out)                 # (batch, time, vocab_size)
         return logits, hidden
 
-    def regress_value(self, x: torch.Tensor, lengths: torch.Tensor) -> torch.Tensor:
-        """Predict the scalar attribute for each sequence in ``x``.
+    def predict_value(self, state: torch.Tensor) -> torch.Tensor:
+        """Regress the trained scalar attribute from an LSTM hidden vector.
 
-        ``x`` is a batch of encoded names (no END token, see ``src/train_dual.py``);
-        ``lengths`` is each row's true length. Reads the value head off the LSTM's
-        hidden state at each row's last real position, so padding never leaks in.
+        ``state`` is (batch, hidden_dim): either the top-layer hidden state after
+        a single generation step, or ``encode()``'s output gathered at each
+        sequence's last non-pad timestep during training. Only valid when this
+        model was built with ``cfg.dual_output=True``.
         """
-        if not self.predict_value:
-            raise RuntimeError("This model was not built with predict_value=True.")
-        emb = self.embedding(x)
-        out, _ = self.lstm(emb)                 # (batch, time, hidden_dim)
-        idx = (lengths - 1).clamp(min=0)
-        last = out[torch.arange(out.size(0), device=x.device), idx]  # (batch, hidden_dim)
-        return self.value_head(last).squeeze(-1)
+        if self.value_head is None:
+            raise RuntimeError("predict_value() requires a model built with dual_output=True")
+        return self.value_head(state).squeeze(-1)
