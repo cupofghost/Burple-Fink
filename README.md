@@ -199,6 +199,10 @@ python -m src.export_web \
 The exporter **verifies** its JavaScript forward pass matches the trained PyTorch model's
 logits before writing the file, so the in-browser net is faithful to the real one.
 
+The live server also exposes `GET /api/health` (which checkpoints are loaded, and their
+labels) and returns real JSON error messages — with an HTTP status code and a message the
+UI displays inline — on a bad request or a failed generation, instead of a silent failure.
+
 ---
 
 ## Sampling temperature (the "creativity" knob)
@@ -214,6 +218,33 @@ Sample runs from the current engine:
 - **Manufacturers @ 0.8:** Sabarg, Jaguat, Mercuber, Tovaso, Chewo
 - **Manufacturers @ 1.3:** Muhkelveo, Volvoz, UVismann, Driza
 - **Car models @ 0.8:** Sentaza, Carlare, Ventora, Chezla
+
+### Decoding controls (WS-7): `--top-k`, `--top-p`, `--repetition-penalty`
+
+`python -m src.sample` and `python -m src.evaluate` both take `--top-k N` (keep only the
+N likeliest next characters), `--top-p P` (nucleus: smallest set with cumulative
+probability ≥ P), and `--repetition-penalty R` (discourage characters already used in the
+current name). All three default to off (0 / 1.0 / 1.0), so nothing changes unless you
+pass them. `--min-length` is now enforced *during* generation, not only filtered after.
+
+`python -m src.evaluate --checkpoint <ckpt> --sweep [--compare <ckpt2> …]` grid-searches
+temperature × decoding setting and prints novelty, **near-duplicate rate** (share of
+generated names within edit distance 1, and separately ≤2, of a training name — the
+number that reveals memorization plain novelty misses), plausibility ratio, uniqueness,
+and mean edit distance, then recommends a setting.
+
+**Measured** on two checkpoints of very different data sizes (159 real car brands vs.
+8,631 English words, 150–200 samples/setting, temperatures 0.7–1.3, `top_k∈{5,10}`,
+`top_p∈{0.8,0.9}`): **plain temperature sampling at 1.1–1.3 beat every top-k/nucleus
+setting tried, on both checkpoints.** Truncating the tail didn't reduce junk here (these
+small char-RNNs weren't producing much at these temperatures — plausibility ratio stayed
+~1.0–1.03) but it did shrink the pool of reachable characters enough to push sampling back
+toward memorized training names: at temperature 1.3 on the manufacturers checkpoint,
+novelty dropped from 38% (plain) to 32% (`top_k=10`) and near-duplicate rate rose from 72%
+to 80%. `repetition_penalty` still helps independently — it targets character-repeat
+junk (*"Bylfgoammm"*) that top-k/nucleus don't touch. Honest conclusion: at this model
+scale, reach for a higher temperature and `repetition_penalty` before top-k/nucleus; don't
+assume truncating the tail is free.
 
 ---
 
