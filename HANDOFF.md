@@ -176,11 +176,27 @@ Adds one **additive** checkpoint key, `"val_names"` (readers must use
 `ckpt.get("val_names", [])`); the four keys in §2 are unchanged. Owns `src/train.py`,
 `src/pretrain.py`, `src/finetune.py`, `src/data.py`.
 
-#### WS-7 · Decoding quality — ⏳ open (`claude/ws7-decoding-quality`, brief: `docs/upgrade/AGENT-B.md`)
-top-k / nucleus / repetition-penalty sampling as keyword-only params on
-`generate_one`/`generate_many` (defaults = today's plain temperature sampling), plus a
-near-duplicate (edit-distance) memorization metric, honest held-out NLL when a checkpoint
-carries `val_names`, and a `--sweep` grid that picks decoding settings with numbers.
+#### WS-7 · Decoding quality — ✅ **done** (`claude/ws7-decoding-quality-fcmaoj`, brief: `docs/upgrade/AGENT-B.md`)
+Implemented: `src/sample.py`'s `generate_one`/`generate_many` gained keyword-only
+`top_k`/`top_p`/`repetition_penalty`/`min_length` (all off by default — 0 / 1.0 / 1.0 / 0
+for `generate_one`; `generate_many` keeps its pre-existing `min_length=2` default and now
+passes it through so it's enforced *during* generation via END/PAD/START masking, not only
+checked afterward). Applied in order: repetition penalty → temperature → top-k → top-p →
+min-length masking → softmax → sample. `python -m src.sample` gained matching
+`--top-k`/`--top-p`/`--repetition-penalty`/`--min-length` flags, defaulting to the
+checkpoint's config. `src/evaluate.py` gained `near_duplicate_rate()` (share of generated
+names within edit distance ≤1, and separately ≤2, of a training name — catches
+memorization that exact-copy novelty misses), an honest held-out NLL that reads
+`ckpt.get("val_names", [])` when present and reports "n/a" otherwise (no dependency on
+WS-6 landing first), and `python -m src.evaluate --sweep [--compare ckpt2 …]` — a
+temperature × decoding grid that prints one table and recommends a setting.
+**Measured finding** (159-name and 8,631-name checkpoints, temps 0.7–1.3, `top_k∈{5,10}`,
+`top_p∈{0.8,0.9}`): plain temperature at 1.1–1.3 beat every top-k/nucleus setting tried on
+*both* checkpoints — truncation shrank the reachable-character pool enough to push
+sampling back toward memorized names rather than away from junk (novelty 38%→32%,
+near-dup rate 72%→80% at `top_k=10` on the small checkpoint). `repetition_penalty` remains
+independently useful for the character-repeat failure mode. 16 new tests in
+`tests/test_sampling.py`; the 3 pre-existing test files (18 tests) still pass untouched.
 Owns `src/sample.py`, `src/evaluate.py`.
 
 #### WS-8 · CI & repo hygiene — ✅ done (`claude/ws8-ci-and-hygiene-w4f3tb`)
@@ -304,7 +320,7 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt`/`motorcycle_brands.txt`/`city_names.txt` (superseded by the merged file) + WS-4 dual-output (discarded design, its `periodic_elements.tsv`/`paint_colors.tsv` ported to `next-item-v4te8p`) | 2026-07-24 | ⚠️ superseded by consolidation |
   | `claude/burple-fink-upgrade-plan-m7ndof` | Wave-2 plan + workspace prep (`docs/UPGRADE_PLAN.md`, per-agent briefs, `src/config.py` pre-wiring) | 2026-07-29 | ⏳ in review |
   | `claude/ws6-training-quality` | WS-6 training quality (Agent A) | 2026-07-29 | 🔒 reserved, not started |
-  | `claude/ws7-decoding-quality` | WS-7 decoding quality (Agent B) | 2026-07-29 | 🔒 reserved, not started |
+  | `claude/ws7-decoding-quality-fcmaoj` | WS-7 decoding quality (Agent B) | 2026-07-29 | ⏳ in review |
   | `claude/ws8-ci-and-hygiene-w4f3tb` | WS-8 CI & repo hygiene (Agent C) | 2026-07-29 | ✅ done, PR open |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
