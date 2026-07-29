@@ -1,0 +1,46 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  # Fast, stdlib-only bookkeeping checks. Runs first and needs no dependencies at all,
+  # so a broken dataset registry / README catalog / a committed secret fails in seconds
+  # instead of waiting on a full torch install (docs/upgrade/AGENT-C.md).
+  hygiene:
+    name: repo hygiene (no torch)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Registry drift, committed weights, secrets/PII
+        run: python scripts/check_repo.py
+      - name: Hygiene unit tests
+        run: python -m unittest tests.test_repo_hygiene -v
+
+  # The full suite plus a CLI smoke train/sample, exercising the actual contracts
+  # (checkpoint format, CLI flags) rather than just the library.
+  test:
+    name: unit tests + CLI smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+      - name: Install dependencies (CPU torch, default PyPI index)
+        run: pip install -r requirements.txt
+      - name: Unit test suite
+        run: python -m unittest discover -s tests -v
+      - name: CLI smoke train
+        run: >
+          python -m src.train --data data/car_manufacturers.txt --epochs 20
+          --name ci_smoke
+      - name: CLI smoke sample
+        run: >
+          python -m src.sample --checkpoint checkpoints/ci_smoke.pt --num 5

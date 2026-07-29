@@ -183,11 +183,22 @@ near-duplicate (edit-distance) memorization metric, honest held-out NLL when a c
 carries `val_names`, and a `--sweep` grid that picks decoding settings with numbers.
 Owns `src/sample.py`, `src/evaluate.py`.
 
-#### WS-8 · CI & repo hygiene — ⏳ open (`claude/ws8-ci-and-hygiene`, brief: `docs/upgrade/AGENT-C.md`)
-First CI for the repo (`.github/workflows/ci.yml`: unittest suite + CLI smoke train/sample),
-a stdlib-only `scripts/check_repo.py` that catches dataset-registry drift, committed weights,
-and secrets/PII (§3), plus `/api/health` and real error handling in the phone UI.
-Owns `.github/`, `scripts/`, `src/serve.py`, `web/`.
+#### WS-8 · CI & repo hygiene — ✅ done (`claude/ws8-ci-and-hygiene-w4f3tb`)
+`.github/workflows/ci.yml` runs on every push/PR: a fast, torch-free `hygiene` job
+(`scripts/check_repo.py` + `tests/test_repo_hygiene.py`) and a `test` job that installs
+torch from the default PyPI index, runs the full unittest suite, then a CLI smoke
+train/sample against `data/car_manufacturers.txt` (~6s locally; well under the ~10 min
+budget). `scripts/check_repo.py` is stdlib-only and importable: dataset-registry drift
+between `data/*.txt`/`*.tsv`, HANDOFF §4, and the README catalog; tracked `*.pt`/`*.pth`
+weights; email/secret-key patterns (never auto-deletes — flags for the owner per §3).
+`src/serve.py` gained `GET /api/health` (loaded checkpoints + labels) and real JSON error
+responses (400 for bad params, 404 for unknown routes, 500 for a failed generation) that
+the UI now displays inline instead of a generic "could not reach server" message. Did
+**not** wire decoding knobs (`top_k`/`top_p`/`repetition_penalty`) into the UI — WS-7 had
+not landed on `main` at the time this branch was cut, and the brief is explicit not to
+guess at an API that isn't there yet. `web/burple-fink.html` (the static export) was not
+touched or regenerated — it's built by `src/export_web.py`, which this workstream doesn't
+own. Owns `.github/`, `scripts/`, `src/serve.py`, `web/`.
 
 > `src/config.py` was pre-wired with all fields WS-6 and WS-7 need (defaults reproduce
 > current behavior), so **no wave-2 agent edits it**. `src/model.py` and `src/train_dual.py`
@@ -294,7 +305,7 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/burple-fink-upgrade-plan-m7ndof` | Wave-2 plan + workspace prep (`docs/UPGRADE_PLAN.md`, per-agent briefs, `src/config.py` pre-wiring) | 2026-07-29 | ⏳ in review |
   | `claude/ws6-training-quality` | WS-6 training quality (Agent A) | 2026-07-29 | 🔒 reserved, not started |
   | `claude/ws7-decoding-quality` | WS-7 decoding quality (Agent B) | 2026-07-29 | 🔒 reserved, not started |
-  | `claude/ws8-ci-and-hygiene` | WS-8 CI & repo hygiene (Agent C) | 2026-07-29 | 🔒 reserved, not started |
+  | `claude/ws8-ci-and-hygiene-w4f3tb` | WS-8 CI & repo hygiene (Agent C) | 2026-07-29 | ✅ done, PR open |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.
@@ -311,6 +322,11 @@ Document the choice in `docs/PLAN.md` when you implement it.
 - Linear history is required.
 - Force pushes are blocked.
 - Head branches auto-delete after merge.
+- **CI now exists** (`.github/workflows/ci.yml`, WS-8) but is **advisory only** — no
+  status check is required to merge yet. To make it a real gate: Settings → Branches →
+  main → Require status checks to pass → select `hygiene` and `test`. Nobody should flip
+  this switch without the owner's say-so (§7's "don't change repo settings" rule still
+  applies to agents).
 - No CI/status checks are configured — don't wait on checks that don't exist.
 - No required signed commits, no required reviewers, no code owners.
 - Branch naming: `<agent-name>/<short-feature-description>`, branched off the latest

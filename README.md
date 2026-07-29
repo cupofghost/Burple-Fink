@@ -150,6 +150,10 @@ python -m src.export_web \
 The exporter **verifies** its JavaScript forward pass matches the trained PyTorch model's
 logits before writing the file, so the in-browser net is faithful to the real one.
 
+The live server also exposes `GET /api/health` (which checkpoints are loaded, and their
+labels) and returns real JSON error messages — with an HTTP status code and a message the
+UI displays inline — on a bad request or a failed generation, instead of a silent failure.
+
 ---
 
 ## Sampling temperature (the "creativity" knob)

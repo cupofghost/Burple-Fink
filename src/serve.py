@@ -141,11 +141,13 @@ async function run(){
   try{
     const params=new URLSearchParams({engine:state.engine,count:state.count,temperature:state.temp,prefix:(state.prefix||"").trim(),novel_only:state.novelOnly?"1":"0"});
     const res=await fetch("/api/generate?"+params.toString());
-    if(!res.ok) throw new Error("server "+res.status);
-    const data=await res.json();
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(data.error||("server responded "+res.status));
     render(data.names||[]);
   }catch(e){
-    $("results").innerHTML='<p class="empty">Could not reach the model server. Is <code>python -m src.serve</code> still running?</p>';
+    const msg=(e&&e.message)?e.message:"Could not reach the model server.";
+    $("results").innerHTML='<p class="empty">'+msg+' Is <code>python -m src.serve</code> still running?</p>';
+    $("stat").hidden=true;
   }finally{
     go.disabled=false;go.textContent="Invent names";
   }
@@ -181,10 +183,18 @@ def make_handler(engines: List[Engine], page: str):
             self.end_headers()
             self.wfile.write(body)
 
+        def _send_json(self, code: int, payload: dict):
+            self._send(code, json.dumps(payload).encode(), "application/json")
+
+        def _send_error_json(self, code: int, message: str):
+            self._send_json(code, {"error": message})
+
         def do_GET(self):
             parsed = urlparse(self.path)
             if parsed.path in ("/", "/index.html"):
                 self._send(200, page.encode("utf-8"), "text/html; charset=utf-8")
+            elif parsed.path == "/api/health":
+                self._health()
             elif parsed.path == "/api/models":
                 body = json.dumps({"models": [e.label for e in engines]}).encode()
                 self._send(200, body, "application/json")
@@ -193,22 +203,66 @@ def make_handler(engines: List[Engine], page: str):
             elif parsed.path == "/favicon.ico":
                 self._send(204, b"", "image/x-icon")  # browsers auto-request this
             else:
-                self._send(404, b"not found", "text/plain")
+                self._send_error_json(404, f"No such endpoint: {parsed.path!r}")
+
+        def _health(self):
+            checkpoints = [
+                {"label": e.label, "path": e.path, "training_names": len(e.training)}
+                for e in engines
+            ]
+            self._send_json(200, {"status": "ok", "checkpoints": checkpoints})
 
         def _generate(self, q: Dict[str, List[str]]):
             def one(key, default):
                 return q.get(key, [default])[0]
+
+            if not engines:
+                self._send_error_json(503, "No checkpoints are loaded on the server.")
+                return
+
+            raw_engine = one("engine", "0")
             try:
-                idx = max(0, min(len(engines) - 1, int(one("engine", "0"))))
-                count = max(1, min(60, int(one("count", "12"))))
-                temperature = max(0.05, min(2.0, float(one("temperature", "0.8"))))
-                prefix = one("prefix", "")
-                novel_only = one("novel_only", "0") in ("1", "true", "True")
-                names = engines[idx].generate(count, temperature, prefix, novel_only)
-                self._send(200, json.dumps({"names": names}).encode(), "application/json")
+                engine_idx = int(raw_engine)
+            except ValueError:
+                self._send_error_json(
+                    400, f"'engine' must be a whole number, got {raw_engine!r}.")
+                return
+            if not (0 <= engine_idx < len(engines)):
+                self._send_error_json(
+                    400,
+                    f"'engine' {engine_idx} is out of range; there "
+                    f"{'is' if len(engines) == 1 else 'are'} {len(engines)} "
+                    f"loaded checkpoint(s) (0-{len(engines) - 1}).")
+                return
+
+            raw_count = one("count", "12")
+            try:
+                count = int(raw_count)
+            except ValueError:
+                self._send_error_json(
+                    400, f"'count' must be a whole number, got {raw_count!r}.")
+                return
+            count = max(1, min(60, count))
+
+            raw_temp = one("temperature", "0.8")
+            try:
+                temperature = float(raw_temp)
+            except ValueError:
+                self._send_error_json(
+                    400, f"'temperature' must be a number, got {raw_temp!r}.")
+                return
+            temperature = max(0.05, min(2.0, temperature))
+
+            prefix = one("prefix", "")
+            novel_only = one("novel_only", "0") in ("1", "true", "True")
+
+            try:
+                names = engines[engine_idx].generate(count, temperature, prefix, novel_only)
             except Exception as exc:  # keep the server alive; report cleanly to the UI
-                self._send(400, json.dumps({"error": str(exc)}).encode(),
-                           "application/json")
+                self._send_error_json(
+                    500, f"Generation failed on the server: {exc}")
+                return
+            self._send_json(200, {"names": names})
 
         def log_message(self, fmt, *args):  # quieter console
             if "/api/generate" in (args[0] if args else ""):
