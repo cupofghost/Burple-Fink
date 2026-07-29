@@ -109,17 +109,22 @@ Everything is deliberately small so it trains in seconds-to-minutes on a laptop 
 ## 9. Roadmap / extensions
 
 1. **✅ MVP:** names-only char-RNN with temperature sampling. *(this repo)*
-2. **More & cleaner data:** scrape/compile a few thousand real car names; dedupe,
-   normalize casing, remove trim levels and years.
+2. **⏳ More & cleaner data — now the top priority:** scrape/compile a few thousand real
+   car names; dedupe, normalize casing, remove trim levels and years. Wave 2 (§12)
+   measured *why* this outranks every other item on this list: the current datasets are
+   too small for the model that reads them.
 3. **✅ Dual output (the paint-color trick):** the network emits a name **and** a
    numeric attribute simultaneously — a second regression head trained jointly with a
    combined loss. Demoed on real paint colors (name + luminance), the same domain Shane
    used. See §11.6.
-4. **Conditioning:** let the user prime generation ("give me a name starting with 'Za'"
-   or "an Italian-sounding sports-car name") via a seed prefix or a country/style tag.
-5. **Packaging:** simple CLI (done) → optional Flask/FastAPI endpoint → tiny web demo.
+4. **Conditioning (partial):** a seed prefix is supported today (`--prefix`, and the box in
+   the web UI); the style/country *tag* half is not built. Deferred past wave 2 — see §12.
+5. **✅ Packaging:** simple CLI → a stdlib HTTP server (`src/serve.py`) and a self-contained
+   in-browser export (`src/export_web.py`). See §11.4.
 6. **Alternative backbones:** swap the LSTM for a GRU or a small character Transformer
-   and compare output quality.
+   and compare output quality. Deferred past wave 2 — §12 explains why more capacity is
+   the wrong lever right now.
+7. **✅ Honest training + decoding controls + CI:** wave 2, §12.
 
 ## 10. Success criteria for the MVP
 
@@ -201,6 +206,9 @@ differs:
 
 ### 11.5 What's still open
 
+> Updated 2026-07-29: wave 2 (§12) put numbers behind this section — the "more data" lever
+> below is no longer just a hunch, it is the measured bottleneck.
+
 - **WS-1 (more datasets):** the single biggest quality lever is still more data; the
   fine-tuning machinery is ready for any dataset dropped into `data/` (rebuild the shared
   vocab by deleting `data/shared_vocab.json` and re-running pretrain). Always open-ended
@@ -250,3 +258,67 @@ Demo datasets (`name<TAB>value`, all outside the shared-vocab `*.txt` glob):
   `Chocolate`-adjacent near 0.2.
 - `data/periodic_elements.tsv` — all 118 IUPAC chemical elements + atomic number, a
   closed and exactly verifiable list.
+
+## 12. Wave 2 — honest training, decoding controls, CI (Stages 6–8)
+
+Stages 0–5 built the platform. Wave 2 (2026-07-29, three parallel agents; plan in
+`docs/UPGRADE_PLAN.md`) asked whether the platform was actually any good, and got an
+answer worth writing down.
+
+### 12.1 Held-out training (WS-6, `src/train.py`)
+
+`fit()` trained on 100% of every dataset for a fixed 300 epochs and kept the final epoch's
+weights. Nothing measured generalization, so nothing could distinguish a model that learned
+a naming *style* from one that memorized a list. `fit()` now takes optional `val_names`:
+per-epoch validation loss, early stopping after `cfg.early_stop_patience` stalled epochs,
+best-epoch weight restore (in memory — no extra files), and optional `plateau`/`cosine` LR
+schedules. All opt-in through `--val-fraction` / `--patience` / `--lr-schedule` on
+`src.train`, `src.pretrain` and `src.finetune`; with them absent, training is byte-identical
+to before (pinned by a golden loss trajectory in `tests/test_training_quality.py`).
+
+Checkpoints gain **one additive key, `val_names`** (HANDOFF §2). When it is non-empty,
+`training_names` holds the training half only, so novelty is judged against what the model
+actually saw. Readers must use `ckpt.get("val_names", [])` — nothing written before
+2026-07-29 has the key.
+
+The measurement: held-out loss bottoms out at epoch ~12–19 on `car_manufacturers` (159
+names) and ~24–26 on `aircraft` (435), then degrades 130% and 35% respectively by epoch 300.
+Roughly 90–95% of the default epoch budget was actively making both models worse.
+
+### 12.2 Decoding controls (WS-7, `src/sample.py`, `src/evaluate.py`)
+
+Generation was plain multinomial sampling over the whole vocabulary with a temperature
+divisor, so the only defense against junk characters was a lower temperature — which also
+drags output back toward the training set. `generate_one`/`generate_many` gained keyword-only
+`top_k`, `top_p`, `repetition_penalty` and an enforced `min_length`, applied in a documented
+order (repetition penalty → temperature → top-k → top-p → sample), each defaulting to the old
+behavior. `src/evaluate.py` gained an honest held-out NLL (using §12.1's `val_names` when
+present), a **near-duplicate rate** — the share of generated names within edit distance 1 or 2
+of a training name — and `--sweep`/`--compare` for grid-searching settings.
+
+The measurement, and it is a negative result: **plain temperature at 1.1–1.3 beat every
+top-k/nucleus setting tried**, on both a 159-name and an 8,631-name checkpoint. Truncating the
+tail didn't remove junk (there wasn't much at these temperatures — plausibility ratio stayed
+~1.0) but it did shrink the reachable character set enough to push sampling back toward
+memorized names: novelty 38%→32%, near-duplicate rate 72%→80% at `top_k=10`. Reach for
+temperature and `repetition_penalty` first; don't assume truncation is free.
+
+### 12.3 CI and repo hygiene (WS-8, `.github/`, `scripts/`)
+
+The repo had no CI at all. `.github/workflows/ci.yml` now runs a fast torch-free `hygiene`
+job plus a `test` job (full suite + a CLI smoke train/sample) on every push and PR.
+`scripts/check_repo.py` is a stdlib-only, importable checker for the two failure modes that
+have each cost this project a session: dataset-registry drift between `data/`, HANDOFF §4 and
+the README catalog, and committed weights/secrets/PII (it reports, never deletes — AGENTS.md
+§3). `src/serve.py` gained `GET /api/health` and real JSON error responses that the UI
+displays inline.
+
+### 12.4 What wave 2 means for the roadmap
+
+§12.1 and §12.2 converge on one conclusion from opposite directions: **the datasets are too
+small for the model reading them.** A 2-layer, 256-wide LSTM on 135 training names reaches its
+best held-out loss before it has learned to spell, and three-quarters of its "novel" output is
+one edit away from a real name. Conditioning (§9.4) and alternative backbones (§9.6) both add
+capacity or ask more of it, so both are deferred until the corpora are several thousand names
+each — `english_words.txt` (8,631) is the only dataset here in that range, and it is also the
+only one that behaves. Roadmap item 2 (more and cleaner data, i.e. WS-1) is the next wave.

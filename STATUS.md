@@ -1,60 +1,96 @@
 # STATUS
 
-Last consolidation: 2026-07-24 — Signed: Claude Code | Sonnet 5 | high
+Last consolidation: 2026-07-29 — Signed: Claude Code | Opus 5 | high
 
 ## Active work
 | Date | Area / files | Task & state (≤3 lines) | Signature |
 |------|--------------|-------------------------|-----------|
-| 2026-07-24 | data/ | ✅ WS-1 batch 1: Added 3 datasets (racehorses 355, spacecraft 270, paint_colors 391). Smoke-tested; registered. | Signed: Claude Code \| Haiku 4.5 \| low |
-| 2026-07-24 | data/ | ✅ WS-1 batch 2: Added 3 datasets (motorcycles 359, craft_beers 398, aircraft 435). All ≥300 entries. Smoke-tested; registered. | Signed: Claude Code \| Haiku 4.5 \| low |
-| 2026-07-29 | docs/, src/config.py | ✅ Wave-2 upgrade plan + workspace prep: three non-overlapping workstreams (WS-6/7/8) specced in `docs/UPGRADE_PLAN.md` + `docs/upgrade/AGENT-{A,B,C}.md`; `src/config.py` fields pre-declared so no two agents share a file. No behavior change. | Signed: Claude Code \| Opus 5 \| high |
-| 2026-07-29 | WS-6 · `src/train.py`, `pretrain.py`, `finetune.py`, `data.py`, `tests/test_training_quality.py` | ✅ Held-out split + per-epoch val loss + early stopping + best-epoch weight restore + `plateau`/`cosine` LR schedules, all opt-in via `--val-fraction`/`--patience`/`--lr-schedule`. **Measured (300 epochs, 15% holdout, current defaults):** `car_manufacturers` (159) val bottoms ~epoch 12–19 then gets **130% worse** by 300 (best 2.98 → 6.87; train 0.72, gap 6.15 nats). `aircraft` (435) bottoms epoch 24–26, **+35%** worse by 300 (0.76 → 1.02; gap 0.64). So ~95% of the 300-epoch budget is actively harmful on both. 34 new tests; 83/83 green after merging WS-7 + WS-8. Recommended defaults + caveats in the README. | Signed: Claude Code \| Opus 5 \| high |
-| 2026-07-29 | WS-7 · `src/sample.py`, `evaluate.py` | ✅ Done: `top_k`/`top_p`/`repetition_penalty`/`min_length` on `generate_one`/`generate_many` (keyword-only, off by default, exact-reproduction proof in `tests/test_sampling.py`); `evaluate.py` gained near-duplicate rate (edit-dist ≤1/≤2), honest held-out NLL (degrades gracefully, no `val_names` yet), and `--sweep`/`--compare`. Measured on 2 checkpoints (159 car brands vs. 8,631 English words): **plain temperature @ 1.1–1.3 beat every top-k/nucleus setting tried on both** — truncation pushed sampling *toward* memorized names (novelty 38%→32%, near-dup 72%→80% at top_k=10 on the small checkpoint) rather than away from junk, since junk wasn't the failure mode at this model scale. `repetition_penalty` still helps independently (targets char-repeats, which top-k/nucleus don't touch). 16 new tests + existing 18 all green (34/34). Did not touch `src/train.py`/`config.py`/`data.py` or wait on WS-6's `val_names`. Brief: `docs/upgrade/AGENT-B.md`. | Signed: Claude Code \| Sonnet 5 \| high |
-| 2026-07-29 | WS-8 · `.github/`, `scripts/`, `src/serve.py`, `web/` | ✅ Agent C (`claude/ws8-ci-and-hygiene-w4f3tb`): added `.github/workflows/ci.yml` (torch-free `hygiene` job + `test` job with full suite + CLI smoke train/sample, ~6s locally); `scripts/check_repo.py` (stdlib-only registry-drift/weights/secrets checks) + `tests/test_repo_hygiene.py` (15 tests, no torch); `src/serve.py` gained `/api/health` + real JSON error responses (400/404/500) shown inline in the UI. 33/33 repo tests green. Did not wire decoding knobs (WS-7 not on `main` yet) or touch `export_web.py`/`burple-fink.html`. | Signed: Claude Code \| Sonnet 5 \| medium |
+| — | — | _Nothing in flight._ Wave 2 (WS-6/7/8) is merged and consolidated. Next up is **WS-1: more and bigger datasets** — see the wave-2 outcome note in `HANDOFF.md §3` for why that outranks the deferred model work. | — |
 
 ## Shared-file touches
-- `src/model.py`, `src/config.py`, `src/data.py`, `src/sample.py`: now carry the WS-4 dual-output implementation chosen during consolidation (originally from `claude/scope-vs-please-yrlsll`) — `value_head`/`encode()`/`predict_value()` on `CharRNN`, `dual_output`/`value_mean`/`value_std`/`value_label` on `Config`, `load_name_value_pairs()` on data, opt-in `return_value` on `sample.generate_one`/`generate_many`. All additive/backward-compatible; `forward(x, hidden)` unchanged. — Claude Code | Sonnet 5 | high
-
-- `src/config.py`: wave-2 prep pre-declared the fields WS-6 and WS-7 will consume
-  (`val_fraction`/`early_stop_patience`/`lr_schedule`/`lr_factor`/`lr_min`,
-  `top_k`/`top_p`/`repetition_penalty`/`min_length`). All additive with defaults that
-  reproduce current behavior, verified via `Config.to_dict`/`from_dict` round-trip incl. an
-  old-checkpoint dict. Done deliberately so the three wave-2 agents never edit this shared
-  file concurrently — the collision that caused the 2026-07-24 consolidation. — Claude Code | Opus 5 | high
+- `src/model.py`, `src/config.py`, `src/data.py`, `src/sample.py`: carry the WS-4 dual-output
+  implementation chosen during the 2026-07-24 consolidation — `value_head`/`encode()`/
+  `predict_value()` on `CharRNN`, `dual_output`/`value_mean`/`value_std`/`value_label` on
+  `Config`, `load_name_value_pairs()` on data, opt-in `return_value` on `sample.generate_one`/
+  `generate_many`. All additive; `forward(x, hidden)` unchanged. — Claude Code | Sonnet 5 | high
+- `src/config.py`: wave-2 prep pre-declared every field WS-6 and WS-7 would consume
+  (`val_fraction`/`early_stop_patience`/`lr_schedule`/`lr_factor`/`lr_min`, `top_k`/`top_p`/
+  `repetition_penalty`/`min_length`) so three concurrent agents never edited it at once. It
+  worked — wave 2 shipped with zero file collisions. Reuse the pattern for the next parallel
+  wave. — Claude Code | Opus 5 | high
+- `scripts/check_repo.py` + `tests/test_repo_hygiene.py` (2026-07-29 consolidation): the
+  secret scanner now skips RFC 2606 documentation domains (`example.com`/`.org`/`.net`) and
+  its own fixture file, which is why CI was red on main. Agent C's file, changed by the
+  consolidation because it blocked everyone; C's 15 tests still pass, plus 2 pinning the
+  fix. — Claude Code | Opus 5 | high
 
 ## Known issues
-- **`scripts/check_repo.py` fails on `main`, so the new CI's `hygiene` job is red.** It
-  reports 5 secret/PII hits, all of them inside `tests/test_repo_hygiene.py` — the scanner
-  is matching its own test fixtures (the deliberately fake `someone@example.com`, OpenAI
-  key, GitHub token, AWS key and private-key block that WS-8's tests feed it). Reproduced on
-  a clean `origin/main` checkout with no WS-6 changes present, so it is not caused by this
-  lane. Not fixed here: `scripts/` and `tests/test_repo_hygiene.py` are Agent C's files
-  (AGENTS.md §4). Likely one-line fix — the scanner needs to skip its own fixture file.
-  Flagged 2026-07-29 — Claude Code | Opus 5 | high
 - **`fit()` seeds the RNG *after* `train()` has already built the model**, so initial weights
-  are not reproducible: three identical `--val-fraction 0.15` runs on `car_manufacturers`
-  put the best epoch at 12, 16 and 19 (best val 2.92–2.98). Training itself is seeded, only
-  the initialization isn't. Found while measuring WS-6; NOT fixed, because seeding it would
-  change the default training trajectory for every existing command — that is a deliberate
-  decision the owner should make, not a side effect of adding a validation split. The fix is
-  one line in `train()`/`pretrain()`. Flagged 2026-07-29 — Claude Code | Opus 5 | high
-- **The right answer for the small datasets is more data, not fewer epochs.** WS-6 can now
-  see that `car_manufacturers` (135 training names) reaches its best held-out loss around
-  epoch 12–19, which is *before* the model has learned to spell — early-stopped samples are
-  noticeably rougher than 300-epoch ones (`Si wte`, `Towc`). Both readings are honest: the
-  300-epoch model generalizes far worse, and the val-optimal model isn't pretty either. A
-  135-name dataset cannot support a 2-layer 256-wide LSTM. This is an argument for WS-1
-  (more datasets, ≥300 names) rather than for a smaller epoch default.
+  are not reproducible: three identical `--val-fraction 0.15` runs on `car_manufacturers` put
+  the best epoch at 12, 16 and 19 (best val 2.92–2.98). Training itself is seeded, only the
+  initialization isn't. NOT fixed — the one-line fix changes the default training trajectory
+  for every existing command, which is the owner's call, not a side effect of another task.
+  **Owner decision pending.** Flagged 2026-07-29 — Claude Code | Opus 5 | high
+- **The datasets are too small for the model reading them.** `car_manufacturers` (135 training
+  names) reaches its best held-out loss around epoch 12–19 — before the model can spell — and
+  72–80% of "novel" generated names are within one edit of a real training name. Both readings
+  are honest and they point the same way: this is an argument for WS-1 (bigger datasets, ≥300
+  and ideally ≥3,000 names), not for a smaller epoch default. See `docs/PLAN.md §12`.
   Flagged 2026-07-29 — Claude Code | Opus 5 | high
-- `data/car_manufacturers_founding_year.tsv` founding years are sourced from each brand's commonly-cited history, not cross-checked against a primary source — treat as approximate, not authoritative. Flagged 2026-07-24 — Claude Code | Sonnet 5 | high
-- `data/world_cities.txt` was merged (2026-07-24) from two independently-built lists via case-insensitive dedupe + alphabetical sort; the original curation order/rationale of both source files was not preserved, only the names. — Claude Code | Sonnet 5 | high
+- `src/train_dual.py` (WS-4) has its own training loop and did **not** receive WS-6's
+  validation split / early stopping — dual-output training is still measured on training data
+  only. Deliberately out of scope for wave 2. Flagged 2026-07-29 — Claude Code | Opus 5 | high
+- The phone UI does not expose WS-7's decoding knobs: WS-8 shipped before WS-7 landed on main.
+  Given WS-7 measured that top-k/nucleus made output *worse* at this scale, wiring them is not
+  obviously worth doing — owner's call. Flagged 2026-07-29 — Claude Code | Opus 5 | high
+- `data/car_manufacturers_founding_year.tsv` founding years come from each brand's commonly
+  cited history, not a primary source — approximate, not authoritative. Flagged 2026-07-24 —
+  Claude Code | Sonnet 5 | high
+- `data/world_cities.txt` was merged (2026-07-24) from two independently built lists via
+  case-insensitive dedupe + alphabetical sort; only the names were preserved, not either
+  file's original curation order. — Claude Code | Sonnet 5 | high
 
 ## Archive
-- 2026-07-24 **Consolidation**: three sessions (`claude/next-item-v4te8p`, `claude/scope-vs-please-yrlsll`, `claude/next-task-tnbsmq`) independently built WS-4 dual-output in parallel without visibility into each other's branches (a git-branch-per-agent blind spot — STATUS.md claims don't cross branches). All three worked and were verified (18/18 tests on two; the third was hand-smoke-tested, had no automated tests). Owner chose `scope-vs-please-yrlsll`'s design (value normalization + `sample.py` integration, already had an open PR). Consolidated onto `claude/next-item-v4te8p`: adopted the chosen WS-4 code, discarded the other two implementations, kept and re-pointed all three branches' demo datasets at the winning API (`car_manufacturers_founding_year.tsv`, `paint_colors.tsv`, `periodic_elements.tsv`), and merged the two independently-built city datasets (671 + 1,323 names, ~45% overlap) into one deduped `world_cities.txt` (1,691 names) rather than dropping either. Also folded in `tech_startups.txt` (400) and `motorcycle_brands.txt` (63), both uncontested WS-1 additions. No secrets/PII found in any branch. Full suite green (18/18) + smoke-trained every dataset post-merge. — Signed: Claude Code | Sonnet 5 | high
-- 2026-07-24 WS-4 dual-output (`next-item-v4te8p` design: `predict_value` flag + `regress_value()`, separate `train_dual.py`/`sample_dual.py`) — superseded by consolidation above, code discarded, `paint_colors.tsv` kept. Signed: Claude Code | Sonnet 5 | high
-- 2026-07-24 WS-4 dual-output (`scope-vs-please-yrlsll` design: `value_head`/`encode()`/`predict_value()`, value normalization) — chosen as canonical by the owner during consolidation. Signed: Claude Code | Sonnet 5 | medium
-- 2026-07-24 WS-1 `world_cities.txt` (671 names, `scope-vs-please-yrlsll`) — superseded by the merged file above, content preserved. Signed: Claude Code | Sonnet 5 | medium
-- 2026-07-24 WS-4 dual-output (`next-task-tnbsmq` design: `DualCharRNN` subclass, no tests) — superseded by consolidation, code discarded, `periodic_elements.tsv` + its `paint_colors.tsv` kept (the latter deduped against the near-identical `next-item-v4te8p` copy; one kept). Signed: Claude Code | Sonnet 5 | medium
-- 2026-07-24 WS-1 `tech_startups.txt` (400 names, `next-task-tnbsmq`) — Signed: Claude Code | Sonnet 5 | medium
-- 2026-07-24 WS-1 `motorcycle_brands.txt` (63 names, `next-task-tnbsmq`) — Signed: Claude Code | Haiku 4.5 | medium
-- 2026-07-24 WS-1 `city_names.txt` (1,323 names, `next-task-tnbsmq`; deduped post-hoc, 326 raw duplicate lines removed) — superseded by the merged `world_cities.txt` above, content preserved. Signed: Claude Code | Haiku 4.5 | medium / Claude Code | Sonnet 5 | low
+- 2026-07-29 **Consolidation (wave 2)**: three agents (WS-6 training quality, WS-7 decoding
+  quality, WS-8 CI & hygiene) ran concurrently off pre-partitioned briefs and merged with
+  **zero file collisions and zero duplicated work** — the failure mode of the 2026-07-24
+  consolidation did not recur. Consolidation fixed the one thing that was actually broken on
+  main (the new CI hygiene job was red: `scripts/check_repo.py` flagged 6 secrets/PII, all of
+  them its own planted test fixtures) and reconciled the docs the three lanes had each edited
+  separately: HANDOFF §2 state + module table, §7 branch statuses, a wave-2 outcome note in
+  §3, README stage table + wave-2 summary, and a new `docs/PLAN.md §12` recording what the
+  wave measured. No code behavior changed beyond the scanner fix; no duplicate implementations
+  to arbitrate. Secrets/PII scan clean (`check_repo`: all clear). 85/85 tests — 17 hygiene
+  tests re-run here, the other 68 on the signed word of the lanes that wrote them (AGENTS.md
+  §4). — Signed: Claude Code | Opus 5 | high
+- 2026-07-29 WS-6 training quality (`claude/ws6-training-quality`, PR #11): held-out split,
+  per-epoch val loss, early stopping, best-epoch restore, plateau/cosine LR schedules, additive
+  `val_names` checkpoint key; 34 tests. Measured ~90–95% of the 300-epoch default to be
+  actively harmful. Signed: Claude Code | Opus 5 | high
+- 2026-07-29 WS-7 decoding quality (`claude/ws7-decoding-quality-fcmaoj`, PR #10): keyword-only
+  `top_k`/`top_p`/`repetition_penalty`/`min_length`, near-duplicate memorization metric, honest
+  held-out NLL, `--sweep`/`--compare`; 16 tests. Negative result: plain temperature beat every
+  truncation setting tried. Signed: Claude Code | Sonnet 5 | high
+- 2026-07-29 WS-8 CI & repo hygiene (`claude/ws8-ci-and-hygiene-w4f3tb`): first CI workflow
+  (torch-free hygiene job + full suite + CLI smoke), `scripts/check_repo.py`, `/api/health` and
+  real JSON errors in the UI; 15 tests. Signed: Claude Code | Sonnet 5 | medium
+- 2026-07-29 Wave-2 plan + workspace prep (`claude/burple-fink-upgrade-plan-m7ndof`, PR #8):
+  three-lane partition with disjoint file ownership, per-agent briefs, one shared launch
+  prompt, `src/config.py` pre-wiring. Signed: Claude Code | Opus 5 | high
+- 2026-07-24 WS-1 batch 1: racehorses (355), spacecraft (270), paint_colors (391). Signed:
+  Claude Code | Haiku 4.5 | low
+- 2026-07-24 WS-1 batch 2: motorcycles (359), craft_beers (398), aircraft (435). Signed:
+  Claude Code | Haiku 4.5 | low
+- 2026-07-24 **Consolidation**: three sessions independently built WS-4 dual-output on separate
+  branches without visibility into each other (STATUS.md claims don't cross branches). Owner
+  chose `scope-vs-please-yrlsll`'s design; the other two implementations were discarded but all
+  their datasets were kept and repointed at the winning API, and two independently built city
+  lists were merged into `world_cities.txt` (1,691 names). No secrets/PII found. 18/18 green.
+  — Signed: Claude Code | Sonnet 5 | high
+- 2026-07-24 WS-4 dual-output, three parallel designs (`next-item-v4te8p` `predict_value` flag;
+  `scope-vs-please-yrlsll` `value_head`/`encode()` — **chosen**; `next-task-tnbsmq` `DualCharRNN`
+  subclass). Two superseded, code discarded, demo datasets kept. Signed: Claude Code | Sonnet 5
+  | high / medium / medium
+- 2026-07-24 WS-1 datasets from the superseded branches, all preserved: `world_cities.txt`
+  (671, merged), `city_names.txt` (1,323, merged), `tech_startups.txt` (400),
+  `motorcycle_brands.txt` (63). Signed: Claude Code | Sonnet 5 & Haiku 4.5 | medium

@@ -18,28 +18,34 @@ outward — the way Janelle Shane's char-rnn generated paint colors.
 
 ---
 
-## 2. Current state (Stages 0, 2, 3, 5 complete)
+## 2. Current state (Stage 1 open by design; every other stage complete)
 
 A working character-level LSTM that trains **per-dataset from scratch** and samples with a
 temperature ("creativity") knob. Verified end-to-end on CPU: loss drops from ~3.7 to
 <1.0 and output matures from noise → plausible names.
 
 On top of that MVP, the fine-tuning core (**WS-2**), evaluation harness (**WS-3**), both
-serving front-ends (**WS-5**), and the dual-output name+attribute head (**WS-4**) are now
-implemented — see the ✅ markers in §3. A `tests/` suite
-(`python -m unittest discover -s tests`) pins the vocab, training, model, and export
-invariants. Still open: more datasets (**WS-1**, always open-ended by design).
+serving front-ends (**WS-5**), and the dual-output name+attribute head (**WS-4**) are
+implemented, and wave 2 (2026-07-29) added held-out training (**WS-6**), decoding controls
+(**WS-7**) and the repo's first CI (**WS-8**) — see the ✅ markers in §3. A `tests/` suite
+(`python -m unittest discover -s tests`, 85 tests) pins the vocab, training, model, export,
+decoding and hygiene invariants, and `.github/workflows/ci.yml` runs it on every push and PR.
+Still open: more datasets (**WS-1**, always open-ended by design) — and after wave 2's
+measurements, it is the highest-value work left (§3 wave-2 outcomes).
 
 Modules and their responsibilities:
 
 | File | Responsibility | Safe to extend? |
 |------|----------------|-----------------|
 | `src/config.py` | All hyperparameters + special tokens (`PAD`/`START`/`END`) | Add fields; keep `from_dict` backward-compatible |
-| `src/data.py` | Name loading, `Vocab`, `(input, target)` next-char pairs, batching | Yes — see the shared-vocab note in §6 |
+| `src/data.py` | Name loading, `Vocab`, `(input, target)` next-char pairs, batching, train/val split (WS-6) | Yes — see the shared-vocab note in §6 |
 | `src/model.py` | `Embedding → LSTM → Linear` char-RNN (+ optional value head, WS-4) | Yes — keep the `forward(x, hidden)` signature |
-| `src/train.py` | Training loop, live previews, checkpoint save | Yes |
-| `src/sample.py` | Checkpoint load + temperature generation (+ predicted value for dual checkpoints) | Yes |
-| `src/train_dual.py` | WS-4: joint next-char + value-regression training | Yes |
+| `src/train.py` | Training loop, live previews, checkpoint save, held-out val loss / early stopping / best-epoch restore / LR schedules (WS-6) | Yes |
+| `src/sample.py` | Checkpoint load + temperature generation, top-k / nucleus / repetition penalty (WS-7), predicted value for dual checkpoints | Yes — new decoding options stay keyword-only and default to off |
+| `src/evaluate.py` | Novelty, near-duplicate rate, plausibility, diversity, held-out NLL, `--sweep`/`--compare` (WS-3 + WS-7) | Yes |
+| `src/train_dual.py` | WS-4: joint next-char + value-regression training | Yes — note it has its own loop and did **not** get WS-6's validation path |
+| `scripts/check_repo.py` | WS-8: registry drift, committed weights, secrets/PII — stdlib only, torch-free | Yes |
+| `.github/workflows/ci.yml` | WS-8: torch-free hygiene job + full suite and CLI smoke train/sample | Yes |
 | `generate.py` | Friendly one-command wrapper | Yes |
 
 **Checkpoint format** (a single `torch.save` dict) — do not break these keys, other
@@ -240,6 +246,31 @@ own. Owns `.github/`, `scripts/`, `src/serve.py`, `web/`.
 > backbones (§9.6) are deliberately deferred to wave 3 — they need the same four files at
 > once and cannot be parallelized safely.
 
+#### Wave-2 outcome (consolidation, 2026-07-29) — read this before picking wave-3 work
+
+The three lanes shipped without a single file collision (the pre-wiring in §2 worked), and
+between them they answered a question this repo could not previously ask: **is the model
+learning a style, or memorizing a list?** Two independent measurements say memorizing:
+
+- WS-6: held-out loss bottoms out around epoch 12–19 on `car_manufacturers` (159 names) and
+  24–26 on `aircraft` (435), then gets 130% / 35% *worse* by the scheduled epoch 300.
+- WS-7: 72–80% of "novel" generated names are within edit distance 1 of a real training
+  name. Plain novelty% never showed this because it only catches exact copies.
+
+Both also found the same ceiling from opposite directions. WS-6: the val-optimal epoch on
+`car_manufacturers` arrives *before* the model can spell, so there is no epoch count that is
+both general and pretty. WS-7: top-k/nucleus truncation made things *worse* at this scale,
+pushing sampling toward the memorized names instead of away from junk — junk was never the
+binding constraint.
+
+**So the recommended wave 3 is WS-1 (more and bigger datasets), not the deferred model
+work.** Domain conditioning and alternative backbones both add capacity to a model that is
+already over-capacity for 135–435 names; they will not pay off until the datasets are
+several thousand names each (Shane used ~7,700, and `english_words.txt` at 8,631 is the one
+corpus here that behaves). Two concrete rules for the next dataset agents, both earned:
+prefer one 3,000-name dataset over ten 300-name ones, and report the near-duplicate rate
+from `python -m src.evaluate --sweep`, not just novelty.
+
 ---
 
 ## 4. Dataset registry
@@ -331,15 +362,16 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | Branch | Workstream | Agent / date | Status |
   |--------|-----------|--------------|--------|
   | `claude/rnn-auto-name-generator-bqbpnv` | WS-0 MVP + docs | initial | ✅ merged to main |
-  | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ⏳ in review |
-  | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ⏳ in review |
-  | `claude/next-item-v4te8p` | **Consolidated PR**: WS-4 dual-output (chosen implementation, originally from `scope-vs-please-yrlsll`) + all salvaged WS-1/WS-4 datasets from the three parallel branches below | 2026-07-24 | ⏳ in review |
+  | `claude/program-development-q4fcp7` | WS-2 fine-tuning + WS-3 eval + WS-5 serving/web app | 2026-07-23 | ✅ merged to main (PR #1) |
+  | `claude/plausible-words-dataset-53qyyg` | WS-1 `english_words.txt` (plausible-words dataset) | 2026-07-23 | ✅ merged to main (PR #2) |
+  | `claude/next-item-v4te8p` | **Consolidated PR**: WS-4 dual-output (chosen implementation, originally from `scope-vs-please-yrlsll`) + all salvaged WS-1/WS-4 datasets from the three parallel branches below | 2026-07-24 | ✅ merged to main (PR #7) |
   | `claude/scope-vs-please-yrlsll` | WS-1 `world_cities.txt` (superseded by the merged file) + WS-4 dual-output (chosen implementation, ported to `next-item-v4te8p`) | 2026-07-24 | ⚠️ superseded by consolidation, PR #5 to be closed |
   | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt`/`motorcycle_brands.txt`/`city_names.txt` (superseded by the merged file) + WS-4 dual-output (discarded design, its `periodic_elements.tsv`/`paint_colors.tsv` ported to `next-item-v4te8p`) | 2026-07-24 | ⚠️ superseded by consolidation |
-  | `claude/burple-fink-upgrade-plan-m7ndof` | Wave-2 plan + workspace prep (`docs/UPGRADE_PLAN.md`, per-agent briefs, `src/config.py` pre-wiring) | 2026-07-29 | ⏳ in review |
-  | `claude/ws6-training-quality` | WS-6 training quality (Agent A): held-out split, val loss, early stopping, best-epoch restore, LR schedules; additive `val_names` checkpoint key | 2026-07-29 | ⏳ in review |
-  | `claude/ws7-decoding-quality-fcmaoj` | WS-7 decoding quality (Agent B) | 2026-07-29 | ✅ merged to main |
-  | `claude/ws8-ci-and-hygiene-w4f3tb` | WS-8 CI & repo hygiene (Agent C) | 2026-07-29 | ✅ merged to main |
+  | `claude/burple-fink-upgrade-plan-m7ndof` | Wave-2 plan + workspace prep (`docs/UPGRADE_PLAN.md`, per-agent briefs, `src/config.py` pre-wiring) | 2026-07-29 | ✅ merged to main (PR #8) |
+  | `claude/ws6-training-quality` | WS-6 training quality (Agent A): held-out split, val loss, early stopping, best-epoch restore, LR schedules; additive `val_names` checkpoint key | 2026-07-29 | ✅ merged to main (PR #11) |
+  | `claude/ws7-decoding-quality-fcmaoj` | WS-7 decoding quality (Agent B): top-k/nucleus/repetition penalty, near-duplicate metric, `--sweep`/`--compare` | 2026-07-29 | ✅ merged to main (PR #10) |
+  | `claude/ws8-ci-and-hygiene-w4f3tb` | WS-8 CI & repo hygiene (Agent C): first CI, `scripts/check_repo.py`, `/api/health` + UI error handling | 2026-07-29 | ✅ merged to main |
+  | `claude/burple-fink-upgrade-plan-m7ndof` (reused) | **Wave-2 consolidation** (2026-07-29): unbroke the CI hygiene job, reconciled README/HANDOFF/PLAN, archived STATUS | 2026-07-29 | ⏳ in review |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.

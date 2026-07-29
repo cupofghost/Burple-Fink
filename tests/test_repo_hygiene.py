@@ -10,10 +10,12 @@ import unittest
 from pathlib import Path
 
 from scripts.check_repo import (
+    SECRET_SCAN_EXCLUDE,
     check_no_committed_weights,
     check_registry_drift,
     check_secrets_and_pii,
     list_dataset_files,
+    run_all_checks,
 )
 
 
@@ -137,9 +139,18 @@ class SecretsAndPiiTests(unittest.TestCase):
         self.assertEqual(self._scan("Just some ordinary documentation text.\n"), [])
 
     def test_email_address_is_flagged(self):
-        issues = self._scan("Contact: someone@example.com for details.\n")
+        issues = self._scan("Contact: someone@realdomain.co.uk for details.\n")
         self.assertEqual(len(issues), 1)
         self.assertIn("email", issues[0])
+
+    def test_rfc2606_example_domains_are_not_flagged(self):
+        """RFC 2606 reserves example.com/.org/.net for documentation, so an address there
+        is never a real person's. Added during the 2026-07-29 consolidation: the scanner
+        was flagging its own fixtures and this repo's docs, turning the CI hygiene job
+        red on main."""
+        for domain in ("example.com", "example.org", "example.net"):
+            with self.subTest(domain=domain):
+                self.assertEqual(self._scan(f"mail someone@{domain} now\n"), [])
 
     def test_openai_style_key_is_flagged(self):
         issues = self._scan("token = 'sk-ABCDEFGHIJKLMNOPQRSTUVWX'\n")
@@ -166,6 +177,13 @@ class SecretsAndPiiTests(unittest.TestCase):
             "`-----BEGIN … PRIVATE KEY-----`)\n"
         )
         self.assertEqual(issues, [])
+
+    def test_own_fixture_file_is_excluded_from_the_repo_wide_walk(self):
+        """This very file is full of planted credentials, so the repo-wide scan must skip
+        it — otherwise `check_repo.py` fails on main forever. An explicit file list is
+        still scanned in full, which is what every other test here relies on."""
+        self.assertIn("tests/test_repo_hygiene.py", SECRET_SCAN_EXCLUDE)
+        self.assertEqual(run_all_checks(), [])
 
 
 if __name__ == "__main__":

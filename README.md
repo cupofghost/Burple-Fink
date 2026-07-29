@@ -38,11 +38,20 @@ colliding with other agents. Repo-wide conventions and commands for agents also 
 | **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | ✅ Done |
 | **5. Serving** | CLI ✅ → live server ✅ → in-browser web app ✅ | ✅ Done |
 | **6. Training quality** | Held-out split, per-epoch val loss, early stopping, best-epoch weights, LR schedules | ✅ Done |
+| **7. Decoding controls** | top-k / nucleus / repetition penalty, near-duplicate metric, settings sweep | ✅ Done |
+| **8. CI & hygiene** | Tests + registry/secret checks on every push and PR | ✅ Done |
 
-**Wave 2 (planned 2026-07-29)** upgrades the quality of what's already built rather than
+**Wave 2 (shipped 2026-07-29)** upgraded the quality of what was already built rather than
 adding stages: honest held-out validation + early stopping (WS-6), top-k/nucleus sampling
-and a decoding sweep (WS-7), and the repo's first CI (WS-8). Three parallel agents, one
-brief each — see [`docs/UPGRADE_PLAN.md`](docs/UPGRADE_PLAN.md).
+and a decoding sweep (WS-7), and the repo's first CI (WS-8), built by three parallel agents
+— see [`docs/UPGRADE_PLAN.md`](docs/UPGRADE_PLAN.md).
+
+It also produced the most useful thing anyone has learned about this project: **the
+datasets are too small for the model reading them.** Held-out loss on a 159-name dataset
+bottoms out by epoch ~15 and then degrades for the remaining 95% of the default 300-epoch
+budget, and 72–80% of the "novel" names it generates are one character-edit away from a
+real training name. So the next wave is Stage 1 — more and *bigger* datasets — not more
+model. The reasoning is in [`docs/PLAN.md §12`](docs/PLAN.md).
 
 The full rationale and design for each stage lives in [`docs/PLAN.md`](docs/PLAN.md).
 

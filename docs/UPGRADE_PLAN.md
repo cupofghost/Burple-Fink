@@ -115,3 +115,29 @@ Before merging your own PR: `git fetch origin main && git merge origin/main`, re
 | C | Sonnet 5 | medium | Mostly plumbing: YAML, a linting script, UI wiring. Low algorithmic risk, high file count. Don't send Haiku — CI YAML that can't be run locally needs judgment about what will actually pass. |
 
 After all three land, run **one consolidation session** (AGENTS.md §8).
+
+---
+
+## 9. Outcome (filled in by the consolidation, 2026-07-29)
+
+All three lanes shipped and merged the same day, in the preferred order (C → B → A), with
+**zero file collisions and zero duplicated work**. The pre-wiring in §2 is what did it: no
+agent ever needed to open `src/config.py`. Reuse that pattern for the next parallel wave.
+
+What each lane delivered, and what it measured, is recorded in `docs/PLAN.md §12` and
+summarized in `HANDOFF.md §3`. The one-line version: **both code lanes independently found
+that the datasets are too small for the model reading them**, which is why §5's deferred
+items (conditioning, alternative backbones) stay deferred and **WS-1 — more and bigger
+datasets — is the recommended wave 3**.
+
+Consolidation found one real defect and fixed it: WS-8's secret scanner flagged its own
+planted test fixtures, so the CI hygiene job was red on `main` from the moment it landed.
+`scripts/check_repo.py` now skips RFC 2606 documentation domains and its own fixture file.
+
+Two decisions were left to the owner rather than made here (both in STATUS.md → Known
+issues): whether to seed model initialization in `fit()` (it would change the default
+training trajectory for every existing command), and whether to wire WS-7's decoding knobs
+into the phone UI (WS-7's own measurements suggest they'd make output worse at this scale).
+
+A third is worth naming: CI is **advisory** until branch protection requires it —
+Settings → Branches → `main` → Require status checks → select the `ci` checks.

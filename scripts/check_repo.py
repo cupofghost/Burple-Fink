@@ -30,6 +30,17 @@ DATASET_SUFFIXES = (".txt", ".tsv")
 _TABLE_FILENAME_RE = re.compile(r"`([\w.\-]+\.(?:txt|tsv))`")
 
 EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+
+# RFC 2606 reserves these domains for documentation, so an address at one of them cannot
+# belong to a real person. Our own docs and tests use them deliberately.
+EXAMPLE_EMAIL_DOMAINS = ("example.com", "example.org", "example.net")
+
+# Files whose *purpose* is to contain fake credentials, skipped when the scanner walks the
+# whole repo. Without this the scanner fails on its own fixtures — which is exactly what
+# happened on main (2026-07-29): six findings, all of them planted test data. Anything
+# listed here is never scanned, so keep it to files that exist only to feed this scanner.
+SECRET_SCAN_EXCLUDE = frozenset({"tests/test_repo_hygiene.py"})
+
 SECRET_PATTERNS = [
     ("OpenAI-style key", re.compile(r"\bsk-[A-Za-z0-9]{16,}\b")),
     ("GitHub token", re.compile(r"\bghp_[A-Za-z0-9]{20,}\b")),
@@ -141,12 +152,18 @@ def check_secrets_and_pii(
 
     Never deletes anything — per AGENTS.md §3, a hit must be flagged to the owner so
     they can decide how to clean git history, not silently scrubbed.
+
+    Two things are deliberately *not* reported, because both are planted rather than
+    leaked: addresses at the RFC 2606 documentation domains, and the files in
+    ``SECRET_SCAN_EXCLUDE``. The exclusion applies only to the repo-wide walk — an
+    explicit ``files`` list is always scanned in full, so callers and tests can still
+    point the scanner at anything.
     """
     if files is None:
         candidates = _git_tracked_files(repo_root)
         paths = [
             Path(repo_root) / f for f in candidates
-            if Path(f).suffix in TEXT_SUFFIXES
+            if Path(f).suffix in TEXT_SUFFIXES and f not in SECRET_SCAN_EXCLUDE
         ]
     else:
         paths = [Path(f) for f in files]
@@ -158,6 +175,8 @@ def check_secrets_and_pii(
         except OSError:
             continue
         for m in EMAIL_RE.finditer(text):
+            if m.group(0).lower().endswith(EXAMPLE_EMAIL_DOMAINS):
+                continue
             issues.append(
                 f"{path}: possible email address found ({m.group(0)}). AGENTS.md §3 "
                 f"forbids committing PII — flag this to the owner; do not delete it "
