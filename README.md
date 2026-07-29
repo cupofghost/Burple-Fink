@@ -137,7 +137,10 @@ test datasets bottoms out early and then gets *worse* for the remaining ~90% of 
 | Dataset | Names | Val loss bottoms at | Val loss by epoch 300 | Train/val gap at 300 |
 |---|---|---|---|---|
 | `car_manufacturers.txt` | 159 | epoch **12–19** | 2.98 → **6.87** (130% worse) | 6.15 nats |
-| `aircraft.txt` | 435 | epoch **~26** | 0.78 → **1.02** (30% worse) | 0.64 nats |
+| `aircraft.txt` | 435 | epoch **24–26** | 0.76 → **1.02** (35% worse) | 0.64 nats |
+
+(Ranges, not single epochs, because the best epoch is not reproducible run to run — see the
+first entry under STATUS.md **Known issues** for why, and why it wasn't fixed here.)
 
 Suggested starting points — and note the honest caveat below them:
 
