@@ -161,6 +161,42 @@ No coupling to WS-2/3/4 beyond the checkpoint format.
 
 ---
 
+### Wave 2 — WS-6 / WS-7 / WS-8 (planned 2026-07-29, three parallel agents)
+
+Stages 0–5 are built; wave 2 upgrades their *quality and durability*. Full rationale, the
+file-ownership matrix, the contracts, and the merge protocol are in
+[`docs/UPGRADE_PLAN.md`](docs/UPGRADE_PLAN.md). Each lane has a self-contained brief under
+`docs/upgrade/`. The lanes were partitioned so **no two agents edit the same file** — the
+failure mode that caused the 2026-07-24 consolidation.
+
+#### WS-6 · Training quality — ⏳ open (`claude/ws6-training-quality`, brief: `docs/upgrade/AGENT-A.md`)
+Held-out validation split, per-epoch val loss, early stopping, best-epoch weight restore, and
+an optional LR schedule in `fit()`, wired through `train.py`/`pretrain.py`/`finetune.py`.
+Adds one **additive** checkpoint key, `"val_names"` (readers must use
+`ckpt.get("val_names", [])`); the four keys in §2 are unchanged. Owns `src/train.py`,
+`src/pretrain.py`, `src/finetune.py`, `src/data.py`.
+
+#### WS-7 · Decoding quality — ⏳ open (`claude/ws7-decoding-quality`, brief: `docs/upgrade/AGENT-B.md`)
+top-k / nucleus / repetition-penalty sampling as keyword-only params on
+`generate_one`/`generate_many` (defaults = today's plain temperature sampling), plus a
+near-duplicate (edit-distance) memorization metric, honest held-out NLL when a checkpoint
+carries `val_names`, and a `--sweep` grid that picks decoding settings with numbers.
+Owns `src/sample.py`, `src/evaluate.py`.
+
+#### WS-8 · CI & repo hygiene — ⏳ open (`claude/ws8-ci-and-hygiene`, brief: `docs/upgrade/AGENT-C.md`)
+First CI for the repo (`.github/workflows/ci.yml`: unittest suite + CLI smoke train/sample),
+a stdlib-only `scripts/check_repo.py` that catches dataset-registry drift, committed weights,
+and secrets/PII (§3), plus `/api/health` and real error handling in the phone UI.
+Owns `.github/`, `scripts/`, `src/serve.py`, `web/`.
+
+> `src/config.py` was pre-wired with all fields WS-6 and WS-7 need (defaults reproduce
+> current behavior), so **no wave-2 agent edits it**. `src/model.py` and `src/train_dual.py`
+> are frozen for the wave. Domain conditioning (`docs/PLAN.md §9.4`) and alternative
+> backbones (§9.6) are deliberately deferred to wave 3 — they need the same four files at
+> once and cannot be parallelized safely.
+
+---
+
 ## 4. Dataset registry
 
 Keep this in sync with `data/` and the README catalog. One row per dataset file.
@@ -255,6 +291,10 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/next-item-v4te8p` | **Consolidated PR**: WS-4 dual-output (chosen implementation, originally from `scope-vs-please-yrlsll`) + all salvaged WS-1/WS-4 datasets from the three parallel branches below | 2026-07-24 | ⏳ in review |
   | `claude/scope-vs-please-yrlsll` | WS-1 `world_cities.txt` (superseded by the merged file) + WS-4 dual-output (chosen implementation, ported to `next-item-v4te8p`) | 2026-07-24 | ⚠️ superseded by consolidation, PR #5 to be closed |
   | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt`/`motorcycle_brands.txt`/`city_names.txt` (superseded by the merged file) + WS-4 dual-output (discarded design, its `periodic_elements.tsv`/`paint_colors.tsv` ported to `next-item-v4te8p`) | 2026-07-24 | ⚠️ superseded by consolidation |
+  | `claude/burple-fink-upgrade-plan-m7ndof` | Wave-2 plan + workspace prep (`docs/UPGRADE_PLAN.md`, per-agent briefs, `src/config.py` pre-wiring) | 2026-07-29 | ⏳ in review |
+  | `claude/ws6-training-quality` | WS-6 training quality (Agent A) | 2026-07-29 | 🔒 reserved, not started |
+  | `claude/ws7-decoding-quality` | WS-7 decoding quality (Agent B) | 2026-07-29 | 🔒 reserved, not started |
+  | `claude/ws8-ci-and-hygiene` | WS-8 CI & repo hygiene (Agent C) | 2026-07-29 | 🔒 reserved, not started |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.

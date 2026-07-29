@@ -41,6 +41,26 @@ class Config:
     value_std: float = 1.0
     value_label: str = ""       # human label for the attribute, e.g. "founding year"
 
+    # --- wave-2 upgrade knobs (pre-wired 2026-07-29) ---
+    # These fields are declared up front, before the work that consumes them, so that
+    # three parallel agents never have to edit this shared file at the same time --
+    # the exact collision that produced three duplicate WS-4 implementations on
+    # 2026-07-24. Every default below reproduces the pre-wave behavior exactly.
+    # See docs/UPGRADE_PLAN.md.
+
+    # WS-6 · training quality (consumed by src/train.py, pretrain.py, finetune.py)
+    val_fraction: float = 0.0        # share of names held out for validation; 0 = no split
+    early_stop_patience: int = 0     # stop after N epochs with no val improvement; 0 = never
+    lr_schedule: str = "none"        # "none" | "plateau" | "cosine"
+    lr_factor: float = 0.5           # plateau: multiply the LR by this when val stalls
+    lr_min: float = 0.0              # floor for any schedule
+
+    # WS-7 · decoding quality (consumed by src/sample.py, evaluate.py)
+    top_k: int = 0                   # sample only from the k likeliest next chars; 0 = off
+    top_p: float = 1.0               # nucleus: smallest set with cumulative prob >= p; 1.0 = off
+    repetition_penalty: float = 1.0  # >1 discourages chars already emitted; 1.0 = off
+    min_length: int = 2              # discard generated names shorter than this
+
     def to_dict(self) -> dict:
         return asdict(self)
 

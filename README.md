@@ -38,6 +38,11 @@ colliding with other agents. Repo-wide conventions and commands for agents also 
 | **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | ✅ Done |
 | **5. Serving** | CLI ✅ → live server ✅ → in-browser web app ✅ | ✅ Done |
 
+**Wave 2 (planned 2026-07-29)** upgrades the quality of what's already built rather than
+adding stages: honest held-out validation + early stopping (WS-6), top-k/nucleus sampling
+and a decoding sweep (WS-7), and the repo's first CI (WS-8). Three parallel agents, one
+brief each — see [`docs/UPGRADE_PLAN.md`](docs/UPGRADE_PLAN.md).
+
 The full rationale and design for each stage lives in [`docs/PLAN.md`](docs/PLAN.md).
 
 ---
