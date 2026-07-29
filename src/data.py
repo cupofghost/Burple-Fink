@@ -10,6 +10,7 @@ from __future__ import annotations
 import glob
 import json
 import os
+import random
 from typing import List, Tuple
 
 import torch
@@ -187,6 +188,48 @@ def filter_to_vocab(names: List[str], vocab: Vocab) -> Tuple[List[str], List[str
     for name in names:
         (kept if all(ch in known for ch in name) else dropped).append(name)
     return kept, dropped
+
+
+def split_names(
+    names: List[str],
+    val_fraction: float,
+    seed: int = 1337,
+) -> Tuple[List[str], List[str]]:
+    """Split ``names`` into ``(train, val)`` deterministically (WS-6).
+
+    Why this exists: until now every model trained on 100% of its dataset, so nothing
+    in the repo could distinguish "learned the style" from "memorized 66 car brands".
+    A held-out slice is the cheapest honest instrument for that.
+
+    Determinism is the whole point — the same ``(names, val_fraction, seed)`` must
+    always produce the same two lists, or a "best val loss" is not comparable between
+    runs and the checkpoint's ``val_names`` would not mean anything. We shuffle a copy
+    with Python's own ``random.Random(seed)`` (not ``torch``) so the split is
+    independent of, and cannot perturb, the training loop's RNG stream.
+
+    Guarantees: the two lists are disjoint, together they cover every input name, and
+    each preserves the original relative order. ``val_fraction <= 0`` returns
+    ``(names, [])`` — today's behavior, exactly. The validation slice is clamped to
+    ``1 .. len(names) - 1`` when the fraction is nonzero, so a split never empties the
+    training set and never silently yields an empty validation set.
+    """
+    if val_fraction <= 0 or len(names) < 2:
+        return list(names), []
+    if val_fraction >= 1:
+        raise ValueError(f"val_fraction must be < 1, got {val_fraction!r}")
+
+    n_val = int(round(len(names) * val_fraction))
+    n_val = max(1, min(n_val, len(names) - 1))
+
+    order = list(range(len(names)))
+    random.Random(seed).shuffle(order)
+    val_idx = set(order[:n_val])
+
+    # Iterate over the original order so both halves stay in dataset order; the
+    # shuffle decides *membership*, not sequence.
+    train = [name for i, name in enumerate(names) if i not in val_idx]
+    val = [name for i, name in enumerate(names) if i in val_idx]
+    return train, val
 
 
 def make_pairs(names: List[str], vocab: Vocab) -> List[Tuple[List[int], List[int]]]:

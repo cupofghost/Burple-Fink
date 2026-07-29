@@ -54,6 +54,13 @@ stages depend on them:
 }
 ```
 
+> **WS-6 adds one additive key: `"val_names"`** (a list of the held-out names, `[]` when the
+> model trained on everything). The four keys above are unchanged. Every reader must use
+> `ckpt.get("val_names", [])` — no checkpoint written before 2026-07-29 has the key, and a
+> bare `ckpt["val_names"]` would crash on all of them. When it is non-empty, `training_names`
+> is the *training half only*, so novelty is judged against what the model actually saw, and
+> the held-out names are available for an honest (non-training) NLL.
+
 > WS-4's dual-output head (§3) does not add or rename any of these keys — it only adds
 > new `Config` fields (`dual_output`/`value_mean`/`value_std`/`value_label`) inside the
 > existing `config` dict, plus extra `value_head.*` tensors inside `model_state` for
@@ -169,12 +176,23 @@ file-ownership matrix, the contracts, and the merge protocol are in
 `docs/upgrade/`. The lanes were partitioned so **no two agents edit the same file** — the
 failure mode that caused the 2026-07-24 consolidation.
 
-#### WS-6 · Training quality — ⏳ open (`claude/ws6-training-quality`, brief: `docs/upgrade/AGENT-A.md`)
-Held-out validation split, per-epoch val loss, early stopping, best-epoch weight restore, and
-an optional LR schedule in `fit()`, wired through `train.py`/`pretrain.py`/`finetune.py`.
-Adds one **additive** checkpoint key, `"val_names"` (readers must use
-`ckpt.get("val_names", [])`); the four keys in §2 are unchanged. Owns `src/train.py`,
-`src/pretrain.py`, `src/finetune.py`, `src/data.py`.
+#### WS-6 · Training quality — ✅ **done** (`claude/ws6-training-quality`, brief: `docs/upgrade/AGENT-A.md`)
+Implemented: `data.split_names(names, val_fraction, seed)` gives a deterministic, disjoint,
+order-preserving train/val split; `train.fit()` grew a keyword-only `val_names=` path that
+computes a held-out loss each epoch (`model.eval()` + `no_grad()`, unshuffled, so it draws
+nothing from any RNG), logs `train X.XXXX | val X.XXXX`, keeps the best epoch's `state_dict`
+in memory and restores it before returning, and stops after `cfg.early_stop_patience` stalled
+epochs. `cfg.lr_schedule` adds `"plateau"`/`"cosine"` (`"none"` builds no scheduler at all).
+`train.evaluate_loss()` is exposed for scoring any name list with the training criterion, and
+`fit(..., report=dict)` fills in the per-epoch curves plus `best_epoch`/`stopped_early` so the
+run is inspectable without parsing stdout. `--val-fraction` / `--patience` / `--lr-schedule`
+are wired through `train.py`, `pretrain.py` and `finetune.py`; all default to off. Adds one
+**additive** checkpoint key, `"val_names"` (readers must use `ckpt.get("val_names", [])`);
+the four keys in §2 are unchanged. 34 tests in `tests/test_training_quality.py`, including a
+golden pre-WS-6 loss trajectory that pins the default path. Measured result in `STATUS.md`.
+
+Deliberately not done: `src/train_dual.py`'s `fit_dual()` has its own loop and gets none of
+this — it is the obvious follow-up, and it was frozen for wave 2.
 
 #### WS-7 · Decoding quality — ✅ **done** (`claude/ws7-decoding-quality-fcmaoj`, brief: `docs/upgrade/AGENT-B.md`)
 Implemented: `src/sample.py`'s `generate_one`/`generate_many` gained keyword-only
@@ -319,9 +337,9 @@ Document the choice in `docs/PLAN.md` when you implement it.
   | `claude/scope-vs-please-yrlsll` | WS-1 `world_cities.txt` (superseded by the merged file) + WS-4 dual-output (chosen implementation, ported to `next-item-v4te8p`) | 2026-07-24 | ⚠️ superseded by consolidation, PR #5 to be closed |
   | `claude/next-task-tnbsmq` | WS-1 `tech_startups.txt`/`motorcycle_brands.txt`/`city_names.txt` (superseded by the merged file) + WS-4 dual-output (discarded design, its `periodic_elements.tsv`/`paint_colors.tsv` ported to `next-item-v4te8p`) | 2026-07-24 | ⚠️ superseded by consolidation |
   | `claude/burple-fink-upgrade-plan-m7ndof` | Wave-2 plan + workspace prep (`docs/UPGRADE_PLAN.md`, per-agent briefs, `src/config.py` pre-wiring) | 2026-07-29 | ⏳ in review |
-  | `claude/ws6-training-quality` | WS-6 training quality (Agent A) | 2026-07-29 | 🔒 reserved, not started |
-  | `claude/ws7-decoding-quality-fcmaoj` | WS-7 decoding quality (Agent B) | 2026-07-29 | ⏳ in review |
-  | `claude/ws8-ci-and-hygiene-w4f3tb` | WS-8 CI & repo hygiene (Agent C) | 2026-07-29 | ✅ done, PR open |
+  | `claude/ws6-training-quality` | WS-6 training quality (Agent A): held-out split, val loss, early stopping, best-epoch restore, LR schedules; additive `val_names` checkpoint key | 2026-07-29 | ⏳ in review |
+  | `claude/ws7-decoding-quality-fcmaoj` | WS-7 decoding quality (Agent B) | 2026-07-29 | ✅ merged to main |
+  | `claude/ws8-ci-and-hygiene-w4f3tb` | WS-8 CI & repo hygiene (Agent C) | 2026-07-29 | ✅ merged to main |
 
 - **Low-collision zones** (edit freely): new files under `data/`, new modules under
   `src/` (e.g. `pretrain.py`, `finetune.py`, `evaluate.py`), your own docs.
