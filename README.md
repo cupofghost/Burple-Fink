@@ -37,6 +37,7 @@ colliding with other agents. Repo-wide conventions and commands for agents also 
 | **3. Evaluation harness** | Automatic novelty / plausibility / diversity metrics to compare checkpoints | ✅ Done |
 | **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | ✅ Done |
 | **5. Serving** | CLI ✅ → live server ✅ → in-browser web app ✅ | ✅ Done |
+| **6. Training quality** | Held-out split, per-epoch val loss, early stopping, best-epoch weights, LR schedules | ✅ Done |
 
 **Wave 2 (planned 2026-07-29)** upgrades the quality of what's already built rather than
 adding stages: honest held-out validation + early stopping (WS-6), top-k/nucleus sampling
@@ -103,6 +104,54 @@ python -m src.evaluate --checkpoint checkpoints/car_models_ft.pt --temperature 1
 
 See [`HANDOFF.md §6`](HANDOFF.md#6-key-design-decision-for-fine-tuning-shared-vocabulary)
 for the shared-vocabulary design that makes fine-tuning possible.
+
+### Training honestly: hold some names back
+
+A 256-wide, 2-layer LSTM has far more capacity than 150 car brands. Trained on 100% of a
+dataset for a fixed 300 epochs, there is no way to tell whether it learned a *style* or
+simply memorized the list. Three opt-in flags fix that — they work on `src.train`,
+`src.pretrain` and `src.finetune` alike:
+
+```bash
+# Hold back 15% of the names, report a real held-out loss every epoch, keep the
+# best-scoring epoch's weights (not the last epoch's), and stop once it stops improving.
+python -m src.train --data data/aircraft.txt --val-fraction 0.15 --patience 20 --name aircraft
+
+# Optional learning-rate schedule: 'none' (default) | 'plateau' | 'cosine'
+python -m src.finetune --base checkpoints/base.pt --data data/car_models.txt \
+    --name car_models --val-fraction 0.15 --patience 10 --lr-schedule plateau
+```
+
+The log gains a second number — `epoch  120/300 | train 0.8123 | val 1.4470` — and the run
+tells you which epoch it kept. Checkpoints trained this way carry the held-out names under
+an additive `val_names` key ([HANDOFF §2](HANDOFF.md#2-current-state-stages-0-2-3-5-complete)),
+so evaluation can score against names the model never saw.
+
+Every flag defaults to off, so leaving them out trains exactly as before —
+`tests/test_training_quality.py` pins the default loss trajectory against the pre-WS-6
+one to prove it.
+
+**What this measured, and what to type instead of `--epochs 300`.** Held-out loss on both
+test datasets bottoms out early and then gets *worse* for the remaining ~90% of the budget:
+
+| Dataset | Names | Val loss bottoms at | Val loss by epoch 300 | Train/val gap at 300 |
+|---|---|---|---|---|
+| `car_manufacturers.txt` | 159 | epoch **12–19** | 2.98 → **6.87** (130% worse) | 6.15 nats |
+| `aircraft.txt` | 435 | epoch **~26** | 0.78 → **1.02** (30% worse) | 0.64 nats |
+
+Suggested starting points — and note the honest caveat below them:
+
+| Dataset size | `--epochs` | `--patience` |
+|---|---|---|
+| under ~200 names | 60 | 10 |
+| ~200–500 names | 120 | 20 |
+| 1,000+ names (e.g. `english_words.txt`) | 300 (unmeasured — measure it) | 30 |
+
+The caveat: on `car_manufacturers` the val-optimal epoch arrives *before* the model has
+learned to spell, so early-stopped samples are rougher than 300-epoch ones. That is not an
+argument for a smaller epoch default — it is an argument that 135 training names cannot
+support a 2-layer, 256-wide LSTM. Prefer bigger datasets. See
+[`STATUS.md`](STATUS.md) for the full numbers and two caveats worth reading.
 
 ### Dual-output: name + numeric attribute (Shane's paint-color trick)
 
