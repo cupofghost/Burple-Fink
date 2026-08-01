@@ -328,7 +328,11 @@ def resolve_dataset(checkpoint_path: str, cfg=None, data_dir: str = "data") -> D
         "id": dataset or stem,
         "label": str(label),
         "domain": str(domain),
+        # Provenance rides along to the UI. Every wave-3 dataset is verified:false --
+        # recalled from general knowledge, not cross-checked against a primary source --
+        # and a page that quietly implied otherwise would be lying about its own inputs.
         "verified": bool(meta.get("verified", False)),
+        "provenance": str(meta.get("provenance", "")),
     }
 
 
@@ -352,6 +356,8 @@ def dataset_catalog(data_dir: str = "data") -> List[Dict]:
             "label": str(meta.get("label") or pretty_label(stem)),
             "domain": str(meta.get("domain") or DOMAIN_FALLBACK),
             "count": count,
+            "verified": bool(meta.get("verified", False)),
+            "provenance": str(meta.get("provenance", "")),
         })
     return entries
 
@@ -385,6 +391,8 @@ def export_model(checkpoint: str, label: Optional[str] = None, device: str = "cp
         "id": info["id"],
         "label": label or info["label"],
         "domain": domain or info["domain"],
+        "verified": info["verified"],
+        "provenance": info["provenance"],
         "hidden_dim": cfg.hidden_dim,
         "num_layers": cfg.num_layers,
         "embedding_dim": embedding_dim,

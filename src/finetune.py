@@ -21,10 +21,16 @@ The 60 epochs / 5e-4 below were always a guess. Since WS-6 you can measure inste
 best-scoring epoch's weights, and stops when it stops improving. Off by default, so an
 un-flagged fine-tune behaves exactly as it did before.
 
+Since WS-10 you can stop guessing the 60 as well: ``--auto-epochs`` derives the budget
+from the size of the fine-tune dataset. ``--weight-decay`` / ``--label-smoothing`` /
+``--warmup-epochs`` are available here too, and — like the WS-6 flags — are reset to
+their defaults rather than inherited from the base checkpoint.
+
 Usage:
     python -m src.finetune --base checkpoints/base.pt --data data/car_models.txt --name car_models
     python -m src.finetune --base checkpoints/base.pt --data data/car_models.txt --name car_models --epochs 80 --lr 3e-4
     python -m src.finetune --base checkpoints/base.pt --data data/car_models.txt --name car_models --val-fraction 0.15 --patience 10
+    python -m src.finetune --base checkpoints/base.pt --data data/car_models.txt --name car_models --auto-epochs --val-fraction 0.15
 """
 
 from __future__ import annotations
@@ -113,6 +119,12 @@ def finetune(
         print(f"  (skipped {len(dropped)} names with characters outside the base "
               f"model's shared vocab)")
 
+    if auto_epochs:
+        # Derived from the *fine-tune* dataset, not the base corpus: this run only ever
+        # sees these names. It still lands well above the 60-epoch default on anything
+        # bigger than ~250 names, which is the point — 60 was always a guess.
+        apply_auto_epochs(cfg, len(names), log_prefix="ft ")
+
     train_names, val_names = split_names(names, cfg.val_fraction, cfg.seed)
     split_note = f" | {len(train_names)} train / {len(val_names)} val" if val_names else ""
     print(f"Fine-tuning {base_path} on {len(names)} names from {data_path} "
@@ -155,12 +167,23 @@ def main() -> None:
     parser.add_argument("--lr-schedule", choices=("none", "plateau", "cosine"),
                         default=None, dest="lr_schedule",
                         help="Learning-rate schedule. Default 'none' = constant LR.")
+    # No --seed-init here: fine-tuning starts from the base checkpoint's weights, so
+    # there is no random initialization to seed. --arch is accepted only to confirm the
+    # base's architecture (see finetune()).
+    add_regimen_args(parser, include_seed_init=False)
+    parser.add_argument("--auto-epochs", action="store_true",
+                        help="Derive the epoch budget from the fine-tune dataset's size "
+                             f"instead of the fixed {FINETUNE_EPOCHS}. Ignored if "
+                             "--epochs is also given.")
     args = parser.parse_args()
 
     if not os.path.exists(args.base):
         parser.error(
             f"Base checkpoint not found: {args.base}. Run `python -m src.pretrain` first."
         )
+
+    if args.auto_epochs and args.epochs is not None:
+        print(f"--epochs {args.epochs} was given explicitly; ignoring --auto-epochs.")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     finetune(
@@ -174,6 +197,11 @@ def main() -> None:
         val_fraction=args.val_fraction,
         early_stop_patience=args.early_stop_patience,
         lr_schedule=args.lr_schedule,
+        weight_decay=args.weight_decay,
+        label_smoothing=args.label_smoothing,
+        warmup_epochs=args.warmup_epochs,
+        arch=args.arch,
+        auto_epochs=args.auto_epochs and args.epochs is None,
     )
 
 

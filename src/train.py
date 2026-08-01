@@ -524,20 +524,27 @@ def train(
 REGIMEN_FIELDS = ("arch", "seed_init", "weight_decay", "label_smoothing", "warmup_epochs")
 
 
-def add_regimen_args(parser: argparse.ArgumentParser) -> None:
+def add_regimen_args(parser: argparse.ArgumentParser,
+                     include_seed_init: bool = True) -> None:
     """Add ``--arch`` and the WS-10 training-regimen flags to ``parser``.
 
     Every default is ``None`` — meaning "not passed" — so the ``Config`` default survives
     unless the flag is actually used. ``--arch`` only sets ``cfg.arch``; the architectures
     themselves are WS-9's (``src/model.py``), and ``lstm`` is today's model.
+
+    ``include_seed_init=False`` for :mod:`src.finetune`, which loads its weights from a
+    checkpoint and so has no random initialization to seed. Offering the flag there would
+    be offering a switch wired to nothing.
     """
     parser.add_argument("--arch", choices=("lstm", "gru", "transformer"), default=None,
                         help="Model architecture. Default 'lstm' = today's model.")
-    parser.add_argument("--seed-init", action=argparse.BooleanOptionalAction,
-                        default=None, dest="seed_init",
-                        help="Seed the RNG before building the model, so the initial "
-                             "weights are reproducible too. On by default since WS-10; "
-                             "--no-seed-init restores the old unseeded initialization.")
+    if include_seed_init:
+        parser.add_argument("--seed-init", action=argparse.BooleanOptionalAction,
+                            default=None, dest="seed_init",
+                            help="Seed the RNG before building the model, so the initial "
+                                 "weights are reproducible too. On by default since "
+                                 "WS-10; --no-seed-init restores the old unseeded "
+                                 "initialization.")
     parser.add_argument("--weight-decay", type=float, default=None, dest="weight_decay",
                         help="AdamW decoupled weight decay, e.g. 0.01. Default 0 = plain "
                              "Adam. Any value > 0 switches the optimizer to AdamW.")
