@@ -91,33 +91,26 @@ RULE_SIDECAR = "sidecar"
 # Verified against the tree on 2026-08-01; counts are offending lines at that time.
 # ---------------------------------------------------------------------------
 KNOWN_NONCONFORMING: Dict[str, Set[str]] = {
-    # Alphanumeric type designations are the actual names: "ATR 42-300", "Boeing 737".
-    # 330/435 lines. Also the only source of the digit "1", which is *absent* from
-    # shared_vocab.json entirely (65 occurrences here) — see the report at the bottom.
-    "aircraft.txt": {RULE_CHARSET},
-    # Model designations again ("Aprilia RS660", "BMW F800"): 143/359 lines, 64 "1"s.
-    "motorcycles.txt": {RULE_CHARSET},
-    # Beer names carry digits and apostrophes ("90 Minute", "Bell's Two Hearted") plus
-    # one "ä": 25/398 lines.
+    # --- character set: apostrophes, periods, ampersands, slashes, accents ----------
+    # 18/398 lines: 17 apostrophes ("Bell's Two Hearted") and one "ä".
     "craft_beers.txt": {RULE_CHARSET},
-    # Real horse names use apostrophes and one period ("Man O' War", "Dr. Fager"):
-    # 5/355 lines.
+    # 5/355 lines: 4 apostrophes ("Man O' War", "Comet's Flash") and one period
+    # ("Dr. Fager").
     "racehorses.txt": {RULE_CHARSET},
-    # City names carry accented Latin ("Araxá", "Açores"), plus 5 periods and — the
-    # genuinely nasty one — a U+00AD SOFT HYPHEN, invisible in every editor: 93/1691.
-    "world_cities.txt": {RULE_CHARSET},
-    # "Auth0" and "n8n" are the companies' real spellings: 2/400 lines.
-    "tech_startups.txt": {RULE_CHARSET},
-    # One ampersand: "Bells & Whistles" (line 148 of 391).
-    "paint_colors.txt": {RULE_CHARSET},
-    # Acronyms and mission numbers ("2MASS", "Jason 1", "Chang'e", one "/"): 25/270.
-    # Owned by WS-17 this wave.
+    # 2/270 lines: "Chang'e" and one "/". Owned by WS-17 this wave.
     "spacecraft.txt": {RULE_CHARSET},
-    # 12/259 lines are model numbers ("RAV4", "Model 3", "RX-7"), and two names repeat
-    # exactly (Wrangler 106/174, Continental 208/254). Owned by WS-17 this wave.
-    "car_models.txt": {RULE_CHARSET, RULE_DUPLICATE},
-    # "Skoda" appears twice (lines 33 and 118). Owned by WS-17 this wave.
+    # 1/391 lines: "Bells & Whistles" (line 148).
+    "paint_colors.txt": {RULE_CHARSET},
+    # 93/1691 lines, and the worst of the set: accented Latin (á í ç ã ê é ú ó â ñ É Ñ),
+    # 5 periods, 2 apostrophes, and one U+00AD SOFT HYPHEN that is invisible in every
+    # editor. These are the names shared_vocab.json already drops silently.
+    "world_cities.txt": {RULE_CHARSET},
+
+    # --- exact duplicate lines -------------------------------------------------------
+    # "Skoda" twice (lines 33 and 118). Owned by WS-17 this wave.
     "car_manufacturers.txt": {RULE_DUPLICATE},
+    # "Wrangler" (106/174) and "Continental" (208/254). Owned by WS-17 this wave.
+    "car_models.txt": {RULE_DUPLICATE},
 }
 
 
@@ -179,8 +172,10 @@ def _describe_char(ch: str, vocab: Optional[Set[str]]) -> str:
     if not ch.isprintable():
         note += " (non-printable)"
     if vocab is not None and ch not in vocab:
-        note += "; NOT in shared_vocab.json — this character cannot be represented by " \
-                "any existing checkpoint"
+        # Annotation only — shared_vocab.json is stale, so its absence is corroborating
+        # evidence, never the reason a line fails.
+        note += "; also absent from the current shared_vocab.json, so it is being "
+        note += "dropped silently at encode time"
     return f"{shown} ({note})"
 
 
@@ -221,7 +216,7 @@ def check_lines(
         if not LINE_RE.match(line):
             offenders = [
                 (i, ch) for i, ch in enumerate(line, start=1)
-                if not (ch.isascii() and ch.isalpha())
+                if not (ch.isascii() and ch.isalnum())
                 and not (ch in " -" and 1 < i < len(line))
             ]
             if not offenders:
