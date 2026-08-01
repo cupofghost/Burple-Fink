@@ -1,0 +1,10 @@
+{
+  "name": "tech_startups",
+  "label": "Tech company and startup names",
+  "domain": "Business",
+  "count": 400,
+  "provenance": "Wave-1 WS-1, added 2026-07-24 on branch claude/next-task-tnbsmq and folded in uncontested during that day's consolidation. Well-known technology companies and startups recalled from general knowledge; no funding database or company register was consulted. Two lines, 'Auth0' and 'n8n', are the companies' real spellings and are grandfathered in scripts/check_data.py.",
+  "verified": false,
+  "added": "2026-07-24",
+  "signature": "Claude Code | Opus 5 | medium"
+}

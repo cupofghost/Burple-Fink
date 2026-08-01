@@ -1,0 +1,13 @@
+{
+  "name": "car_manufacturers_founding_year",
+  "label": "Car brands + founding year",
+  "domain": "Transport",
+  "file": "car_manufacturers_founding_year.tsv",
+  "format": "name_value",
+  "value_label": "Founding year (Gregorian calendar year the marque was established)",
+  "count": 66,
+  "provenance": "WS-4 dual-output demo, added 2026-07-24 on branch claude/scope-vs-please-yrlsll and kept during that day's consolidation. Tab-separated name<TAB>value. STATUS.md carries a standing caveat on this file: the founding years come from each brand's commonly cited history and were never cross-checked against a primary source, so treat them as approximate rather than authoritative. Values range 1899-2017.",
+  "verified": false,
+  "added": "2026-07-24",
+  "signature": "Claude Code | Opus 5 | medium"
+}

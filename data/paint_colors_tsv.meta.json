@@ -1,0 +1,13 @@
+{
+  "name": "paint_colors_tsv",
+  "label": "CSS named colors + relative luminance",
+  "domain": "Design",
+  "file": "paint_colors.tsv",
+  "format": "name_value",
+  "value_label": "Relative luminance computed from the color's hex (0.0 = black, 1.0 = white)",
+  "count": 141,
+  "provenance": "WS-4 dual-output demo, added 2026-07-24 on branch claude/next-item-v4te8p and kept during that day's consolidation (a near-identical copy from a second branch was deduped away). Tab-separated name<TAB>value. Names and hex values are the standardised CSS Color Module Level 4 extended keyword list, with scripts/build_paint_colors.py as the source of truth and regenerator; the value is not an external fact but is computed from the hex by that script using the standard relative-luminance formula, so it is internally consistent by construction. Sidecar is named paint_colors_tsv.meta.json rather than paint_colors.meta.json because data/paint_colors.txt - an unrelated WS-1 dataset - already owns that stem.",
+  "verified": false,
+  "added": "2026-07-24",
+  "signature": "Claude Code | Opus 5 | medium"
+}
