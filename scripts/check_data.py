@@ -234,7 +234,7 @@ def check_lines(
                 more = "" if len(offenders) <= 5 else f" (+{len(offenders) - 5} more)"
                 add(
                     RULE_CHARSET, lineno,
-                    f"{line!r} does not match ^[A-Za-z][A-Za-z -]*[A-Za-z]$ — "
+                    f"{line!r} does not match ^[A-Za-z0-9][A-Za-z0-9 -]*[A-Za-z0-9]$ — "
                     f"{shown}{more}",
                 )
 
@@ -404,27 +404,39 @@ def format_table(reports: Sequence[DatasetReport]) -> str:
     return "\n".join(out)
 
 
-def _print_findings(reports: Sequence[DatasetReport], verbose: bool, limit: int = 10) -> None:
+def _print_findings(
+    reports: Sequence[DatasetReport], verbose: bool, stream, limit: int = 10,
+) -> None:
     for report in reports:
         hard = [f for f in report.findings if not f.grandfathered]
         soft = [f for f in report.findings if f.grandfathered]
         if not hard and not soft:
             continue
-        print(f"\n{report.dataset}")
-        for finding in hard[:limit]:
-            print(f"  {finding.level.upper():7} [{finding.rule}] {finding.message}")
-        if len(hard) > limit:
-            print(f"  ... and {len(hard) - limit} more (use --verbose to see all)")
+        print(f"\n{report.dataset}", file=stream)
+        shown = hard if verbose else hard[:limit]
+        for finding in shown:
+            print(
+                f"  {finding.level.upper():7} [{finding.rule}] {finding.message}",
+                file=stream,
+            )
+        if len(hard) > len(shown):
+            print(
+                f"  ... and {len(hard) - len(shown)} more (use --verbose to see all)",
+                file=stream,
+            )
         if soft:
             by_rule: Dict[str, int] = defaultdict(int)
             for finding in soft:
                 by_rule[finding.rule] += 1
             summary = ", ".join(f"{n} {rule}" for rule, n in sorted(by_rule.items()))
-            print(f"  WARNING [grandfathered] {summary} — pre-existing, see "
-                  f"KNOWN_NONCONFORMING in scripts/check_data.py")
+            print(
+                f"  WARNING [grandfathered] {summary} — pre-existing, see "
+                f"KNOWN_NONCONFORMING in scripts/check_data.py",
+                file=stream,
+            )
             if verbose:
                 for finding in soft:
-                    print(f"      [{finding.rule}] {finding.message}")
+                    print(f"      [{finding.rule}] {finding.message}", file=stream)
 
 
 def run(
@@ -445,7 +457,7 @@ def run(
     warnings = [f for f in findings if f.level == "warning"]
 
     print(format_table(reports), file=stream)
-    _print_findings(reports, verbose=verbose)
+    _print_findings(reports, verbose=verbose, stream=stream)
 
     total = sum(r.count for r in reports)
     print(
