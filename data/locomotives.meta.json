@@ -1,0 +1,10 @@
+{
+  "name": "locomotives",
+  "label": "Locomotives",
+  "domain": "Rail",
+  "count": 395,
+  "provenance": "Recalled from knowledge of British named steam classes (GWR Castle/Hall/Manor/King, LNER A1/A3/A4, LMS Princess/Duchess/Jubilee/Royal Scot, SR Merchant Navy/West Country/Battle of Britain, BR Standard/Clan), narrow-gauge Welsh and Cumbrian railways, early pioneers, US and continental types. Running numbers and apostrophes stripped; deliberately kept conservative rather than padded.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}

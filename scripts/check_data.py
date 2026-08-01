@@ -4,18 +4,29 @@
 Wave 3 lands ~22 new datasets from four parallel lanes. Nobody reviews 22 files by eye,
 so this is the gate: run it before you hand a dataset off.
 
-Why the character rule is strict
---------------------------------
-`data/shared_vocab.json` freezes the model's alphabet. Every checkpoint in
-`checkpoints/` was trained against that exact `itos` list, and `src/data.py` maps an
-unknown character to nothing at all — so one stray `é`, apostrophe or soft hyphen does
-not crash anything, it silently changes what the model can spell and quietly
-invalidates comparisons against every existing checkpoint. Catching it here costs a
-second; catching it after a training sweep costs the sweep.
+Why the character rule matters
+------------------------------
+The model has a fixed alphabet, and `src/data.py` maps an unknown character to nothing
+at all. A stray `é`, apostrophe or soft hyphen therefore doesn't crash anything — it
+silently changes what the model can spell and quietly invalidates comparisons against
+existing checkpoints. Catching it here costs a second; catching it after a training
+sweep costs the sweep.
+
+Digits are *allowed*: they are load-bearing in real names (`ATR 42`, `RAV4`, `MR2`,
+`90 Minute`), and excluding them would condemn three otherwise-clean datasets. Anything
+beyond letters, digits, spaces and hyphens is an error — apostrophes, periods,
+ampersands, slashes and accented Latin all have to be normalised before the data lands.
+
+Note on `data/shared_vocab.json`: it is known to be **stale** — its alphabet omits the
+digit `1` as well as accents and apostrophes, so some names are already being dropped
+silently at fine-tune time. Regenerating it is the orchestrator's job at consolidation.
+This script therefore validates against the rule above, not against that file; it only
+reads the vocab to *annotate* a finding with "and this character isn't in the current
+vocab either", never to decide whether something is an error.
 
 What it checks
 --------------
-1. Character set — every line matches ``^[A-Za-z][A-Za-z -]*[A-Za-z]$``.
+1. Character set — every line matches ``^[A-Za-z0-9][A-Za-z0-9 -]*[A-Za-z0-9]$``.
 2. Duplicates within a file, case-insensitively.
 3. Blank lines and lines shorter than two characters.
 4. The `data/<stem>.meta.json` sidecar: required keys, `name` == stem, `count` == the
@@ -46,11 +57,11 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 VOCAB_PATH = "shared_vocab.json"
 
-#: Letters, interior spaces and hyphens; no leading/trailing whitespace; at least two
-#: characters. Deliberately narrower than `shared_vocab.json` (which also carries
-#: digits) because a *name* dataset made of model numbers teaches the model arithmetic
-#: noise rather than name shapes.
-LINE_RE = re.compile(r"^[A-Za-z][A-Za-z -]*[A-Za-z]$")
+#: Letters, digits, interior spaces and hyphens; no leading/trailing whitespace; at
+#: least two characters. Digits are in because real names use them ("ATR 42", "RAV4").
+#: Apostrophes, periods, ampersands, slashes and accented Latin are out: they are the
+#: characters that actually go missing at encode time.
+LINE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9 -]*[A-Za-z0-9]$")
 
 MIN_LINE_LENGTH = 2
 

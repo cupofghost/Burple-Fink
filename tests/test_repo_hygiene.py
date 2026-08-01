@@ -139,7 +139,7 @@ class SecretsAndPiiTests(unittest.TestCase):
         self.assertEqual(self._scan("Just some ordinary documentation text.\n"), [])
 
     def test_email_address_is_flagged(self):
-        issues = self._scan("Contact: someone@example.com for details.\n")
+        issues = self._scan("Contact: someone@example.com for details.\n")  # check_repo: allow (fake)
         self.assertEqual(len(issues), 1)
         self.assertIn("email", issues[0])
 
@@ -174,9 +174,11 @@ class FixtureSuppressionTests(unittest.TestCase):
     """WS-13: the scanner used to flag its own fixtures and the STATUS.md paragraph
     describing that bug, which made CI's `hygiene` job red on every push.
 
-    These tests pin down that the fix is *narrow*. There is no file-level or
-    directory-level exemption: every test below feeds the scanner a secret from a file
-    that has not opted out, and expects it to be caught.
+    These tests pin down that the fix is *narrow*. There is no file-level,
+    directory-level or domain-level exemption — only a per-line `check_repo: allow`
+    pragma and an exact (path, string) allowlist for the one unowned file that cannot
+    carry a pragma. Every other test below feeds the scanner a secret from a file that
+    has not opted out, and expects it to be caught.
     """
 
     def _scan_file(self, name, content):
@@ -202,9 +204,8 @@ class FixtureSuppressionTests(unittest.TestCase):
     def test_secret_under_tests_dir_is_not_blanket_skipped(self):
         """Guards against the lazy fix (`if 'tests/' in path: continue`)."""
         tmp = Path(tempfile.mkdtemp())
-        path = _write(  # check_repo: allow (fake)
-            tmp / "tests" / "test_thing.py", "KEY = 'AKIAQQQQWWWWEEEERRRR'\n",
-        )
+        content = "KEY = 'AKIAQQQQWWWWEEEERRRR'\n"  # check_repo: allow (fake)
+        path = _write(tmp / "tests" / "test_thing.py", content)
         issues = check_secrets_and_pii([path])
         self.assertTrue(any("AWS" in i for i in issues), issues)
 
@@ -230,29 +231,39 @@ class FixtureSuppressionTests(unittest.TestCase):
         self.assertIn("OpenAI", issues[0])
 
     def test_real_email_domain_is_still_pii(self):
-        issues = self._scan_file(  # check_repo: allow (fake)
-            "notes.md", "ping owner@gmail.com about it\n",
-        )
+        address = "owner@gmail.com"  # check_repo: allow (fake)
+        issues = self._scan_file("notes.md", f"ping {address} about it\n")
         self.assertEqual(len(issues), 1, issues)
-        self.assertIn("owner@gmail.com", issues[0])  # check_repo: allow (fake)
+        self.assertIn(address, issues[0])
 
-    def test_reserved_example_domains_are_not_pii(self):
-        """RFC 2606 / RFC 6761 names cannot be registered, so an address at one is
-        documentation. This is what lets STATUS.md keep quoting `someone@example.com`
-        while describing the very bug this class fixes, unedited."""
-        content = (
-            "someone@example.com\n"
-            "a@example.org\n"
-            "b@mail.example.com\n"
-            "c@my-service.test\n"
-            "d@thing.invalid\n"
-        )
-        self.assertEqual(self._scan_file("doc.md", content), [])
+    def test_example_domain_is_not_blanket_allowed(self):
+        """The allowance is per (file, string), NOT per domain. An `example.com`
+        address that has not opted out is still PII as far as this scanner is
+        concerned — `SecretsAndPiiTests.test_email_address_is_flagged` depends on it."""
+        issues = self._scan_file("doc.md", "write to someone@example.com\n")  # check_repo: allow (fake)
+        self.assertEqual(len(issues), 1, issues)
+
+    def test_allowlist_is_scoped_to_one_file_and_one_string(self):
+        """STATUS.md may quote the fake address (it is unowned, so it cannot carry a
+        pragma), but nothing else gets a free pass on the strength of that."""
+        tmp = Path(tempfile.mkdtemp())
+        quoted = "the deliberately fake `someone@example.com`, OpenAI key\n"  # check_repo: allow (fake)
+        status = _write(tmp / "STATUS.md", quoted)
+        self.assertEqual(check_secrets_and_pii([status], repo_root=tmp), [])
+
+        # Same string, different file -> still reported.
+        other = _write(tmp / "notes.md", quoted)
+        self.assertEqual(len(check_secrets_and_pii([other], repo_root=tmp)), 1)
+
+        # Same file, different address -> still reported.
+        status2 = _write(tmp / "STATUS.md", quoted + "and someone@example.org\n")  # check_repo: allow (fake)
+        issues = check_secrets_and_pii([status2], repo_root=tmp)
+        self.assertEqual(len(issues), 1, issues)
+        self.assertIn("someone@example.org", issues[0])  # check_repo: allow (fake)
 
     def test_findings_carry_a_line_number(self):
-        issues = self._scan_file(  # check_repo: allow (fake)
-            "x.md", "clean\nclean\nmail: owner@company.co.uk\n",
-        )
+        content = "clean\nclean\nmail: owner@company.co.uk\n"  # check_repo: allow (fake)
+        issues = self._scan_file("x.md", content)
         self.assertEqual(len(issues), 1, issues)
         self.assertIn(":3:", issues[0])
 

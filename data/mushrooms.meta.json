@@ -1,0 +1,10 @@
+{
+  "name": "mushrooms",
+  "label": "Mushrooms and fungi",
+  "domain": "Nature",
+  "count": 441,
+  "provenance": "Fungus common names recalled from general mycology and field-guide knowledge, weighted toward British and North American guide names plus culinary species; apostrophes dropped (Dryads Saddle, Dead Mans Fingers).",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}
