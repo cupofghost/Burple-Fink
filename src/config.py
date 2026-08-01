@@ -61,6 +61,29 @@ class Config:
     repetition_penalty: float = 1.0  # >1 discourages chars already emitted; 1.0 = off
     min_length: int = 2              # discard generated names shorter than this
 
+    # --- wave-3 knobs (pre-wired 2026-08-01) ---
+    # Same discipline as wave 2 above: every field a wave-3 lane will consume is declared
+    # here *before* that lane starts, so no two parallel agents ever edit this file at the
+    # same time. Every default below reproduces pre-wave-3 behavior exactly, and
+    # `from_dict` already ignores unknown keys, so old checkpoints stay loadable.
+    # See docs/WAVE3_PLAN.md.
+
+    # WS-9 · architecture (consumed by src/model.py, src/arch/)
+    arch: str = "lstm"               # "lstm" | "gru" | "transformer"
+    num_heads: int = 4               # transformer only: self-attention heads
+    ff_dim: int = 512                # transformer only: feed-forward inner width
+    max_position: int = 64           # transformer only: longest position it can encode
+
+    # WS-10 · training regimen (consumed by src/train.py, pretrain.py, finetune.py)
+    seed_init: bool = False          # also seed *before* model construction; see STATUS.md
+    weight_decay: float = 0.0        # AdamW-style L2; 0.0 = plain Adam, today's behavior
+    label_smoothing: float = 0.0     # softens the next-char target; 0.0 = off
+    warmup_epochs: int = 0           # linear LR warmup over the first N epochs; 0 = off
+
+    # WS-12 · provenance, for the web gallery and eval reports
+    dataset_label: str = ""          # human name of the dataset this was trained on
+    dataset_path: str = ""           # the --data path it was trained from
+
     def to_dict(self) -> dict:
         return asdict(self)
 
