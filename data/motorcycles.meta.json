@@ -1,7 +1,7 @@
 {
   "name": "motorcycles",
   "label": "Motorcycle brands and models",
-  "domain": "Transport",
+  "domain": "Vehicles & Transport",
   "count": 359,
   "provenance": "Wave-1 WS-1 batch 2, added 2026-07-24 on branch claude/next-three-items-nj7dyj. Brand and model names (Honda, Yamaha, Kawasaki, Harley-Davidson, Ducati, BMW, KTM, Royal Enfield and others) recalled from general knowledge; not checked against manufacturer model lists. Deliberately broader than motorcycle_brands.txt, which is brands only - HANDOFF.md records that the two were kept separate rather than merged because their scopes differ. 143 of 359 lines contain model numbers (Aprilia RS660, BMW F800), which scripts/check_data.py accepts; 64 of those digits are '1', which the current (stale) data/shared_vocab.json omits, so those names are already being altered silently at encode time.",
   "verified": false,

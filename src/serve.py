@@ -31,38 +31,74 @@ from urllib.parse import parse_qs, urlparse
 
 import torch
 
+from .export_web import (
+    BUNDLE_FORMAT, ENGINE_MARKER, TEMPLATE_MARKER, dataset_catalog, resolve_dataset)
 from .sample import generate_one, load_checkpoint
 
 TEMPLATE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web", "app_template.html")
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 
 
 class Engine:
     """One loaded checkpoint plus the training-name set used to flag novelty."""
 
-    def __init__(self, path: str, label: str, device: str = "cpu"):
+    def __init__(self, path: str, label: str = "", device: str = "cpu"):
         self.path = path
-        self.label = label
         self.device = device
         self.model, self.vocab, self.cfg, training = load_checkpoint(path, device)
         self.training: Set[str] = set(training)
+        # Case-insensitive too: "Rolls-royce" is the same real name as "Rolls-Royce",
+        # and calling it an invention because one letter changed case would be dishonest.
+        # The exported app applies the identical rule (see noveltyOf in app_template.html).
+        self.training_lower: Set[str] = {n.lower() for n in self.training}
+        info = resolve_dataset(path, self.cfg)
+        self.id = info["id"]
+        self.label = label or info["label"]
+        self.domain = info["domain"]
+        self.verified = info["verified"]
+        self.provenance = info["provenance"]
 
-    def generate(self, count: int, temperature: float, prefix: str,
-                 novel_only: bool) -> List[Dict]:
-        """Sample distinct names from the real model, each tagged novel vs. training."""
+    def novelty(self, name: str) -> Dict:
+        if name in self.training:
+            return {"novel": False, "exact": True}
+        if name.lower() in self.training_lower:
+            return {"novel": False, "exact": False}
+        return {"novel": True, "exact": False}
+
+    def generate(self, count: int, temperature: float, prefix: str, novel_only: bool,
+                 *, top_k: int = 0, top_p: float = 1.0,
+                 repetition_penalty: float = 1.0, min_length: int = 2) -> List[Dict]:
+        """Sample distinct names from the real model, each tagged novel vs. training.
+
+        The decoding controls are passed straight through to ``src.sample.generate_one``
+        so the served UI drives exactly the same code path as ``python -m src.sample``.
+        """
         results, seen = [], set()
         attempts, cap = 0, count * 60
+        floor = max(2, min_length)
         while len(results) < count and attempts < cap:
             attempts += 1
-            name = generate_one(self.model, self.vocab, temperature,
-                                 self.cfg.max_length, prefix=prefix, device=self.device)
-            if len(name) < 2 or name in seen:
+            name = generate_one(
+                self.model, self.vocab, temperature, self.cfg.max_length,
+                prefix=prefix, device=self.device,
+                top_k=top_k, top_p=top_p,
+                repetition_penalty=repetition_penalty, min_length=min_length)
+            if len(name) < floor or name in seen:
                 continue
             seen.add(name)
-            novel = name not in self.training
-            if novel_only and not novel:
+            item = dict(self.novelty(name), name=name)
+            if novel_only and not item["novel"]:
                 continue
-            results.append({"name": name, "novel": novel})
+            results.append(item)
         return results
+
+    def meta(self) -> Dict:
+        """What the gallery needs to list this engine (no weights: the model stays here)."""
+        return {
+            "id": self.id, "label": self.label, "domain": self.domain,
+            "verified": self.verified, "provenance": self.provenance,
+            "count": len(self.training),
+        }
 
 
 def _pretty_label(path: str) -> str:
@@ -82,86 +118,36 @@ def discover_checkpoints(checkpoint_dir: str = "checkpoints") -> List[str]:
 
 # --- build the served page from the shared template ---------------------------------
 
-def _live_script(labels: List[str]) -> str:
-    """The browser-side script for the *server* build: same UI, but fetches the API."""
-    labels_json = json.dumps(labels)
+def _live_engine() -> str:
+    """The only JS the server build changes: where the names come from.
+
+    Everything else — the gallery, the decoding controls, favorites, novelty badges —
+    is the shared template's code, so the two front ends cannot drift apart.
+    """
     return """
-const LABELS = __LABELS__;
-const $ = (id) => document.getElementById(id);
-const root = document.documentElement;
-const state = { engine: 0, temp: 1.0, count: 12, prefix: "", novelOnly: false };
-
-function hexToRgb(h){return [1,3,5].map(i=>parseInt(h.slice(i,i+2),16));}
-function lerp(a,b,t){return a.map((v,i)=>Math.round(v+(b[i]-v)*t));}
-const COLD=hexToRgb("37b6ff"),MID=hexToRgb("ffc23a"),HOT=hexToRgb("ff4326");
-function accentFor(t){const x=(t-0.4)/1.2;return x<0.5?lerp(COLD,MID,x/0.5):lerp(MID,HOT,(x-0.5)/0.5);}
-function luminance([r,g,b]){return (0.299*r+0.587*g+0.114*b)/255;}
-function applyAccent(){
-  const rgb=accentFor(state.temp);
-  const hex="#"+rgb.map(v=>v.toString(16).padStart(2,"0")).join("");
-  root.style.setProperty("--accent",hex);
-  root.style.setProperty("--accent-soft",`rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.18)`);
-  root.style.setProperty("--accent-ink",luminance(rgb)>0.6?"#14161c":"#fff");
-}
-function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");
-  clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),1500);}
-function copy(text){
-  const done=()=>toast('Copied "'+text+'"');
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(()=>fb(text,done));}
-  else fb(text,done);
-}
-function fb(text,done){const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";
-  document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done();}catch(e){}document.body.removeChild(ta);}
-
-function buildSeg(host,options,current,onPick){
-  host.innerHTML="";
-  options.forEach((opt,i)=>{
-    const b=document.createElement("button");b.type="button";b.textContent=opt.label;
-    b.setAttribute("aria-pressed",String(i===current));
-    b.addEventListener("click",()=>{[...host.children].forEach((c,j)=>c.setAttribute("aria-pressed",String(j===i)));onPick(i,opt);});
-    host.appendChild(b);
+engineGenerate = async (model, opts) => {
+  const params = new URLSearchParams({
+    engine: model.id,
+    count: opts.count,
+    temperature: opts.temperature,
+    prefix: (opts.prefix || "").trim(),
+    novel_only: opts.novelOnly ? "1" : "0",
+    top_k: opts.topK,
+    top_p: opts.topP,
+    repetition_penalty: opts.repetitionPenalty,
+    min_length: opts.minLength,
   });
-}
-function render(batch){
-  const box=$("results");box.innerHTML="";
-  if(!batch.length){box.innerHTML='<p class="empty">The net drew a blank at this setting &mdash; try nudging the dial or clearing the prefix.</p>';$("stat").hidden=true;return;}
-  batch.forEach((item,i)=>{
-    const el=document.createElement("button");el.type="button";
-    el.className="name "+(item.novel?"novel":"known");el.style.animationDelay=(i*45)+"ms";
-    el.innerHTML='<span class="word"></span><span class="tag">'+(item.novel?"new":"real")+'</span><span class="copy">copy</span>';
-    el.querySelector(".word").textContent=item.name;
-    el.addEventListener("click",()=>copy(item.name));
-    box.appendChild(el);
-  });
-  const novelCount=batch.filter(b=>b.novel).length;
-  const stat=$("stat");stat.innerHTML="<b>"+novelCount+"</b> of "+batch.length+" never existed before";stat.hidden=false;
-}
-async function run(){
-  const go=$("go");go.disabled=true;go.textContent="Inventing\\u2026";
-  try{
-    const params=new URLSearchParams({engine:state.engine,count:state.count,temperature:state.temp,prefix:(state.prefix||"").trim(),novel_only:state.novelOnly?"1":"0"});
-    const res=await fetch("/api/generate?"+params.toString());
-    const data=await res.json().catch(()=>({}));
-    if(!res.ok) throw new Error(data.error||("server responded "+res.status));
-    render(data.names||[]);
-  }catch(e){
-    const msg=(e&&e.message)?e.message:"Could not reach the model server.";
-    $("results").innerHTML='<p class="empty">'+msg+' Is <code>python -m src.serve</code> still running?</p>';
-    $("stat").hidden=true;
-  }finally{
-    go.disabled=false;go.textContent="Invent names";
+  let res;
+  try {
+    res = await fetch("/api/generate?" + params.toString());
+  } catch (e) {
+    throw new Error("Could not reach the model server. Is `python -m src.serve` still running?");
   }
-}
-
-buildSeg($("engine"),LABELS.map(l=>({label:l})),state.engine,(i)=>{state.engine=i;});
-buildSeg($("count"),[6,12,24].map(n=>({label:String(n),value:n})),1,(i,opt)=>{state.count=opt.value;});
-$("temp").addEventListener("input",e=>{state.temp=parseFloat(e.target.value);$("tempVal").textContent=state.temp.toFixed(2);applyAccent();});
-$("prefix").addEventListener("input",e=>{state.prefix=e.target.value;});
-$("novelOnly").addEventListener("change",e=>{state.novelOnly=e.target.checked;});
-$("go").addEventListener("click",run);
-document.title="Burple-Fink \\u2014 live model";
-applyAccent();
-""".replace("__LABELS__", labels_json)
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || ("The server responded " + res.status + "."));
+  return data.names || [];
+};
+"""
 
 
 def build_page(labels: List[str]) -> str:

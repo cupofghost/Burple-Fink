@@ -32,10 +32,12 @@ jobs:
       # catalog tables once, at the end, so eighteen lanes don't fight over one markdown
       # table. The check still runs and still prints every missing row verbatim, ready
       # to paste. Committed weights, secrets and PII are always blocking.
-      # ORCHESTRATOR: after merging the catalogs at consolidation, append `--strict` to
-      # the line below to re-arm the drift check.
-      - name: Committed weights, secrets/PII (+ advisory registry drift)
-        run: python scripts/check_repo.py
+      # Re-armed 2026-08-01 at wave-3 consolidation: the README catalog and HANDOFF §4
+      # registry now carry all 30 datasets, so drift is blocking again. If you add a
+      # dataset, this job fails until both tables list it — run the check locally and
+      # paste the rows it prints.
+      - name: Committed weights, secrets/PII + registry drift
+        run: python scripts/check_repo.py --strict
 
       - name: Dataset validation (charset, duplicates, sidecar metadata)
         run: python scripts/check_data.py

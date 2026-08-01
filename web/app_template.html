@@ -718,7 +718,11 @@ function weightCount(V, E, H, L) {
 // Decode a model's weights and compute the flat offsets. Done lazily, the first time a
 // model is actually used, so opening the page never pays for models you don't touch.
 function prepare(m) {
-  if (m._w) return m;
+  if (m._ready) return m;
+  m._ready = true;
+  // The live-server build (src/serve.py) ships model *metadata* with no weights: the
+  // real PyTorch model does the generating, so there is nothing to decode here.
+  if (!m.weights) { m._train = new Set(); m._trainLower = new Set(); m._trainCount = 0; return m; }
   const V = m.itos.length, E = m.embedding_dim, H = m.hidden_dim, L = m.num_layers;
   const n = weightCount(V, E, H, L);
   m._w = unpackWeights(m.weights, n, m.dtype);
@@ -910,6 +914,14 @@ function generateMany(model, opts) {
   return results;
 }
 
+/* ---- the pluggable "brain" ------------------------------------------ *
+ * Everything below this point is UI and is shared verbatim by both builds.
+ * The static export keeps this local implementation; src/serve.py splices a
+ * fetch-based override in at the marker so the two front ends can never drift
+ * apart in anything except where the names come from.                     */
+let engineGenerate = async (model, opts) => generateMany(prepare(model), opts);
+/*__BURPLE_ENGINE__*/
+
 /* ---- app state ------------------------------------------------------ */
 const $ = (id) => document.getElementById(id);
 const root = document.documentElement;
@@ -1003,8 +1015,6 @@ function buildSeg(host, options, current, onPick) {
 }
 
 /* ---- rendering ------------------------------------------------------ */
-function currentModel() { return prepare(MODELS[state.engine]); }
-
 function nameRow(item, from) {
   const el = document.createElement("div");
   el.className = "name " + (item.novel ? "novel" : "known");
@@ -1219,32 +1229,34 @@ function closeSheet() {
 }
 
 /* ---- run ------------------------------------------------------------ */
-function run() {
-  if (!MODELS.length) { toast("No models bundled in this file"); return; }
-  const model = currentModel();
+async function run() {
+  if (!MODELS.length) { toast("No models available"); return; }
+  const model = MODELS[state.engine];
   const go = $("go");
   go.disabled = true; go.textContent = "Inventing…";
-  // let the button state paint before the synchronous crunch
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    let batch = [];
-    try {
-      batch = generateMany(model, {
-        count: state.count,
-        temperature: state.temp,
-        prefix: (state.prefix || "").trim(),
-        novelOnly: state.novelOnly,
-        topK: state.topK,
-        topP: state.topP,
-        repetitionPenalty: state.rep,
-        minLength: state.minLength,
-      });
-    } catch (e) {
-      $("results").innerHTML = '<p class="empty">The engine hit an error: ' +
-        String(e && e.message || e) + "</p>";
-    }
-    render(batch);
+  // let the button state paint before the (synchronous, in-browser) crunch
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  try {
+    render(await engineGenerate(model, {
+      count: state.count,
+      temperature: state.temp,
+      prefix: (state.prefix || "").trim(),
+      novelOnly: state.novelOnly,
+      topK: state.topK,
+      topP: state.topP,
+      repetitionPenalty: state.rep,
+      minLength: state.minLength,
+    }));
+  } catch (e) {
+    const msg = (e && e.message) ? e.message : "The engine hit an error.";
+    $("results").innerHTML = '<p class="empty"></p>';
+    $("results").firstChild.textContent = msg;
+    $("stat").hidden = true;
+    $("resultActions").hidden = true;
+    lastBatch = [];
+  } finally {
     go.disabled = false; go.textContent = "Invent names";
-  }));
+  }
 }
 
 /* ---- wiring --------------------------------------------------------- */

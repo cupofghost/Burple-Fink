@@ -1,7 +1,7 @@
 {
   "name": "stars_constellations",
   "label": "Stars and Constellations",
-  "domain": "Astronomy",
+  "domain": "Space & Sky",
   "count": 503,
   "provenance": "Recalled from the IAU Catalog of Star Names, the 88 official constellations, and common names for Messier/NGC deep-sky objects. High confidence; catalogue designations and possessive apostrophes were dropped.",
   "verified": false,

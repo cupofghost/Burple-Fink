@@ -261,29 +261,24 @@ Burple-Fink/
 ├── requirements.txt
 ├── docs/
 │   └── PLAN.md               # full design rationale, pipelines, and roadmap
-├── data/                     # training datasets, one name per line (or name<TAB>value)
-│   ├── car_manufacturers.txt # ~150 real auto brands
-│   ├── car_models.txt        # ~250 real car model names
-│   ├── english_words.txt     # ~8,600 common English words (base-model fuel)
-│   ├── world_cities.txt      # ~1,690 real world city/capital names
-│   ├── tech_startups.txt     # ~400 real tech company/startup names
-│   ├── motorcycle_brands.txt # ~60 real motorcycle manufacturers (brands only)
-│   ├── motorcycles.txt       # 359 real motorcycle brands & models
-│   ├── racehorses.txt        # 355 real thoroughbred racehorse names
-│   ├── spacecraft.txt        # 270 real NASA/ESA/JAXA/CNSA spacecraft & satellites
-│   ├── craft_beers.txt       # 398 real craft brewery & beer names
-│   ├── aircraft.txt          # 435 real aircraft & helicopter models
-│   ├── paint_colors.txt      # 391 real/whimsical paint color names (plain list)
-│   ├── car_manufacturers_founding_year.tsv # WS-4 demo: brand + founding year
-│   ├── paint_colors.tsv      # WS-4 demo: ~140 CSS named colors + luminance
-│   ├── periodic_elements.tsv # WS-4 demo: 118 elements + atomic number
+├── data/                     # 30 datasets + a .meta.json sidecar each (see catalog below)
+│   ├── english_words.txt     # 8,631 — base-model fuel
+│   ├── pharma_drugs.txt      # 2,223 — the best char-RNN signal in the repo
+│   ├── world_cities.txt      # 1,691
+│   ├── car_models.txt        # 1,218
+│   ├── …                     # 26 more, from birds to typefaces
+│   ├── *.meta.json           # label / domain / count / provenance per dataset
+│   ├── *.tsv                 # WS-4 dual-output demos: name<TAB>value
 │   └── shared_vocab.json     # fixed char set shared by base + all fine-tunes
 ├── scripts/
-│   └── build_paint_colors.py # regenerates data/paint_colors.tsv from its hex source
+│   ├── build_paint_colors.py # regenerates data/paint_colors.tsv from its hex source
+│   ├── check_repo.py         # registry drift, committed weights, secrets/PII
+│   └── check_data.py         # dataset charset / duplicates / sidecar validation
 ├── src/
 │   ├── config.py             # hyperparameters in one place
 │   ├── data.py               # read names -> vocab -> tensors (+ shared vocab)
-│   ├── model.py              # the char-RNN (LSTM) itself (+ optional value head)
+│   ├── model.py              # the char-RNN itself (+ optional value head)
+│   ├── arch/                 # lstm / gru / transformer cores behind cfg.arch
 │   ├── train.py              # training loop (reusable `fit`) + checkpointing
 │   ├── sample.py             # load checkpoint, generate names (+ predicted value)
 │   ├── pretrain.py           # train one base model on all datasets
@@ -303,31 +298,100 @@ Burple-Fink/
 
 ## Dataset catalog
 
-The whole point of the platform is *variety* of names, so datasets are first-class. Each
-lives in `data/` as a newline-separated `.txt` file and follows the conventions in
-[`HANDOFF.md`](HANDOFF.md#adding-a-new-dataset).
+The whole point of the platform is *variety* of names, so datasets are first-class.
+Each lives in `data/` as a newline-separated `.txt` file with a `data/<stem>.meta.json`
+sidecar carrying its label, domain, count and provenance. `python scripts/check_data.py`
+validates every one of them.
 
-| Dataset file | Domain | Count | Status |
-|--------------|--------|-------|--------|
-| `car_manufacturers.txt` | Auto brands | ~150 | ✅ seed |
-| `car_models.txt` | Car model names | ~250 | ✅ seed |
-| `english_words.txt` | Common English words | ~8,600 | ✅ added |
-| `world_cities.txt` | World city/capital names | ~1,690 | ✅ added |
-| `tech_startups.txt` | Tech company/startup names | ~400 | ✅ added |
-| `motorcycle_brands.txt` | Motorcycle manufacturers | ~60 | ✅ added |
-| `motorcycles.txt` | Motorcycle brands & models | 359 | ✅ added |
-| `racehorses.txt` | Racehorse names | 355 | ✅ added |
-| `spacecraft.txt` | NASA/ESA spacecraft & satellites | 270 | ✅ added |
-| `craft_beers.txt` | Craft brewery & beer names | 398 | ✅ added |
-| `aircraft.txt` | Aircraft models | 435 | ✅ added |
-| `car_manufacturers_founding_year.tsv` | Car brands + founding year (WS-4 demo) | 66 | ✅ added |
-| `paint_colors.tsv` | CSS named colors + luminance (WS-4 demo) | ~140 | ✅ added |
-| `paint_colors.txt` | Paint color names, plain list (WS-1) | 391 | ✅ added |
-| `periodic_elements.tsv` | Chemical elements + atomic number (WS-4 demo) | 118 | ✅ added |
-| _(your dataset here)_ | — | — | 🔜 |
+**30 datasets, 27,243 names.**
 
-Ideas for future domains (a Shane-style variety): boat & yacht names, perfumes,
-fantasy characters. Claim one in `HANDOFF.md` before you start.
+### Vehicles & Transport — 3,774 names
+
+| Dataset file | Contents | Count |
+|---|---|---|
+| `car_models.txt` | Car models | 1,218 |
+| `car_manufacturers.txt` | Car manufacturers | 590 |
+| `sailing_ships.txt` | Sailing Ships and Naval Vessels | 468 |
+| `aircraft.txt` | Aircraft models | 435 |
+| `locomotives.txt` | Locomotives | 395 |
+| `motorcycles.txt` | Motorcycle brands and models | 359 |
+| `motorcycle_brands.txt` | Motorcycle brands | 309 |
+
+### Space & Sky — 1,096 names
+
+| Dataset file | Contents | Count |
+|---|---|---|
+| `spacecraft.txt` | Spacecraft | 593 |
+| `stars_constellations.txt` | Stars and Constellations | 503 |
+
+### Nature — 3,546 names
+
+| Dataset file | Contents | Count |
+|---|---|---|
+| `birds.txt` | Bird species | 863 |
+| `plants_flowers.txt` | Plants and flowers | 634 |
+| `minerals_gems.txt` | Minerals and gemstones | 624 |
+| `mountains.txt` | Mountains and peaks | 523 |
+| `dog_breeds.txt` | Dog breeds | 461 |
+| `mushrooms.txt` | Mushrooms and fungi | 441 |
+
+### Food & Drink — 1,278 names
+
+| Dataset file | Contents | Count |
+|---|---|---|
+| `cocktails.txt` | Cocktails | 459 |
+| `cheeses.txt` | Cheeses | 421 |
+| `craft_beers.txt` | Craft brewery and beer names | 398 |
+
+### Games & Music — 2,001 names
+
+| Dataset file | Contents | Count |
+|---|---|---|
+| `video_games.txt` | Video games | 753 |
+| `metal_bands.txt` | Metal and rock bands | 663 |
+| `board_games.txt` | Board games | 585 |
+
+### Design & Brands — 1,893 names
+
+| Dataset file | Contents | Count |
+|---|---|---|
+| `perfumes.txt` | Perfumes | 639 |
+| `typefaces.txt` | Typefaces | 463 |
+| `tech_startups.txt` | Tech company and startup names | 400 |
+| `paint_colors.txt` | Paint color names | 391 |
+
+### Science & Medicine — 2,223 names
+
+| Dataset file | Contents | Count |
+|---|---|---|
+| `pharma_drugs.txt` | Pharmaceutical Drugs | 2,223 |
+
+### Words, Names & Places — 11,432 names
+
+| Dataset file | Contents | Count |
+|---|---|---|
+| `english_words.txt` | Common English words | 8,631 |
+| `world_cities.txt` | World city and capital names | 1,691 |
+| `greek_myth.txt` | Greek and Roman Mythology | 755 |
+| `racehorses.txt` | Racehorse names | 355 |
+
+### Dual-output demos (`name<TAB>value`)
+
+| Dataset file | Contents | Count |
+|---|---|---|
+| `car_manufacturers_founding_year.tsv` | Car brands + founding year | 66 |
+| `paint_colors.tsv` | CSS named colors + luminance | 141 |
+| `periodic_elements.tsv` | Chemical elements + atomic number | 118 |
+
+**Provenance caveat.** Every dataset added in wave 3 carries `"verified": false`
+in its sidecar: the entries were recalled from model knowledge and are believed real,
+but were not cross-checked against a primary source. `periodic_elements.tsv` is the
+one exception — its 118 rows were checked. Treat the rest as good training data,
+not as a reference work.
+
+Five pre-wave datasets contain characters outside the model's alphabet (accents,
+apostrophes) and are grandfathered in `scripts/check_data.py`'s `KNOWN_NONCONFORMING`.
+New datasets must stay within `[A-Za-z0-9]`, space and hyphen.
 
 ---
 

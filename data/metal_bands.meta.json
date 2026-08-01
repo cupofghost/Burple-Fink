@@ -1,7 +1,7 @@
 {
   "name": "metal_bands",
   "label": "Metal and rock bands",
-  "domain": "Culture",
+  "domain": "Games & Music",
   "count": 663,
   "provenance": "Recalled from general knowledge of heavy metal and hard rock across NWOBHM, thrash, death, doom, black, power, progressive, metalcore, grunge and stoner scenes; stylised punctuation was normalised (AC/DC to ACDC, Guns N Roses) and gratuitously violent or slur-adjacent band names were deliberately excluded. Not cross-checked against Encyclopaedia Metallum in this session.",
   "verified": false,

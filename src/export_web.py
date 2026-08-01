@@ -52,6 +52,10 @@ from .sample import load_checkpoint
 
 # Marker in the HTML template that the model bundle is spliced into.
 TEMPLATE_MARKER = "/*__BURPLE_MODELS__*/"
+# Marker where a build may override the in-browser engine. The static export leaves it
+# empty (the browser runs the net); src/serve.py replaces it with a fetch to /api/generate
+# so both front ends share one copy of the UI instead of two that drift apart.
+ENGINE_MARKER = "/*__BURPLE_ENGINE__*/"
 
 # Bundle format version. The JS engine checks this so a stale template and a fresh
 # bundle fail loudly instead of mis-decoding weights into plausible-looking garbage.

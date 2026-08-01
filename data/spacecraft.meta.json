@@ -1,7 +1,7 @@
 {
   "name": "spacecraft",
   "label": "Spacecraft",
-  "domain": "Space",
+  "domain": "Space & Sky",
   "count": 593,
   "provenance": "Was 270 lines skewed toward Earth-observation instruments and Shuttle-era hardware; grew it with real launch vehicles, planetary probes, space telescopes, communications, navigation and weather satellites, and Mir, ISS and Tiangong modules from NASA, ESA, Roscosmos, JAXA, ISRO, CNSA and commercial operators. Transliterated two lines whose characters were illegal (Chang'e, SSM/I). Every addition is a real mission or vehicle; none are invented. Confidence high, not checked against a source.",
   "verified": false,
