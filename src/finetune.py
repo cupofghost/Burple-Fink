@@ -37,7 +37,7 @@ import torch
 from .config import Config
 from .data import filter_to_vocab, load_names, split_names
 from .sample import load_checkpoint
-from .train import fit, save_checkpoint
+from .train import add_regimen_args, apply_auto_epochs, fit, save_checkpoint
 
 # Fine-tuning defaults: much shorter and gentler than pretraining, so the base
 # model is *nudged* toward the domain rather than overwritten. Overridable on the CLI.
@@ -56,11 +56,29 @@ def finetune(
     val_fraction: float | None = None,
     early_stop_patience: int | None = None,
     lr_schedule: str | None = None,
+    weight_decay: float | None = None,
+    label_smoothing: float | None = None,
+    warmup_epochs: int | None = None,
+    arch: str | None = None,
+    auto_epochs: bool = False,
 ) -> str:
+    """Fine-tune ``base_path`` onto ``data_path`` and write ``<name>_ft.pt``.
+
+    ``arch`` is accepted for symmetry with the other two entry points, but it can only
+    *confirm* the base checkpoint's architecture — the weights being loaded are that
+    architecture's weights, so asking to fine-tune an LSTM base as a transformer is a
+    mistake, not a request, and it is rejected rather than silently mislabelled.
+    """
     # Load the base model together with the exact config + shared vocab it was built
     # with. Architecture fields must stay as-is or the loaded weights won't fit; we
     # only override the training knobs below.
     model, vocab, cfg, _base_names = load_checkpoint(base_path, device)
+    if arch is not None and arch != cfg.arch:
+        raise ValueError(
+            f"--arch {arch} does not match the base checkpoint's architecture "
+            f"({cfg.arch!r}). Fine-tuning starts from the base model's weights, so the "
+            f"architecture is fixed by {base_path}. Pretrain a {arch} base first."
+        )
     cfg.epochs = epochs if epochs is not None else FINETUNE_EPOCHS
     cfg.learning_rate = learning_rate if learning_rate is not None else FINETUNE_LR
 

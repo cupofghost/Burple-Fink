@@ -1,11 +1,18 @@
 <style>
   /* ------------------------------------------------------------------ *
-   * Burple-Fink — instrument-panel UI. The "Creativity" control is a
-   * temperature gauge: its accent runs cold blue -> marigold -> redline
-   * as you push it, mirroring what the model actually does (low temp =
-   * safe/boring, high temp = gloriously broken). Colors are driven by
-   * CSS custom properties so both themes and the live temperature hue
-   * flow through one place.
+   * Burple-Fink — instrument-panel UI, wave-3 gallery edition.
+   *
+   * Two things drive the look:
+   *  1. The "Creativity" control is a temperature gauge: its accent runs
+   *     cold blue -> marigold -> redline as you push it, mirroring what
+   *     the model does (low temp = safe/boring, high = gloriously broken).
+   *  2. Everything else is a flat instrument panel so the *names* are the
+   *     brightest thing on the screen.
+   *
+   * Colors are driven by CSS custom properties so both themes and the live
+   * temperature hue flow through one place. Sized for a phone first: every
+   * tappable target is >= 44px, the gallery is a full-height sheet, and no
+   * layout is wider than the viewport.
    * ------------------------------------------------------------------ */
   :root {
     color-scheme: light dark;
@@ -23,6 +30,7 @@
     --hairline: rgba(255,255,255,0.09);
     --hairline-strong: rgba(255,255,255,0.16);
     --shadow: 0 18px 40px -20px rgba(0,0,0,0.8);
+    --warn: #ffb02e;
 
     /* live temperature accent (recomputed by JS); safe defaults here */
     --accent: #ffc23a;
@@ -45,6 +53,7 @@
       --hairline: rgba(20,22,28,0.10);
       --hairline-strong: rgba(20,22,28,0.18);
       --shadow: 0 16px 34px -22px rgba(20,30,60,0.45);
+      --warn: #b06a00;
     }
   }
   /* explicit toggle wins over the media query, in both directions */
@@ -52,13 +61,13 @@
     --ground: #14161c; --ground-2: #0f1116; --surface: #1c1f27; --surface-2: #262a34;
     --ink: #eef1f6; --muted: #99a2b2; --faint: #6b7382;
     --hairline: rgba(255,255,255,0.09); --hairline-strong: rgba(255,255,255,0.16);
-    --shadow: 0 18px 40px -20px rgba(0,0,0,0.8);
+    --shadow: 0 18px 40px -20px rgba(0,0,0,0.8); --warn: #ffb02e;
   }
   :root[data-theme="light"] {
     --ground: #eef0f4; --ground-2: #e3e6ec; --surface: #ffffff; --surface-2: #f1f3f7;
     --ink: #191c23; --muted: #5b6472; --faint: #8b93a2;
     --hairline: rgba(20,22,28,0.10); --hairline-strong: rgba(20,22,28,0.18);
-    --shadow: 0 16px 34px -22px rgba(20,30,60,0.45);
+    --shadow: 0 16px 34px -22px rgba(20,30,60,0.45); --warn: #b06a00;
   }
 
   * { box-sizing: border-box; }
@@ -80,7 +89,7 @@
     padding: 22px 18px 40px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 18px;
   }
 
   /* --- wordmark ---------------------------------------------------- */
@@ -113,6 +122,40 @@
     color: var(--muted);
   }
 
+  /* --- the generator picker (opens the gallery) --------------------- */
+  .picker {
+    display: flex; align-items: center; gap: 13px; width: 100%;
+    appearance: none; cursor: pointer; text-align: left;
+    font-family: inherit; color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--accent);
+    border-radius: 16px;
+    padding: 13px 15px;
+    box-shadow: var(--shadow);
+    transition: background 140ms ease, transform 120ms ease;
+  }
+  .picker:hover { background: var(--surface-2); }
+  .picker:active { transform: scale(0.995); }
+  .picker:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+  .picker-text { flex: 1 1 auto; min-width: 0; }
+  .picker-label {
+    display: block; font-size: 17px; font-weight: 700; letter-spacing: -0.01em;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .picker-sub {
+    display: block; margin-top: 2px;
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .picker-chev {
+    flex: none; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent);
+    border: 1px solid var(--hairline-strong); border-radius: 999px;
+    padding: 7px 11px;
+  }
+
   /* --- control panel ---------------------------------------------- */
   .controls {
     background: var(--surface);
@@ -130,7 +173,7 @@
     text-transform: uppercase;
     color: var(--muted);
   }
-  .lab-row { display: flex; align-items: baseline; justify-content: space-between; }
+  .lab-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
   .readout {
     font-family: var(--mono);
     font-variant-numeric: tabular-nums;
@@ -138,8 +181,12 @@
     color: var(--accent);
     font-weight: 600;
   }
+  .hint {
+    margin: 0; font-size: 11.5px; line-height: 1.45; color: var(--faint);
+  }
+  .hint b { color: var(--muted); font-weight: 600; }
 
-  /* segmented controls (engine + count) */
+  /* segmented controls (count) */
   .seg { display: flex; gap: 4px; background: var(--surface-2); border-radius: 12px; padding: 4px; }
   .seg button {
     flex: 1 1 0;
@@ -183,11 +230,17 @@
   }
   .dial:focus-visible { outline: none; }
   .dial:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--accent-soft); }
+
+  /* plain (non-temperature) slider, e.g. repetition penalty */
+  .dial.plain::-webkit-slider-runnable-track { background: var(--surface-2); }
+  .dial.plain::-moz-range-track { background: var(--surface-2); }
+
   .scale {
     display: flex; justify-content: space-between;
-    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--faint);
   }
+  .scale .best { color: var(--accent); font-weight: 700; }
 
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .text {
@@ -206,6 +259,34 @@
     font-size: 13.5px; color: var(--muted); cursor: pointer; user-select: none;
   }
   .check input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+
+  /* advanced / truncation drawer — deliberately collapsed, see the copy inside */
+  .adv {
+    border: 1px dashed var(--hairline-strong);
+    border-radius: 13px;
+    padding: 0 13px;
+    background: var(--surface-2);
+  }
+  .adv > summary {
+    cursor: pointer; list-style: none; padding: 12px 0;
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .adv > summary::-webkit-details-marker { display: none; }
+  .adv > summary::after { content: "+"; font-size: 15px; color: var(--faint); }
+  .adv[open] > summary::after { content: "\2212"; }
+  .adv[open] > summary { border-bottom: 1px solid var(--hairline); }
+  .adv-body { display: flex; flex-direction: column; gap: 16px; padding: 15px 0 16px; }
+  .warnbox {
+    margin: 0; padding: 10px 12px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--warn) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--warn) 34%, transparent);
+    color: var(--ink);
+    font-size: 12px; line-height: 1.5;
+  }
+  .warnbox b { color: var(--warn); }
 
   .go {
     appearance: none; border: 0; cursor: pointer;
@@ -228,36 +309,48 @@
     line-height: 1.5;
   }
   .name {
-    display: flex; align-items: center; gap: 12px;
+    display: flex; align-items: center; gap: 10px;
     background: var(--surface);
     border: 1px solid var(--hairline);
     border-left: 3px solid var(--accent);
     border-radius: 12px;
-    padding: 13px 14px;
-    cursor: pointer;
+    padding: 11px 12px 11px 14px;
     text-align: left; width: 100%;
-    appearance: none; font-family: inherit;
     color: var(--ink);
-    transition: border-color 140ms ease, background 140ms ease, transform 120ms ease;
+    transition: border-color 140ms ease, background 140ms ease;
   }
-  .name:hover { background: var(--surface-2); }
-  .name:active { transform: scale(0.99); }
-  .name:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
   .name .word {
-    flex: 1 1 auto;
-    font-size: clamp(1.15rem, 5vw, 1.4rem); font-weight: 700; letter-spacing: -0.01em;
+    flex: 1 1 auto; min-width: 0;
+    font-size: clamp(1.1rem, 4.6vw, 1.35rem); font-weight: 700; letter-spacing: -0.01em;
+    background: none; border: 0; padding: 0; margin: 0;
+    color: inherit; font-family: inherit; text-align: left; cursor: pointer;
+    overflow: hidden; text-overflow: ellipsis;
   }
-  .name .tag {
+  .name .word:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 3px; border-radius: 4px; }
+  .tag {
     flex: none;
-    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 4px 7px; border-radius: 999px;
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.09em; text-transform: uppercase;
+    padding: 4px 7px; border-radius: 999px; white-space: nowrap;
   }
   .name.novel { border-left-color: var(--accent); }
   .name.novel .tag { color: var(--accent-ink); background: var(--accent); }
-  .name.known { border-left-color: var(--hairline-strong); }
+  /* A name that is character-for-character in the training data is never dressed up as
+     an invention: muted text, amber "in training data" badge, warning-colored rule. */
+  .name.known { border-left-color: var(--warn); background: color-mix(in srgb, var(--warn) 7%, var(--surface)); }
   .name.known .word { color: var(--muted); }
-  .name.known .tag { color: var(--faint); background: var(--surface-2); }
-  .name .copy { flex: none; color: var(--faint); font-family: var(--mono); font-size: 11px; }
+  .name.known .tag { color: var(--accent-ink); background: var(--warn); }
+
+  .iconbtn {
+    flex: none; appearance: none; cursor: pointer;
+    width: 34px; height: 34px; border-radius: 9px;
+    display: grid; place-items: center;
+    background: var(--surface-2); border: 1px solid var(--hairline);
+    color: var(--muted); font-size: 15px; line-height: 1;
+    transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
+  }
+  .iconbtn:hover { color: var(--ink); border-color: var(--hairline-strong); }
+  .iconbtn:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+  .iconbtn[aria-pressed="true"] { color: var(--accent-ink); background: var(--accent); border-color: transparent; }
 
   @keyframes stamp {
     from { opacity: 0; transform: translateY(8px) scale(0.98); }
@@ -267,15 +360,113 @@
 
   .stat {
     margin: 2px 2px 0; text-align: center;
-    font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
     text-transform: uppercase; color: var(--muted);
   }
   .stat b { color: var(--accent); font-weight: 700; }
+  .stat .copied { color: var(--warn); font-weight: 700; }
+
+  .bar { display: flex; gap: 8px; }
+  .bar button {
+    flex: 1 1 0; appearance: none; cursor: pointer;
+    font-family: var(--sans); font-size: 13px; font-weight: 600;
+    color: var(--muted); background: var(--surface); border: 1px solid var(--hairline);
+    border-radius: 11px; padding: 11px 10px;
+    transition: color 140ms ease, border-color 140ms ease;
+  }
+  .bar button:hover { color: var(--ink); border-color: var(--hairline-strong); }
+  .bar button:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+
+  /* --- kept / favorites -------------------------------------------- */
+  .kept { display: flex; flex-direction: column; gap: 8px; }
+  .kept-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .kept-head h2 {
+    margin: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted); font-weight: 600;
+  }
+  .kept-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface-2); border: 1px solid var(--hairline);
+    border-radius: 11px; padding: 9px 10px 9px 13px;
+  }
+  .kept-row .word {
+    flex: 1 1 auto; min-width: 0; font-size: 15.5px; font-weight: 650;
+    background: none; border: 0; padding: 0; color: var(--ink);
+    font-family: inherit; text-align: left; cursor: pointer;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .kept-row .from {
+    flex: none; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--faint); max-width: 40%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
 
   .foot {
     margin: 6px 4px 0; color: var(--faint);
     font-size: 12px; line-height: 1.55; text-align: center;
   }
+  .foot code { font-family: var(--mono); font-size: 11px; }
+
+  /* --- the gallery sheet ------------------------------------------- */
+  .sheet {
+    position: fixed; inset: 0; z-index: 20;
+    display: flex; flex-direction: column;
+    background: var(--ground);
+  }
+  .sheet[hidden] { display: none; }
+  .sheet-head {
+    flex: none; display: flex; gap: 9px; align-items: center;
+    padding: 14px 14px 12px;
+    border-bottom: 1px solid var(--hairline);
+    background: var(--surface);
+  }
+  .sheet-head .text { flex: 1 1 auto; font-size: 16px; }
+  .sheet-done {
+    flex: none; appearance: none; cursor: pointer;
+    font-family: var(--sans); font-size: 14px; font-weight: 700;
+    color: var(--accent-ink); background: var(--accent);
+    border: 0; border-radius: 11px; padding: 11px 15px;
+  }
+  .sheet-done:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+  .sheet-body {
+    flex: 1 1 auto; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 6px 14px 40px;
+  }
+  .grp {
+    margin: 16px 2px 7px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--faint);
+    display: flex; align-items: center; gap: 9px;
+  }
+  .grp::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--hairline); }
+  .card {
+    display: flex; align-items: center; gap: 11px; width: 100%;
+    appearance: none; cursor: pointer; text-align: left;
+    font-family: inherit; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--hairline);
+    border-radius: 12px; padding: 12px 13px; margin-bottom: 7px;
+    transition: border-color 140ms ease, background 140ms ease;
+  }
+  .card:hover { background: var(--surface-2); }
+  .card:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+  .card[aria-current="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .card[disabled] { cursor: not-allowed; opacity: 0.55; }
+  .card-text { flex: 1 1 auto; min-width: 0; }
+  .card-label {
+    display: block; font-size: 15.5px; font-weight: 650;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .card-sub {
+    display: block; margin-top: 2px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em;
+    color: var(--faint); text-transform: uppercase;
+  }
+  .chip {
+    flex: none; font-family: var(--mono); font-size: 9px; letter-spacing: 0.09em;
+    text-transform: uppercase; padding: 4px 7px; border-radius: 999px;
+    border: 1px solid var(--hairline-strong); color: var(--faint); white-space: nowrap;
+  }
+  .chip.on { color: var(--accent); border-color: var(--accent); }
 
   .toast {
     position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px);
@@ -284,13 +475,13 @@
     padding: 10px 16px; border-radius: 999px;
     box-shadow: var(--shadow);
     opacity: 0; pointer-events: none; transition: opacity 200ms ease, transform 200ms ease;
-    z-index: 10;
+    z-index: 30; max-width: 88vw; text-align: center;
   }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   @media (prefers-reduced-motion: reduce) {
     .name { animation: none; }
-    body, .go, .seg button, .name { transition: none; }
+    body, .go, .seg button, .name, .card, .picker { transition: none; }
   }
 </style>
 
@@ -299,24 +490,41 @@
     <div class="emblem" aria-hidden="true">B&#8202;F</div>
     <div>
       <h1>Burple&#8209;Fink</h1>
-      <p class="tagline">a machine that invents car names, one letter at a time</p>
+      <p class="tagline">a machine that invents names, one letter at a time</p>
     </div>
   </header>
 
+  <button class="picker" id="picker" type="button" aria-haspopup="dialog">
+    <span class="picker-text">
+      <span class="picker-label" id="pickerLabel">Loading&hellip;</span>
+      <span class="picker-sub" id="pickerSub">&nbsp;</span>
+    </span>
+    <span class="picker-chev" aria-hidden="true">Browse</span>
+  </button>
+
   <section class="controls">
     <div class="field">
-      <span class="lab">Engine</span>
-      <div class="seg" id="engine" role="group" aria-label="Which name generator"></div>
+      <div class="lab-row">
+        <label class="lab" for="temp">Creativity &mdash; the temperature dial</label>
+        <span class="readout" id="tempVal">1.15</span>
+      </div>
+      <input id="temp" class="dial" type="range" min="0.4" max="1.6" step="0.01" value="1.15"
+             aria-label="Creativity (sampling temperature)">
+      <div class="scale">
+        <span>safe</span><span class="best">1.1&ndash;1.3 measured best</span><span>unhinged</span>
+      </div>
     </div>
 
     <div class="field">
       <div class="lab-row">
-        <label class="lab" for="temp">Creativity &mdash; the temperature dial</label>
-        <span class="readout" id="tempVal">1.00</span>
+        <label class="lab" for="rep">Anti-stutter &mdash; repetition penalty</label>
+        <span class="readout" id="repVal">1.00</span>
       </div>
-      <input id="temp" class="dial" type="range" min="0.4" max="1.6" step="0.01" value="1.0"
-             aria-label="Creativity (sampling temperature)">
-      <div class="scale"><span>safe</span><span>sweet spot</span><span>unhinged</span></div>
+      <input id="rep" class="dial plain" type="range" min="1" max="2" step="0.05" value="1"
+             aria-label="Repetition penalty">
+      <p class="hint">Pushes down letters already used in the same name. Targets
+        <b>&ldquo;Bylfgoammm&rdquo;</b>-style stutter that truncation does not touch.
+        Off at 1.00; try 1.2&ndash;1.4.</p>
     </div>
 
     <div class="row2">
@@ -330,6 +538,46 @@
                spellcheck="false" placeholder="optional" maxlength="12">
       </div>
     </div>
+
+    <details class="adv" id="adv">
+      <summary>Truncation &mdash; measured worse here</summary>
+      <div class="adv-body">
+        <p class="warnbox">
+          <b>Wave-2 result:</b> on these small models plain temperature at 1.1&ndash;1.3 beat
+          every top-k / nucleus setting tried. Truncating the tail did not cut junk, but it
+          did shrink the reachable character pool enough to push sampling back toward
+          <em>memorized</em> training names &mdash; at temperature 1.3, novelty fell 38%
+          &rarr; 32% and near-duplicates rose 72% &rarr; 80% with <code>top_k=10</code>.
+          Left off on purpose. Reach for temperature and repetition penalty first.
+        </p>
+        <div class="field">
+          <div class="lab-row">
+            <label class="lab" for="topk">Top-k &mdash; keep only the k likeliest letters</label>
+            <span class="readout" id="topkVal">off</span>
+          </div>
+          <input id="topk" class="dial plain" type="range" min="0" max="20" step="1" value="0"
+                 aria-label="Top-k (0 = off)">
+        </div>
+        <div class="field">
+          <div class="lab-row">
+            <label class="lab" for="topp">Top-p &mdash; nucleus sampling</label>
+            <span class="readout" id="toppVal">off</span>
+          </div>
+          <input id="topp" class="dial plain" type="range" min="0.5" max="1" step="0.01" value="1"
+                 aria-label="Top-p (1.0 = off)">
+        </div>
+        <div class="field">
+          <div class="lab-row">
+            <label class="lab" for="minlen">Shortest name to allow</label>
+            <span class="readout" id="minlenVal">2</span>
+          </div>
+          <input id="minlen" class="dial plain" type="range" min="2" max="12" step="1" value="2"
+                 aria-label="Minimum name length">
+          <p class="hint">A plain filter, not a quality setting: the model simply may not
+            finish a name before this many letters.</p>
+        </div>
+      </div>
+    </details>
 
     <label class="check">
       <input type="checkbox" id="novelOnly">
@@ -345,27 +593,135 @@
 
   <p class="stat" id="stat" hidden></p>
 
+  <div class="bar" id="resultActions" hidden>
+    <button type="button" id="copyAll">Copy all</button>
+    <button type="button" id="keepAll">Keep all new</button>
+  </div>
+
+  <section class="kept" id="keptSection" hidden>
+    <div class="kept-head">
+      <h2>Kept <span id="keptCount"></span></h2>
+    </div>
+    <div id="keptList"></div>
+    <div class="bar">
+      <button type="button" id="keptCopy">Copy kept</button>
+      <button type="button" id="keptClear">Clear kept</button>
+    </div>
+  </section>
+
   <footer class="foot">
-    Every name is dreamed up on your device by a tiny character-level neural net &mdash;
-    the same engine, fine-tuned per dataset. Tap any name to copy it. No two runs are alike.
+    Every name is dreamed up on your device by a tiny character-level neural net.
+    Tap a name to copy it, tap <b>&#9733;</b> to keep it. Kept names survive a reload.
   </footer>
 </main>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Choose a generator">
+  <div class="sheet-head">
+    <input id="search" class="text" type="search" autocomplete="off" spellcheck="false"
+           placeholder="Search generators" aria-label="Search generators">
+    <button type="button" class="sheet-done" id="sheetDone">Done</button>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+</div>
 
 <div class="toast" id="toast" role="status" aria-hidden="true"></div>
 
 <script>
 /* ==================================================================== *
  * The trained models, spliced in by src/export_web.py. Each carries the
- * exact weights of a char-RNN plus its vocabulary and training names.
+ * exact weights of a char-RNN (base64 float16 or float32), its vocabulary
+ * and its training names, plus a catalog of every dataset that exists --
+ * including the ones too large to fit in this file.
  * ==================================================================== */
 const BURPLE = /*__BURPLE_MODELS__*/;
 
-/* ---- the char-RNN, re-implemented faithfully in the browser --------- *
- * This mirrors src/model.py (Embedding -> LSTM -> Linear) and the
- * reference forward pass that src/export_web.py verifies against the real
- * PyTorch model before shipping. Same math, same weights => same net.    */
+const BUNDLE_FORMAT = 3;
+if (BURPLE.format !== BUNDLE_FORMAT) {
+  // A stale template + a fresh bundle would mis-decode weights into plausible-looking
+  // garbage. Fail loudly instead.
+  throw new Error("Bundle format " + BURPLE.format + " != engine format " + BUNDLE_FORMAT +
+                  " — re-run python -m src.export_web.");
+}
 
-function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+/* ---- weight decoding ------------------------------------------------ *
+ * Weights arrive as one base64 blob per model in a fixed tensor order:
+ *   embedding | per layer (w_ih, w_hh, b_ih, b_hh) | head_w | head_b
+ * The same order and the same flat indexing are used by the Python
+ * reference forward pass in src/export_web.py, which is checked against
+ * the real PyTorch model before this file is written.                    */
+
+function f16(u) {                       // IEEE-754 binary16 -> Number
+  const s = (u & 0x8000) ? -1 : 1;
+  const e = (u >> 10) & 0x1f;
+  const m = u & 0x3ff;
+  if (e === 0) return s * m * 5.9604644775390625e-8;   // subnormal: m * 2^-24
+  if (e === 31) return m ? NaN : s * Infinity;
+  return s * Math.pow(2, e - 25) * (m + 1024);         // 2^(e-15) * (1 + m/1024)
+}
+
+function b64bytes(b64) {
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+function unpackWeights(b64, count, dtype) {
+  const bytes = b64bytes(b64);
+  const out = new Float64Array(count);
+  if (dtype === "f16") {
+    for (let i = 0; i < count; i++) out[i] = f16(bytes[2 * i] | (bytes[2 * i + 1] << 8));
+  } else {
+    const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    for (let i = 0; i < count; i++) out[i] = dv.getFloat32(i * 4, true);  // little-endian
+  }
+  return out;
+}
+
+function weightCount(V, E, H, L) {
+  let n = V * E, inp = E;
+  for (let i = 0; i < L; i++) { n += 4 * H * inp + 4 * H * H + 8 * H; inp = H; }
+  return n + V * H + V;
+}
+
+// Decode a model's weights and compute the flat offsets. Done lazily, the first time a
+// model is actually used, so opening the page never pays for models you don't touch.
+function prepare(m) {
+  if (m._w) return m;
+  const V = m.itos.length, E = m.embedding_dim, H = m.hidden_dim, L = m.num_layers;
+  const n = weightCount(V, E, H, L);
+  m._w = unpackWeights(m.weights, n, m.dtype);
+  m._V = V; m._E = E;
+  let o = 0;
+  m._emb = o; o += V * E;
+  m._layers = [];
+  let inp = E;
+  for (let i = 0; i < L; i++) {
+    const wih = o; o += 4 * H * inp;
+    const whh = o; o += 4 * H * H;
+    const bih = o; o += 4 * H;
+    const bhh = o; o += 4 * H;
+    m._layers.push({ wih, whh, bih, bhh, inp });
+    inp = H;
+  }
+  m._headW = o; o += V * H;
+  m._headB = o;
+  m._stoi = Object.fromEntries(m.itos.map((ch, i) => [ch, i]));
+  const names = m.training_names ? m.training_names.split("\n") : [];
+  m._train = new Set(names);
+  // Case-insensitive too: "Rolls-royce" is the same real name as "Rolls-Royce", and
+  // calling it an invention because one letter changed case would be dishonest.
+  m._trainLower = new Set(names.map((s) => s.toLowerCase()));
+  m._trainCount = names.length;
+  return m;
+}
+
+/* ---- the char-RNN, re-implemented faithfully in the browser --------- *
+ * Mirrors src/model.py (Embedding -> LSTM -> Linear) and the reference
+ * forward pass that src/export_web.py verifies against the real PyTorch
+ * model before shipping. Same math, same weights => same net.           */
+
+function sigmoid(x) { return x < -60 ? 0 : 1 / (1 + Math.exp(-x)); }
 
 function zeroState(model) {
   const H = model.hidden_dim;
@@ -377,21 +733,20 @@ function zeroState(model) {
 
 // Feed one character id; mutate state; return the logits for the *next* char.
 function step(model, state, tokenId) {
-  const H = model.hidden_dim;
-  let x = model.embedding[tokenId];              // (E,) for layer 0; then (H,)
+  const H = model.hidden_dim, w = model._w;
+  let x = w.subarray(model._emb + tokenId * model._E, model._emb + (tokenId + 1) * model._E);
   for (let li = 0; li < model.num_layers; li++) {
-    const L = model.layers[li];
-    const wih = L.w_ih, whh = L.w_hh, bih = L.b_ih, bhh = L.b_hh;
+    const L = model._layers[li], inp = L.inp;
     const hl = state.h[li], cl = state.c[li];
     const nh = new Float64Array(H), nc = new Float64Array(H);
     for (let k = 0; k < H; k++) {
       // gate rows are stacked [input, forget, cell, output] in the 4H dim
       const pre = (off) => {
         const r = off + k;
-        const wr = wih[r], hr = whh[r];
-        let s = bih[r] + bhh[r];
-        for (let j = 0; j < x.length; j++) s += wr[j] * x[j];
-        for (let j = 0; j < H; j++)        s += hr[j] * hl[j];
+        let s = w[L.bih + r] + w[L.bhh + r];
+        const bi = L.wih + r * inp, bh = L.whh + r * H;
+        for (let j = 0; j < inp; j++) s += w[bi + j] * x[j];
+        for (let j = 0; j < H; j++)   s += w[bh + j] * hl[j];
         return s;
       };
       const ig = sigmoid(pre(0));
@@ -405,70 +760,161 @@ function step(model, state, tokenId) {
     x = nh;                                        // output feeds the next layer
   }
   // linear head -> one logit per vocabulary character
-  const V = model.head_b.length, logits = new Float64Array(V);
+  const V = model._V, logits = new Float64Array(V);
   for (let v = 0; v < V; v++) {
-    const row = model.head_w[v];
-    let s = model.head_b[v];
-    for (let j = 0; j < H; j++) s += row[j] * x[j];
+    let s = w[model._headB + v];
+    const base = model._headW + v * H;
+    for (let j = 0; j < H; j++) s += w[base + j] * x[j];
     logits[v] = s;
   }
   return logits;
 }
 
-function sampleId(logits, temperature) {
-  const t = Math.max(temperature, 1e-6);
+/* ---- sampling ------------------------------------------------------- *
+ * Same order of operations as src/sample.py, deliberately:
+ *   repetition penalty -> temperature -> top-k -> top-p -> min-length
+ *   masking -> softmax -> sample.                                       */
+function sampleId(model, logits, opts, usedIds, emitted) {
+  const n = logits.length;
+  const z = new Float64Array(n);
+  for (let i = 0; i < n; i++) z[i] = logits[i];
+
+  // CTRL-style: divide a positive logit, *multiply* a negative one, so a repeat is
+  // always pushed down regardless of sign (matches _apply_repetition_penalty).
+  if (opts.repetitionPenalty !== 1 && usedIds.size) {
+    for (const tid of usedIds) {
+      const v = z[tid];
+      z[tid] = v > 0 ? v / opts.repetitionPenalty : v * opts.repetitionPenalty;
+    }
+  }
+
+  const t = Math.max(opts.temperature, 1e-6);
+  for (let i = 0; i < n; i++) z[i] /= t;
+
+  if (opts.topK > 0 && opts.topK < n) {
+    const desc = Array.from(z).sort((a, b) => b - a);
+    const thr = desc[opts.topK - 1];
+    for (let i = 0; i < n; i++) if (z[i] < thr) z[i] = -Infinity;
+  }
+
+  if (opts.topP < 1) {
+    const order = Array.from({ length: n }, (_, i) => i).sort((a, b) => z[b] - z[a]);
+    let mx = -Infinity;
+    for (let i = 0; i < n; i++) if (z[i] > mx) mx = z[i];
+    let sum = 0;
+    const p = new Float64Array(n);
+    for (let i = 0; i < n; i++) { const e = Math.exp(z[i] - mx); p[i] = e; sum += e; }
+    let before = 0;                       // cumulative probability *before* this entry
+    for (let r = 0; r < order.length; r++) {
+      const i = order[r];
+      const pi = p[i] / sum;
+      if (r > 0 && before > opts.topP) z[i] = -Infinity;
+      before += pi;
+    }
+  }
+
+  // min-length: any of these three ends the name, so all three must stay unreachable.
+  if (opts.minLength > 0 && emitted < opts.minLength) {
+    z[model.end_id] = -Infinity;
+    z[model.pad_id] = -Infinity;
+    z[model.start_id] = -Infinity;
+  }
+
   let max = -Infinity;
-  for (let i = 0; i < logits.length; i++) { const a = logits[i] / t; if (a > max) max = a; }
-  let sum = 0; const p = new Float64Array(logits.length);
-  for (let i = 0; i < logits.length; i++) { const e = Math.exp(logits[i] / t - max); p[i] = e; sum += e; }
+  for (let i = 0; i < n; i++) if (z[i] > max) max = z[i];
+  if (max === -Infinity) return model.end_id;      // everything masked; stop cleanly
+  let sum = 0;
+  const p = new Float64Array(n);
+  for (let i = 0; i < n; i++) { const e = Math.exp(z[i] - max); p[i] = e; sum += e; }
   let r = Math.random() * sum;
-  for (let i = 0; i < p.length; i++) { r -= p[i]; if (r <= 0) return i; }
-  return p.length - 1;
+  for (let i = 0; i < n; i++) { r -= p[i]; if (r <= 0) return i; }
+  return n - 1;
 }
 
 // Generate one name, optionally forced to start with `prefix`.
-function generateOne(model, temperature, prefix) {
+function generateOne(model, opts) {
   const stoi = model._stoi;
   const state = zeroState(model);
   let logits = step(model, state, model.start_id);
   let out = "";
-  for (const ch of prefix) {
+  const used = new Set();
+  for (const ch of opts.prefix) {
     const id = stoi[ch];
     if (id === undefined) return null;             // prefix char not in vocab
     out += ch;
+    used.add(id);
     logits = step(model, state, id);
   }
   for (let n = 0; n < model.max_length; n++) {
-    const id = sampleId(logits, temperature);
-    if (id === model.end_id) break;
-    if (id === model.pad_id || id === model.start_id) break;
+    const id = sampleId(model, logits, opts, used, out.length);
+    if (id === model.end_id || id === model.pad_id || id === model.start_id) break;
     out += model.itos[id];
+    used.add(id);
     logits = step(model, state, id);
   }
   return out;
 }
 
+// Is this name character-for-character (or case-for-case) already in the training data?
+function noveltyOf(model, name) {
+  if (model._train.has(name)) return { novel: false, exact: true };
+  if (model._trainLower.has(name.toLowerCase())) return { novel: false, exact: false };
+  return { novel: true, exact: false };
+}
+
 // A batch of distinct names, tagged novel vs. present-in-training.
-function generateMany(model, { count, temperature, prefix, novelOnly }) {
+function generateMany(model, opts) {
   const results = [], seen = new Set();
-  const cap = count * 60;
+  const cap = opts.count * 60;
   let attempts = 0;
-  while (results.length < count && attempts < cap) {
+  while (results.length < opts.count && attempts < cap) {
     attempts++;
-    const name = generateOne(model, temperature, prefix);
-    if (name === null || name.length < 2 || seen.has(name)) continue;
-    const novel = !model._train.has(name);
-    if (novelOnly && !novel) { seen.add(name); continue; }
+    const name = generateOne(model, opts);
+    if (name === null || name.length < Math.max(2, opts.minLength) || seen.has(name)) continue;
     seen.add(name);
-    results.push({ name, novel });
+    const nov = noveltyOf(model, name);
+    if (opts.novelOnly && !nov.novel) continue;
+    results.push({ name, novel: nov.novel, exact: nov.exact });
   }
   return results;
 }
 
-/* ---- prepare models (build lookup tables once) --------------------- */
-for (const m of BURPLE.models) {
-  m._stoi = Object.fromEntries(m.itos.map((ch, i) => [ch, i]));
-  m._train = new Set(m.training_names);
+/* ---- app state ------------------------------------------------------ */
+const $ = (id) => document.getElementById(id);
+const root = document.documentElement;
+const MODELS = BURPLE.models;
+const CATALOG = BURPLE.catalog || [];
+const state = {
+  engine: 0, temp: 1.15, rep: 1, count: 12, prefix: "",
+  novelOnly: false, topK: 0, topP: 1, minLength: 2,
+};
+let lastBatch = [];
+
+/* ---- kept names (localStorage, degrades to memory) ------------------ */
+const KEEP_KEY = "burple-fink.kept.v1";
+let kept = [];
+let storageOK = true;
+try {
+  const raw = localStorage.getItem(KEEP_KEY);
+  kept = raw ? JSON.parse(raw) : [];
+  if (!Array.isArray(kept)) kept = [];
+} catch (e) { kept = []; storageOK = false; }
+
+function saveKept() {
+  if (!storageOK) return;
+  try { localStorage.setItem(KEEP_KEY, JSON.stringify(kept)); }
+  catch (e) { storageOK = false; toast("Can't save kept names in this browser"); }
+}
+const keptKey = (name, from) => name + " " + from;
+function isKept(name, from) { return kept.some((k) => keptKey(k.name, k.from) === keptKey(name, from)); }
+function addKept(name, from, novel) {
+  if (isKept(name, from)) return false;
+  kept.unshift({ name, from, novel, at: Date.now() });
+  saveKept(); renderKept(); return true;
+}
+function removeKept(name, from) {
+  kept = kept.filter((k) => keptKey(k.name, k.from) !== keptKey(name, from));
+  saveKept(); renderKept();
 }
 
 /* ---- temperature -> accent hue (cold blue -> marigold -> redline) --- */
@@ -476,16 +922,39 @@ function hexToRgb(h) { return [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 1
 function lerp(a, b, t) { return a.map((v, i) => Math.round(v + (b[i] - v) * t)); }
 const COLD = hexToRgb("37b6ff"), MID = hexToRgb("ffc23a"), HOT = hexToRgb("ff4326");
 function accentFor(temp) {
-  const t = (temp - 0.4) / 1.2;                    // 0.4..1.6 -> 0..1
-  const rgb = t < 0.5 ? lerp(COLD, MID, t / 0.5) : lerp(MID, HOT, (t - 0.5) / 0.5);
-  return rgb;
+  const t = Math.min(1, Math.max(0, (temp - 0.4) / 1.2));   // 0.4..1.6 -> 0..1
+  return t < 0.5 ? lerp(COLD, MID, t / 0.5) : lerp(MID, HOT, (t - 0.5) / 0.5);
 }
 function luminance([r, g, b]) { return (0.299 * r + 0.587 * g + 0.114 * b) / 255; }
+function applyAccent() {
+  const rgb = accentFor(state.temp);
+  const hex = "#" + rgb.map((v) => v.toString(16).padStart(2, "0")).join("");
+  root.style.setProperty("--accent", hex);
+  root.style.setProperty("--accent-soft", `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.18)`);
+  // pick legible text for on-accent surfaces (button, tags)
+  root.style.setProperty("--accent-ink", luminance(rgb) > 0.6 ? "#14161c" : "#fff");
+}
 
-/* ---- wiring -------------------------------------------------------- */
-const $ = (id) => document.getElementById(id);
-const root = document.documentElement;
-const state = { engine: 0, temp: 1.0, count: 12, prefix: "", novelOnly: false };
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove("show"), 1600);
+}
+
+function copy(text, note) {
+  const done = () => toast(note || ('Copied "' + text + '"'));
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else { fallbackCopy(text, done); }
+}
+function fallbackCopy(text, done) {
+  const ta = document.createElement("textarea");
+  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); done(); } catch (e) { /* ignore */ }
+  document.body.removeChild(ta);
+}
 
 function buildSeg(host, options, current, onPick) {
   host.innerHTML = "";
@@ -502,83 +971,229 @@ function buildSeg(host, options, current, onPick) {
   });
 }
 
-function applyAccent() {
-  const rgb = accentFor(state.temp);
-  const hex = "#" + rgb.map((v) => v.toString(16).padStart(2, "0")).join("");
-  root.style.setProperty("--accent", hex);
-  root.style.setProperty("--accent-soft", `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.18)`);
-  // pick legible text for on-accent surfaces (button, tags)
-  root.style.setProperty("--accent-ink", luminance(rgb) > 0.6 ? "#14161c" : "#fff");
-}
+/* ---- rendering ------------------------------------------------------ */
+function currentModel() { return prepare(MODELS[state.engine]); }
 
-function toast(msg) {
-  const t = $("toast");
-  t.textContent = msg; t.classList.add("show");
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => t.classList.remove("show"), 1500);
+function nameRow(item, from) {
+  const el = document.createElement("div");
+  el.className = "name " + (item.novel ? "novel" : "known");
+  const word = document.createElement("button");
+  word.type = "button"; word.className = "word"; word.textContent = item.name;
+  word.title = "Copy";
+  word.addEventListener("click", () => copy(item.name));
+  const tag = document.createElement("span");
+  tag.className = "tag";
+  tag.textContent = item.novel ? "new" : (item.exact ? "in training data" : "same but for case");
+  if (!item.novel) tag.title = "This exact name is already in the training data — the model reproduced it, it did not invent it.";
+  const star = document.createElement("button");
+  star.type = "button"; star.className = "iconbtn";
+  const sync = () => {
+    const on = isKept(item.name, from);
+    star.setAttribute("aria-pressed", String(on));
+    star.setAttribute("aria-label", (on ? "Remove " : "Keep ") + item.name);
+    star.textContent = on ? "★" : "☆";
+  };
+  star.addEventListener("click", () => {
+    if (isKept(item.name, from)) removeKept(item.name, from);
+    else addKept(item.name, from, item.novel);
+    sync();
+  });
+  sync();
+  el.append(word, tag, star);
+  return el;
 }
 
 function render(batch) {
+  lastBatch = batch;
   const box = $("results");
   box.innerHTML = "";
+  const from = currentLabel();
   if (!batch.length) {
     box.innerHTML = '<p class="empty">The net drew a blank at this setting &mdash; try nudging the dial or clearing the prefix.</p>';
     $("stat").hidden = true;
+    $("resultActions").hidden = true;
     return;
   }
   batch.forEach((item, i) => {
-    const el = document.createElement("button");
-    el.type = "button";
-    el.className = "name " + (item.novel ? "novel" : "known");
-    el.style.animationDelay = (i * 45) + "ms";
-    el.innerHTML =
-      `<span class="word"></span>` +
-      `<span class="tag">${item.novel ? "new" : "real"}</span>` +
-      `<span class="copy">copy</span>`;
-    el.querySelector(".word").textContent = item.name;
-    el.addEventListener("click", () => copy(item.name));
+    const el = nameRow(item, from);
+    el.style.animationDelay = (i * 40) + "ms";
     box.appendChild(el);
   });
-  const novelCount = batch.filter((b) => b.novel).length;
+  const novel = batch.filter((b) => b.novel).length;
+  const copied = batch.length - novel;
   const stat = $("stat");
-  stat.innerHTML = `<b>${novelCount}</b> of ${batch.length} never existed before`;
+  stat.innerHTML = "<b>" + novel + "</b> of " + batch.length + " never existed before" +
+    (copied ? ' &middot; <span class="copied">' + copied + " copied from training data</span>" : "");
   stat.hidden = false;
+  $("resultActions").hidden = false;
 }
 
-function copy(text) {
-  const done = () => toast(`Copied &ldquo;${text}&rdquo;`.replace(/&ldquo;|&rdquo;/g, '"'));
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
-  } else { fallbackCopy(text, done); }
-}
-function fallbackCopy(text, done) {
-  const ta = document.createElement("textarea");
-  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
-  document.body.appendChild(ta); ta.select();
-  try { document.execCommand("copy"); done(); } catch (e) { /* ignore */ }
-  document.body.removeChild(ta);
+function renderKept() {
+  const sec = $("keptSection"), list = $("keptList");
+  if (!kept.length) { sec.hidden = true; list.innerHTML = ""; return; }
+  sec.hidden = false;
+  $("keptCount").textContent = "(" + kept.length + ")";
+  list.innerHTML = "";
+  kept.forEach((k) => {
+    const row = document.createElement("div");
+    row.className = "kept-row";
+    const word = document.createElement("button");
+    word.type = "button"; word.className = "word"; word.textContent = k.name;
+    word.title = "Copy";
+    word.addEventListener("click", () => copy(k.name));
+    const from = document.createElement("span");
+    from.className = "from"; from.textContent = k.from || "";
+    const del = document.createElement("button");
+    del.type = "button"; del.className = "iconbtn";
+    del.textContent = "×";
+    del.setAttribute("aria-label", "Remove " + k.name);
+    del.addEventListener("click", () => {
+      removeKept(k.name, k.from);
+      // keep the star in the results list in sync
+      if (lastBatch.length) render(lastBatch);
+    });
+    row.append(word, from, del);
+    list.appendChild(row);
+  });
 }
 
+/* ---- the gallery sheet ---------------------------------------------- */
+function currentLabel() { return MODELS.length ? MODELS[state.engine].label : ""; }
+
+function pickerSync() {
+  if (!MODELS.length) {
+    $("pickerLabel").textContent = "No models in this file";
+    $("pickerSub").textContent = "Run python -m src.export_web";
+    return;
+  }
+  const m = MODELS[state.engine];
+  const entry = CATALOG.find((c) => c.id === m.id);
+  const n = (entry && entry.count) || (m.training_names ? m.training_names.split("\n").length : 0);
+  $("pickerLabel").textContent = m.label;
+  $("pickerSub").textContent = m.domain + (n ? " · " + n + " real names" : "");
+}
+
+function renderGallery(query) {
+  const body = $("sheetBody");
+  body.innerHTML = "";
+  const q = (query || "").trim().toLowerCase();
+  const bundled = new Map(MODELS.map((m, i) => [m.id, i]));
+  // Catalog is the source of truth for "what exists"; anything bundled but missing from
+  // the catalog (e.g. --no-catalog) is appended so it is never unreachable.
+  let rows = CATALOG.slice();
+  for (const m of MODELS) {
+    if (!rows.some((r) => r.id === m.id)) {
+      rows.push({ id: m.id, label: m.label, domain: m.domain, count: 0, bundled: true });
+    }
+  }
+  if (q) {
+    rows = rows.filter((r) => (r.label + " " + r.domain + " " + r.id).toLowerCase().includes(q));
+  }
+  if (!rows.length) {
+    body.innerHTML = '<p class="empty">Nothing matches that.</p>';
+    return;
+  }
+  // playable first inside each domain, then alphabetical
+  const groups = new Map();
+  for (const r of rows) {
+    const d = r.domain || "Other";
+    if (!groups.has(d)) groups.set(d, []);
+    groups.get(d).push(r);
+  }
+  const dnames = [...groups.keys()].sort((a, b) => a.localeCompare(b));
+  for (const d of dnames) {
+    const items = groups.get(d).sort((a, b) => {
+      const ab = bundled.has(a.id), bb = bundled.has(b.id);
+      if (ab !== bb) return ab ? -1 : 1;
+      return a.label.localeCompare(b.label);
+    });
+    const h = document.createElement("div");
+    h.className = "grp";
+    h.appendChild(document.createTextNode(d));
+    body.appendChild(h);
+    for (const r of items) {
+      const idx = bundled.has(r.id) ? bundled.get(r.id) : -1;
+      const card = document.createElement("button");
+      card.type = "button"; card.className = "card";
+      if (idx < 0) card.disabled = true;
+      if (idx === state.engine) card.setAttribute("aria-current", "true");
+      const txt = document.createElement("span");
+      txt.className = "card-text";
+      const lab = document.createElement("span");
+      lab.className = "card-label"; lab.textContent = r.label;
+      const sub = document.createElement("span");
+      sub.className = "card-sub";
+      sub.textContent = idx >= 0
+        ? (r.count ? r.count + " real names" : "ready")
+        : (r.count ? r.count + " names · not in this file" : "not in this file");
+      txt.append(lab, sub);
+      const chip = document.createElement("span");
+      chip.className = "chip" + (idx >= 0 ? " on" : "");
+      chip.textContent = idx >= 0 ? "offline" : "server";
+      if (idx < 0) chip.title = "Too big to bundle. Run python -m src.serve to use this one.";
+      card.append(txt, chip);
+      if (idx >= 0) {
+        card.addEventListener("click", () => { selectEngine(idx); closeSheet(); });
+      }
+      body.appendChild(card);
+    }
+  }
+}
+
+function selectEngine(i) {
+  state.engine = i;
+  const m = prepare(MODELS[i]);
+  if (m.default_temperature && !selectEngine._touched) { /* keep the measured default */ }
+  pickerSync();
+  $("results").innerHTML = '<p class="empty">Tap <b>Invent names</b> to run <b>' +
+    m.label.replace(/[<>&]/g, "") + '</b>.</p>';
+  $("stat").hidden = true;
+  $("resultActions").hidden = true;
+  lastBatch = [];
+}
+
+function openSheet() {
+  $("sheet").hidden = false;
+  $("search").value = "";
+  renderGallery("");
+  document.body.style.overflow = "hidden";
+  setTimeout(() => $("search").focus({ preventScroll: true }), 30);
+}
+function closeSheet() {
+  $("sheet").hidden = true;
+  document.body.style.overflow = "";
+}
+
+/* ---- run ------------------------------------------------------------ */
 function run() {
-  const model = BURPLE.models[state.engine];
+  if (!MODELS.length) { toast("No models bundled in this file"); return; }
+  const model = currentModel();
   const go = $("go");
   go.disabled = true; go.textContent = "Inventing…";
-  // let the button state paint before the (fast) synchronous crunch
+  // let the button state paint before the synchronous crunch
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    const batch = generateMany(model, {
-      count: state.count,
-      temperature: state.temp,
-      prefix: (state.prefix || "").trim(),
-      novelOnly: state.novelOnly,
-    });
+    let batch = [];
+    try {
+      batch = generateMany(model, {
+        count: state.count,
+        temperature: state.temp,
+        prefix: (state.prefix || "").trim(),
+        novelOnly: state.novelOnly,
+        topK: state.topK,
+        topP: state.topP,
+        repetitionPenalty: state.rep,
+        minLength: state.minLength,
+      });
+    } catch (e) {
+      $("results").innerHTML = '<p class="empty">The engine hit an error: ' +
+        String(e && e.message || e) + "</p>";
+    }
     render(batch);
     go.disabled = false; go.textContent = "Invent names";
   }));
 }
 
-/* build controls from the actual bundled models */
-buildSeg($("engine"), BURPLE.models.map((m) => ({ label: m.label })), state.engine,
-  (i) => { state.engine = i; });
+/* ---- wiring --------------------------------------------------------- */
 buildSeg($("count"), [6, 12, 24].map((n) => ({ label: String(n), value: n })), 1,
   (i, opt) => { state.count = opt.value; });
 
@@ -587,10 +1202,57 @@ $("temp").addEventListener("input", (e) => {
   $("tempVal").textContent = state.temp.toFixed(2);
   applyAccent();
 });
+$("rep").addEventListener("input", (e) => {
+  state.rep = parseFloat(e.target.value);
+  $("repVal").textContent = state.rep.toFixed(2);
+});
+$("topk").addEventListener("input", (e) => {
+  state.topK = parseInt(e.target.value, 10);
+  $("topkVal").textContent = state.topK === 0 ? "off" : String(state.topK);
+});
+$("topp").addEventListener("input", (e) => {
+  state.topP = parseFloat(e.target.value);
+  $("toppVal").textContent = state.topP >= 1 ? "off" : state.topP.toFixed(2);
+});
+$("minlen").addEventListener("input", (e) => {
+  state.minLength = parseInt(e.target.value, 10);
+  $("minlenVal").textContent = String(state.minLength);
+});
 $("prefix").addEventListener("input", (e) => { state.prefix = e.target.value; });
 $("novelOnly").addEventListener("change", (e) => { state.novelOnly = e.target.checked; });
 $("go").addEventListener("click", run);
 
-document.title = "Burple-Fink — invented car names";
+$("picker").addEventListener("click", openSheet);
+$("sheetDone").addEventListener("click", closeSheet);
+$("search").addEventListener("input", (e) => renderGallery(e.target.value));
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !$("sheet").hidden) closeSheet();
+});
+
+$("copyAll").addEventListener("click", () => {
+  if (!lastBatch.length) return;
+  copy(lastBatch.map((b) => b.name).join("\n"), "Copied " + lastBatch.length + " names");
+});
+$("keepAll").addEventListener("click", () => {
+  const from = currentLabel();
+  let n = 0;
+  lastBatch.filter((b) => b.novel).forEach((b) => { if (addKept(b.name, from, true)) n++; });
+  toast(n ? "Kept " + n + " name" + (n === 1 ? "" : "s") : "Nothing new to keep");
+  render(lastBatch);
+});
+$("keptCopy").addEventListener("click", () => {
+  if (!kept.length) return;
+  copy(kept.map((k) => k.name).join("\n"), "Copied " + kept.length + " kept names");
+});
+$("keptClear").addEventListener("click", () => {
+  if (!kept.length) return;
+  kept = []; saveKept(); renderKept();
+  if (lastBatch.length) render(lastBatch);
+  toast("Cleared");
+});
+
+if (MODELS.length) selectEngine(0); else pickerSync();
+renderKept();
 applyAccent();
+document.title = "Burple-Fink — " + MODELS.length + " name generators";
 </script>

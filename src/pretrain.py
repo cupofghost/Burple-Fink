@@ -17,6 +17,11 @@ to the vocabulary. The shared vocab is built (and persisted to
 Usage:
     python -m src.pretrain --epochs 300 --name base
     python -m src.pretrain --data-dir data --epochs 200 --hidden-dim 256
+    python -m src.pretrain --auto-epochs --val-fraction 0.15 --name base
+
+WS-10's regimen flags (``--weight-decay``, ``--label-smoothing``, ``--warmup-epochs``,
+``--arch``, ``--auto-epochs``) work here exactly as they do on :mod:`src.train`; they are
+declared once in ``src/train.py`` and shared. All default to today's behavior.
 """
 
 from __future__ import annotations
@@ -38,7 +43,14 @@ from .data import (
     split_names,
 )
 from .model import CharRNN
-from .train import fit, save_checkpoint
+from .train import (
+    add_regimen_args,
+    apply_auto_epochs,
+    apply_regimen_args,
+    fit,
+    save_checkpoint,
+    seed_for_init,
+)
 
 
 def ensure_shared_vocab(paths, vocab_path: str = DEFAULT_VOCAB_PATH):
@@ -64,7 +76,13 @@ def pretrain(
     checkpoint_dir: str = "checkpoints",
     vocab_path: str = DEFAULT_VOCAB_PATH,
     device: str = "cpu",
+    auto_epochs: bool = False,
 ) -> str:
+    """Train one base model on every dataset in ``data_dir``.
+
+    ``auto_epochs`` derives the budget from the size of the *combined* corpus, which is
+    the only sensible reading here — the base model sees all of it at once.
+    """
     cfg = cfg or Config()
 
     paths = list_dataset_files(data_dir)
@@ -83,7 +101,12 @@ def pretrain(
     split_note = f" | {len(train_names)} train / {len(val_names)} val" if val_names else ""
     print(f"Pretraining on {len(names)} names from {len(paths)} datasets "
           f"| vocab {len(vocab)} | device {device}{split_note}")
+    if auto_epochs:
+        apply_auto_epochs(cfg, len(names))
 
+    # Seed before construction so the base model's initial weights are reproducible
+    # (WS-10); every fine-tune inherits this base, so it is the one init worth pinning.
+    seed_for_init(cfg)
     model = CharRNN(len(vocab), cfg, pad_id=vocab.pad_id).to(device)
     fit(model, vocab, train_names, cfg, device=device, val_names=val_names or None)
 
@@ -119,6 +142,10 @@ def main() -> None:
     parser.add_argument("--lr-schedule", choices=("none", "plateau", "cosine"),
                         default=None, dest="lr_schedule",
                         help="Learning-rate schedule. Default 'none' = constant LR.")
+    add_regimen_args(parser)
+    parser.add_argument("--auto-epochs", action="store_true",
+                        help="Derive the epoch budget from the size of the combined "
+                             "corpus. Ignored if --epochs is also given.")
     args = parser.parse_args()
 
     cfg = Config()
@@ -128,6 +155,11 @@ def main() -> None:
         val = getattr(args, field, None)
         if val is not None:
             setattr(cfg, field, val)
+    apply_regimen_args(cfg, args)
+
+    auto_epochs = args.auto_epochs and args.epochs is None
+    if args.auto_epochs and args.epochs is not None:
+        print(f"--epochs {args.epochs} was given explicitly; ignoring --auto-epochs.")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     pretrain(
@@ -137,6 +169,7 @@ def main() -> None:
         checkpoint_dir=args.checkpoint_dir,
         vocab_path=args.vocab,
         device=device,
+        auto_epochs=auto_epochs,
     )
 
 

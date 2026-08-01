@@ -1,0 +1,17 @@
+{
+ "dataset": "craft_beers",
+ "path": "data/craft_beers.txt",
+ "total_names": 398,
+ "train_names": 338,
+ "val_names": 60,
+ "checkpoint": "checkpoints/ws11_craft_beers.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 40,
+ "best_epoch": 20,
+ "best_val_loss": 1.383058786392212,
+ "final_train_loss": 0.37034567377784033,
+ "train_loss_at_best": 0.8370307358828458,
+ "stopped_early": true,
+ "wall_seconds": 54.5
+}

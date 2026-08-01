@@ -9,10 +9,26 @@ or imported function-by-function from tests/CI.
 This script never deletes or modifies anything — it only reports. Per AGENTS.md §3, a
 found secret or PII must be flagged to the owner, not auto-removed (proper removal
 requires cleaning git history).
+
+Suppressing a *known-fake* match (WS-13)
+----------------------------------------
+The scanner used to flag its own test fixtures and the STATUS.md paragraph describing
+that bug, which made the CI `hygiene` job red on every push. Two narrow mechanisms fix
+that without weakening the scanner against a real secret:
+
+1. **Reserved example domains.** An address at an RFC 2606 / RFC 6761 reserved name
+   (`example.com`, `*.test`, `*.invalid`, `*.localhost`, …) cannot belong to a real
+   person, so it is not PII. Real domains are unaffected.
+2. **Line-level pragma.** A line carrying the marker ``check_repo: allow`` is skipped —
+   *only that line*. Deliberate fixture credentials opt out one at a time, so a
+   genuinely new secret anywhere else in the same file is still caught.
+
+There is deliberately no file-level or directory-level exemption (no "skip tests/").
 """
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -42,6 +58,29 @@ TEXT_SUFFIXES = {
     ".py", ".md", ".txt", ".tsv", ".json", ".html", ".yml", ".yaml", ".sh", ".cfg", ".ini",
 }
 
+# A single line may opt out of the secret/PII scan by carrying this marker, e.g.
+#     issues = self._scan("ghp_AAAA...")  # check_repo: allow (test fixture)
+# Scope is one line, on purpose: a real secret added elsewhere in the same file is
+# still reported. See the module docstring.
+ALLOW_PRAGMA_RE = re.compile(r"check_repo:\s*allow\b")
+
+# RFC 2606 §3 reserved second-level domains and RFC 6761 reserved TLDs. Addresses here
+# are unregistrable by definition, so `someone@example.com` in a docstring, a test
+# fixture, or a STATUS.md paragraph is documentation — not the owner's PII.
+RESERVED_EMAIL_DOMAINS = ("example.com", "example.org", "example.net", "example.edu")
+RESERVED_EMAIL_TLDS = ("example", "invalid", "test", "localhost")
+
+
+def _is_reserved_example_email(address: str) -> bool:
+    """True for addresses no human can actually own (RFC 2606 / RFC 6761)."""
+    _, _, domain = address.rpartition("@")
+    domain = domain.rstrip(".").lower()
+    if not domain:
+        return False
+    if any(domain == d or domain.endswith("." + d) for d in RESERVED_EMAIL_DOMAINS):
+        return True
+    return domain.rsplit(".", 1)[-1] in RESERVED_EMAIL_TLDS
+
 
 def list_dataset_files(data_dir: Path = DATA_DIR) -> List[str]:
     """Every `data/*.txt` and `data/*.tsv` name (not full paths), sorted."""
@@ -68,6 +107,48 @@ def _section(text: str, heading: str) -> str:
     return rest if end == -1 else rest[:end]
 
 
+def _sidecar_meta(name: str, data_dir: Path) -> dict:
+    """Best-effort read of `data/<stem>.meta.json` (WS-13) for a dataset filename."""
+    stem = Path(name).stem
+    candidates = [Path(data_dir) / f"{stem}.meta.json"]
+    if Path(name).suffix == ".tsv":
+        # `paint_colors.tsv` and `paint_colors.txt` share a stem; the .tsv sidecar is
+        # disambiguated as `paint_colors_tsv.meta.json`.
+        candidates.insert(0, Path(data_dir) / f"{stem}_tsv.meta.json")
+    for sidecar in candidates:
+        try:
+            meta = json.loads(sidecar.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if isinstance(meta, dict):
+            return meta
+    return {}
+
+
+def _suggested_rows(names: Iterable[str], data_dir: Path, columns: List[str]) -> str:
+    """Paste-ready markdown rows for `names`, pre-filled from their `.meta.json` sidecars.
+
+    Wave 3 lands ~22 datasets from parallel lanes, so this check reports drift until the
+    orchestrating session merges the catalog tables. Emitting the literal rows makes that
+    merge mechanical instead of a scavenger hunt through `data/`.
+    """
+    defaults = {"status": "✅ added"}
+    rows = []
+    for name in names:
+        meta = _sidecar_meta(name, data_dir)
+        cells = []
+        for col in columns:
+            if col == "file":
+                cells.append(f"`{name}`")
+            else:
+                # Escape pipes so a signature ("Claude Code | Opus 5 | high") or a
+                # provenance sentence cannot split the pasted row into extra columns.
+                value = str(meta.get(col, defaults.get(col, "TODO")))
+                cells.append(value.replace("|", r"\|"))
+        rows.append("    | " + " | ".join(cells) + " |")
+    return "\n".join(rows)
+
+
 def check_registry_drift(
     data_dir: Path = DATA_DIR,
     handoff_path: Path = HANDOFF_PATH,
@@ -85,15 +166,30 @@ def check_registry_drift(
     readme_files = _table_filenames(readme_section)
 
     issues: List[str] = []
-    for name in sorted(dataset_files - handoff_files):
+    missing_from_handoff = sorted(dataset_files - handoff_files)
+    if missing_from_handoff:
         issues.append(
-            f"data/{name} exists but has no row in the dataset registry table in "
-            f"{handoff_path} (§4). Add one — see HANDOFF §5 'Adding a new dataset'."
+            f"{handoff_path} (§4 Dataset registry) is missing {len(missing_from_handoff)} "
+            f"row(s) for files that exist in data/: "
+            f"{', '.join(missing_from_handoff)}. Add these rows verbatim (columns "
+            f"File | Domain | Count | Owner | Notes; TODO = no sidecar to read it from) — "
+            f"see HANDOFF §5 'Adding a new dataset':\n"
+            + _suggested_rows(
+                missing_from_handoff, data_dir,
+                ["file", "domain", "count", "signature", "provenance"],
+            )
         )
-    for name in sorted(dataset_files - readme_files):
+    missing_from_readme = sorted(dataset_files - readme_files)
+    if missing_from_readme:
         issues.append(
-            f"data/{name} exists but has no row in the dataset catalog table in "
-            f"{readme_path}. Add one."
+            f"{readme_path} (## Dataset catalog) is missing {len(missing_from_readme)} "
+            f"row(s) for files that exist in data/: "
+            f"{', '.join(missing_from_readme)}. Add these rows verbatim (columns "
+            f"Dataset file | Domain | Count | Status; TODO = no sidecar to read it "
+            f"from):\n"
+            + _suggested_rows(
+                missing_from_readme, data_dir, ["file", "label", "count", "status"],
+            )
         )
     for name in sorted(handoff_files - dataset_files):
         issues.append(
@@ -139,6 +235,10 @@ def check_secrets_and_pii(
 ) -> List[str]:
     """Scan tracked text files for email addresses and common secret-key patterns.
 
+    Scanning is line-by-line so findings carry a line number and so a single line can
+    opt out via the ``check_repo: allow`` pragma without blinding the rest of the file.
+    Addresses at reserved example domains are not PII and are never reported.
+
     Never deletes anything — per AGENTS.md §3, a hit must be flagged to the owner so
     they can decide how to clean git history, not silently scrubbed.
     """
@@ -157,19 +257,28 @@ def check_secrets_and_pii(
             text = path.read_text(encoding="utf-8", errors="ignore")
         except OSError:
             continue
-        for m in EMAIL_RE.finditer(text):
-            issues.append(
-                f"{path}: possible email address found ({m.group(0)}). AGENTS.md §3 "
-                f"forbids committing PII — flag this to the owner; do not delete it "
-                f"yourself (proper removal requires cleaning git history)."
-            )
-        for label, pattern in SECRET_PATTERNS:
-            if pattern.search(text):
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            if ALLOW_PRAGMA_RE.search(line):
+                continue
+            for m in EMAIL_RE.finditer(line):
+                if _is_reserved_example_email(m.group(0)):
+                    continue
                 issues.append(
-                    f"{path}: possible {label} found. AGENTS.md §3 forbids committing "
-                    f"credentials — stop and flag this to the owner; do not delete it "
-                    f"yourself (proper removal requires cleaning git history)."
+                    f"{path}:{lineno}: possible email address found ({m.group(0)}). "
+                    f"AGENTS.md §3 forbids committing PII — flag this to the owner; do "
+                    f"not delete it yourself (proper removal requires cleaning git "
+                    f"history). If it is a deliberate fixture, use a reserved domain "
+                    f"(user@example.com) or add a `check_repo: allow` comment to the line."
                 )
+            for label, pattern in SECRET_PATTERNS:
+                if pattern.search(line):
+                    issues.append(
+                        f"{path}:{lineno}: possible {label} found. AGENTS.md §3 forbids "
+                        f"committing credentials — stop and flag this to the owner; do "
+                        f"not delete it yourself (proper removal requires cleaning git "
+                        f"history). If it is a deliberate fixture, add a "
+                        f"`check_repo: allow` comment to that line."
+                    )
     return issues
 
 

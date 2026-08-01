@@ -1,0 +1,17 @@
+{
+ "dataset": "world_cities",
+ "path": "data/world_cities.txt",
+ "total_names": 1691,
+ "train_names": 1437,
+ "val_names": 254,
+ "checkpoint": "checkpoints/ws11_world_cities.pt",
+ "epoch_budget": 60,
+ "patience": 10,
+ "epochs_run": 18,
+ "best_epoch": 8,
+ "best_val_loss": 2.4779447317123413,
+ "final_train_loss": 1.4085777494642469,
+ "train_loss_at_best": 2.3125204934014216,
+ "stopped_early": true,
+ "wall_seconds": 46.3
+}
