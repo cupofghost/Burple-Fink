@@ -237,10 +237,11 @@ def fit(
     so it still reaches ``lr_min`` at the end of the run instead of being cut off
     part-way down.
 
-    Optional ``report`` dict is filled in with ``train_losses``, ``val_losses``,
-    ``best_epoch``, ``best_val_loss``, ``stopped_early`` and ``epochs_run`` so callers
-    and tests can inspect the run without parsing stdout. The return value stays the
-    model, unchanged, because three call sites rely on that.
+    Optional ``report`` dict is filled in with ``train_losses``, ``val_losses``, ``lrs``
+    (the learning rate each epoch actually ran at), ``best_epoch``, ``best_val_loss``,
+    ``stopped_early`` and ``epochs_run`` so callers and tests can inspect the run without
+    parsing stdout. The return value stays the model, unchanged, because three call sites
+    rely on that.
     """
     torch.manual_seed(cfg.seed)
     generator = torch.Generator().manual_seed(cfg.seed)
@@ -272,6 +273,7 @@ def fit(
 
     train_losses: list[float] = []
     val_losses: list[float] = []
+    lrs: list[float] = []
     best_val = float("inf")
     best_epoch = 0
     best_state: dict | None = None
@@ -284,6 +286,7 @@ def fit(
             _apply_warmup(optimizer, cfg, epoch, base_lrs)
             if epoch == cfg.warmup_epochs + 1:
                 scheduler = _make_scheduler(optimizer, cfg)
+        lrs.append(optimizer.param_groups[0]["lr"])
 
         model.train()
         total_loss = 0.0
@@ -367,6 +370,7 @@ def fit(
         report.update(
             train_losses=train_losses,
             val_losses=val_losses,
+            lrs=lrs,
             best_epoch=best_epoch,
             best_val_loss=best_val if best_state is not None else None,
             stopped_early=stopped_early,

@@ -528,6 +528,11 @@
     <span class="picker-chev" aria-hidden="true">Browse</span>
   </button>
 
+  <details class="prov" id="prov">
+    <summary id="provSummary">Where these names came from</summary>
+    <p class="prov-body" id="provBody"></p>
+  </details>
+
   <section class="controls">
     <div class="field">
       <div class="lab-row">
@@ -1090,13 +1095,36 @@ function pickerSync() {
   if (!MODELS.length) {
     $("pickerLabel").textContent = "No models in this file";
     $("pickerSub").textContent = "Run python -m src.export_web";
+    $("prov").hidden = true;
     return;
   }
   const m = MODELS[state.engine];
-  const entry = CATALOG.find((c) => c.id === m.id);
-  const n = (entry && entry.count) || (m.training_names ? m.training_names.split("\n").length : 0);
+  const entry = CATALOG.find((c) => c.id === m.id) || {};
+  const n = entry.count || (m.training_names ? m.training_names.split("\n").length : 0);
   $("pickerLabel").textContent = m.label;
   $("pickerSub").textContent = m.domain + (n ? " · " + n + " real names" : "");
+
+  // Provenance: unobtrusive by default, but never absent. These datasets were recalled
+  // from general knowledge rather than checked against a register, and the page says so.
+  const verified = m.verified === true;
+  const prov = m.provenance || entry.provenance || "";
+  $("prov").hidden = false;
+  $("provSummary").textContent = verified
+    ? "Source-checked training data"
+    : "Unverified training data — tap for provenance";
+  const body = $("provBody");
+  body.innerHTML = "";
+  const lead = document.createElement("b");
+  lead.textContent = m.label + " · " + (n ? n + " names" : "training set") + ". ";
+  body.appendChild(lead);
+  body.appendChild(document.createTextNode(
+    verified
+      ? "This dataset was cross-checked against a primary source."
+      : "Not cross-checked against a primary source. "));
+  if (!verified && prov) body.appendChild(document.createTextNode(prov));
+  body.appendChild(document.createTextNode(
+    " The generator learns letter patterns from these names, so anything it invents " +
+    "inherits their gaps and mistakes."));
 }
 
 function renderGallery(query) {
