@@ -156,6 +156,32 @@
     padding: 7px 11px;
   }
 
+  /* --- provenance disclosure --------------------------------------- *
+   * Every wave-3 dataset is verified:false — recalled from general knowledge,
+   * not cross-checked against a register. That belongs on the page, but as a
+   * footnote you can open, not a banner that shouts on every load.          */
+  .prov { margin: -8px 4px 0; }
+  .prov > summary {
+    cursor: pointer; list-style: none;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--faint);
+    display: flex; align-items: center; gap: 7px; padding: 3px 0;
+  }
+  .prov > summary::-webkit-details-marker { display: none; }
+  .prov > summary::before {
+    content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--warn);
+  }
+  .prov > summary:hover { color: var(--muted); }
+  .prov > summary:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 3px; border-radius: 4px; }
+  .prov-body {
+    margin: 8px 0 0; padding: 11px 12px;
+    background: var(--surface-2); border: 1px solid var(--hairline);
+    border-radius: 10px;
+    font-size: 12px; line-height: 1.55; color: var(--muted);
+  }
+  .prov-body b { color: var(--ink); font-weight: 650; }
+
   /* --- control panel ---------------------------------------------- */
   .controls {
     background: var(--surface);

@@ -511,12 +511,16 @@ def build_bundle(models: List[Dict], skipped: Optional[List[Dict]] = None,
             continue
         manifest.append({"id": m["id"], "label": m["label"], "domain": m["domain"],
                          "count": 0, "bundled": False,
+                         "verified": m.get("verified", False),
+                         "provenance": m.get("provenance", ""),
                          "skip_reason": m.get("skip_reason", "not bundled")})
     for m in models:
         if m["id"] not in seen:
             manifest.append({"id": m["id"], "label": m["label"], "domain": m["domain"],
                              "count": len(m["training_names"].split("\n")) if
-                             m["training_names"] else 0, "bundled": True})
+                             m["training_names"] else 0, "bundled": True,
+                             "verified": m.get("verified", False),
+                             "provenance": m.get("provenance", "")})
     manifest.sort(key=lambda e: (e["domain"].lower(), e["label"].lower()))
     return {"format": BUNDLE_FORMAT, "models": models, "catalog": manifest}
 

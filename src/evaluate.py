@@ -326,12 +326,17 @@ def evaluate(checkpoint: str, num: int = 200, temperature: float = 0.8,
     suppresses the printed table -- used by ``sweep()`` so it can print one
     combined table instead of one per grid point.
     """
-    if seed is not None:
-        torch.manual_seed(seed)
     ckpt = _load(checkpoint, device)
     model, vocab, cfg = ckpt.model, ckpt.vocab, ckpt.cfg
     training_names = ckpt.training_names
     training_set = set(training_names)
+
+    # Seed *after* loading, never before. Building a CharRNN initializes its weights
+    # from the global torch RNG, so a cache miss consumes a different amount of the
+    # stream than a cache hit -- seeding first would make the very same command
+    # produce different names depending on what ran before it in the process.
+    if seed is not None:
+        torch.manual_seed(seed)
 
     # Raw sample: keep duplicates and training-set collisions so we can *measure* them.
     raw: List[str] = []
