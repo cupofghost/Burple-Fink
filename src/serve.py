@@ -150,14 +150,39 @@ engineGenerate = async (model, opts) => {
 """
 
 
-def build_page(labels: List[str]) -> str:
-    """Reuse the shared UI's CSS + markup, but swap in the fetch-based script."""
+def build_page(engines: List[Engine], data_dir: str = DATA_DIR) -> str:
+    """Build the served page from the *whole* shared template.
+
+    Before WS-12 this took only the template's ``<style>`` + markup and appended a
+    separately-maintained script, so every UI feature had to be written twice. Now both
+    builds use the same file and the same script; the server build differs in exactly two
+    spliced values — model metadata with no weights, and a fetch-based ``engineGenerate``.
+    """
     with open(TEMPLATE, "r", encoding="utf-8") as fh:
         template = fh.read()
-    # Everything up to the <script> tag (the <style> block and the markup) is shared
-    # verbatim; only the "brain" differs between the static export and the live server.
-    head = template.split("<script>", 1)[0]
-    return head + "<script>\n" + _live_script(labels) + "\n</script>\n"
+    for marker in (TEMPLATE_MARKER, ENGINE_MARKER):
+        if marker not in template:
+            raise ValueError(f"Template {TEMPLATE!r} is missing marker {marker}")
+
+    # The catalog lists every dataset that exists; a checkpoint is what makes one usable.
+    loaded = {e.id for e in engines}
+    catalog = [dict(c, bundled=c["id"] in loaded) for c in dataset_catalog(data_dir)]
+    for e in engines:
+        if e.id not in {c["id"] for c in catalog}:
+            catalog.append(dict(e.meta(), bundled=True))
+    catalog.sort(key=lambda c: (c["domain"].lower(), c["label"].lower()))
+
+    bundle = json.dumps({
+        "format": BUNDLE_FORMAT,
+        # No weights: on this path the real PyTorch model does the generating, so the
+        # browser needs nothing but labels. That is why the served page stays ~40 KB
+        # however many checkpoints are loaded.
+        "models": [e.meta() for e in engines],
+        "catalog": catalog,
+    }, ensure_ascii=True, separators=(",", ":"))
+
+    page = template.replace(TEMPLATE_MARKER, bundle).replace(ENGINE_MARKER, _live_engine())
+    return page + "\n<script>document.title = 'Burple-Fink \\u2014 live model';</script>\n"
 
 
 def make_handler(engines: List[Engine], page: str):
@@ -182,8 +207,7 @@ def make_handler(engines: List[Engine], page: str):
             elif parsed.path == "/api/health":
                 self._health()
             elif parsed.path == "/api/models":
-                body = json.dumps({"models": [e.label for e in engines]}).encode()
-                self._send(200, body, "application/json")
+                self._send_json(200, {"models": [e.meta() for e in engines]})
             elif parsed.path == "/api/generate":
                 self._generate(parse_qs(parsed.query))
             elif parsed.path == "/favicon.ico":

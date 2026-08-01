@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import math
 import os
 import sys
 import tempfile
@@ -730,10 +731,6 @@ class AutoEpochsTest(unittest.TestCase):
             ckpt = torch.load(path, map_location="cpu", weights_only=False)
             # The checkpoint records the budget that actually ran, not the 999.
             self.assertEqual(ckpt["config"]["epochs"], derive_epochs(len(NAMES)))
-
-
-class RegimenCLITest:
-    """Placeholder replaced below; see RegimenArgsTest."""
 
 
 class RegimenArgsTest(unittest.TestCase):
