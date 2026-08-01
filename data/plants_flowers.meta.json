@@ -1,0 +1,10 @@
+{
+  "name": "plants_flowers",
+  "label": "Plants and flowers",
+  "domain": "Nature",
+  "count": 634,
+  "provenance": "Common names of garden and wild plants recalled from general horticultural and field-guide knowledge; apostrophes stripped (Ladys Mantle, Queen Annes Lace) to fit the shared vocabulary.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}
