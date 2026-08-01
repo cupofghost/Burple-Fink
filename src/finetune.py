@@ -87,11 +87,19 @@ def finetune(
     # corpus* was held out says nothing about this dataset, and silently splitting a
     # 66-name fine-tune set because the base run used 15% would be a nasty surprise.
     # This is also what keeps fine-tuning byte-identical to its pre-WS-6 behavior.
+    # WS-10's regimen knobs follow exactly the same rule and for the same reason: the
+    # weight decay that suited a 24,000-name pretraining corpus is not automatically the
+    # weight decay for a 400-name fine-tune.
     defaults = Config()
     cfg.val_fraction = val_fraction if val_fraction is not None else defaults.val_fraction
     cfg.early_stop_patience = (early_stop_patience if early_stop_patience is not None
                                else defaults.early_stop_patience)
     cfg.lr_schedule = lr_schedule if lr_schedule is not None else defaults.lr_schedule
+    cfg.weight_decay = weight_decay if weight_decay is not None else defaults.weight_decay
+    cfg.label_smoothing = (label_smoothing if label_smoothing is not None
+                           else defaults.label_smoothing)
+    cfg.warmup_epochs = (warmup_epochs if warmup_epochs is not None
+                         else defaults.warmup_epochs)
 
     names = load_names(data_path)
     names, dropped = filter_to_vocab(names, vocab)

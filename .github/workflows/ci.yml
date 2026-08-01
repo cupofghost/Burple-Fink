@@ -4,6 +4,14 @@ on:
   push:
   pull_request:
 
+# One run per ref. Wave 3 has eighteen lanes pushing in parallel, so without this the
+# queue fills with runs against commits nobody is looking at any more. A superseded push
+# is cancelled rather than queued; the newest commit on a ref is the only one that
+# matters.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   # Fast, stdlib-only bookkeeping checks. Runs first and needs no dependencies at all,
   # so a broken dataset registry / README catalog / a committed secret fails in seconds
@@ -12,35 +20,63 @@ jobs:
     name: repo hygiene (no torch)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.11 (no dependencies needed)
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Registry drift, committed weights, secrets/PII
+
+      # Registry drift is ADVISORY here and does not fail the build: wave 3 lands ~22
+      # datasets from four parallel lanes, and the orchestrating session merges the two
+      # catalog tables once, at the end, so eighteen lanes don't fight over one markdown
+      # table. The check still runs and still prints every missing row verbatim, ready
+      # to paste. Committed weights, secrets and PII are always blocking.
+      # ORCHESTRATOR: after merging the catalogs at consolidation, append `--strict` to
+      # the line below to re-arm the drift check.
+      - name: Committed weights, secrets/PII (+ advisory registry drift)
         run: python scripts/check_repo.py
-      - name: Hygiene unit tests
-        run: python -m unittest tests.test_repo_hygiene -v
+
+      - name: Dataset validation (charset, duplicates, sidecar metadata)
+        run: python scripts/check_data.py
+
+      - name: Hygiene unit tests (check_repo + check_data)
+        run: python -m unittest tests.test_repo_hygiene tests.test_data_hygiene -v
 
   # The full suite plus a CLI smoke train/sample, exercising the actual contracts
   # (checkpoint format, CLI flags) rather than just the library.
+  #
+  # Step names here are deliberately specific. This job installs torch, so a red X is
+  # ambiguous unless you can tell "PyPI was slow" from "the model broke" from "the CLI
+  # contract changed" by reading the step list alone, without opening the logs.
   test:
     name: unit tests + CLI smoke
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.11 with pip cache (keyed on requirements.txt)
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: "pip"
           cache-dependency-path: requirements.txt
-      - name: Install dependencies (CPU torch, default PyPI index)
+
+      # Slowest step by far: the CPU torch wheel is large, and setup-python's cache
+      # covers pip's HTTP cache rather than a prebuilt environment, so a cold cache
+      # means a real download. If *this* step is the one that fails, it is an
+      # infrastructure problem (PyPI, the runner, a torch release), not a code problem.
+      - name: Install dependencies (CPU torch from PyPI — slow, network-bound)
         run: pip install -r requirements.txt
-      - name: Unit test suite
+
+      - name: Unit test suite (everything under tests/, needs torch)
         run: python -m unittest discover -s tests -v
-      - name: CLI smoke train
+
+      - name: CLI smoke — train a 20-epoch checkpoint from data/car_manufacturers.txt
         run: >
           python -m src.train --data data/car_manufacturers.txt --epochs 20
           --name ci_smoke
-      - name: CLI smoke sample
+
+      - name: CLI smoke — sample 5 names from that checkpoint
         run: >
           python -m src.sample --checkpoint checkpoints/ci_smoke.pt --num 5

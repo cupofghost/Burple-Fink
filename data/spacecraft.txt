@@ -1,270 +1,593 @@
 2MASS
-AERCam
-AIRS
-AKARI
-AMSR
-ATV
-AVHRR
+ACE
+Aditya
 Advanced Microwave Scanning
 Advanced Very High Resolution
+Aeolus
+AERCam
+AIM
+AIRS
+Ajisai
+AKARI
 Akatsuki
 Akatsuki Venus
+Almaz
+Alos
+Alouette
+Amos
+AMSR
+Angara
+Anik
+Antares
 Apollo
+Apollo 11
+Apollo 13
 Aqua
+Aquarius
+Arabsat
+Arase
+Ares
+Ariane
+Ariane 5
+Ariane 6
 Ariel
+Artemis
+Aryabhata
+Astra
+Astron
+Astrosat
+Asuka
+Athena
 Atlantis
+Atlas
+Atlas V
 Atmospheric Infrared Sounder
+ATV
 Aura
+AVHRR
 Axiom
 Axiom Station
+Beagle
+BEAM
+Beidou
 BepiColombo Mercury
 BeppoSAX
+Bhaskara
 Bigelow
+Biomass
+Black Arrow
+Blue Ghost
 Blue Origin
+Blue Streak
 Buran
 CALIOP
 CALIPSO
-COBE
-COBE Microwave
 Canadarm
+Cargo Dragon
+Cartosat
 Cassini
 Challenger
 Chandra
 Chandra Space
 Chandra X-ray
 Chandrayaan
-Chang'e
+Chandrayaan 2
+Chandrayaan 3
+Chang-e
+CHEOPS
 Clementine
 Cloud-Aerosol Lidar
 CloudSat
+Cluster
+COBE
+COBE Microwave
 Columbia
 Columbus
 Compton
 Compton Gamma-ray
+Contour
 Copernicus
+CoRoT
+Cosmo-SkyMed
+Courier
+Crew Dragon
+Cryosat
 Cupola
 Curiosity
 Cygnus
+Daichi
+DART
+Dawn
+Deep Impact
+Deep Space One
+Delta
+Delta IV
 Destiny
 Destiny Module
+Diamant
 Discovery
+DMSP
+Dongfanghong
+Dove
 Dragon
+Dragonfly
 Dream Chaser
-ERS 1
-ERS 2
+Early Bird
+EarthCARE
+Echo
 Einstein
+Einstein Probe
 Einstein Space
 Einstein X-ray
+Ekran
+Electron
+Elektro
 Endeavour
+Energia
 Enterprise
 Envisat
+Epsilon
+ERS 1
+ERS 2
+ESSA
+Etalon
+Euclid
+Europa
+Europa Clipper
 European Module
+Eutelsat
+ExoMars
+Explorer
+Explorer 1
 Falcon
+Falcon 9
 Falcon Heavy
+Fengyun
 Fermi
 Fermi Gamma-ray
 Fermi Space
+Fobos-Grunt
+Gaganyaan
+Gaia
+Galileo
+Gaofen
+Gemini
+Genesis
+GeoEye
+Geosat
+Geosat Follow-On
+Ginga
+Giotto
+Global Precipitation Measurement
+Globalstar
+Glonass
 GOCE
 GOES
 GOES Weather
-GPM
-GRACE
-Gaia
-Galileo
-Gemini
-Geosat
-Geosat Follow-On
-Global Precipitation Measurement
+Gonets
+Gorizont
 Gould
 Gould Belt Survey
+GPM
+GRACE
 Grail
+Granat
 Gravity Field
 Gravity Recovery
-HTV
+GSAT
+GSLV
+H-II
+H-IIA
+H-IIB
+Haiyang
+Halca
 Harmony
 Harmony Module
 Hayabusa
+Hayabusa 2
 Hayabusa2
+Helios
+Hera
+Hermes
+Herschel
+Himawari
 Hinode
 Hinode Solar
 Hipparcos
+Hispasat
+Hiten
+Hitomi
+HTV
 Hubble
 Hubble Space Telescope
+Huiyan
+Huygens
+IBEX
+Ice Cloud and Land
 ICESat
+Ikaros
+IKONOS
+Imaging Radar
+Infrared Space Observatory
+Ingenuity
+Inmarsat
+INSAT
+InSight
 INTEGRAL
 INTEGRAL Gamma-ray
 INTEGRAL Space
+Integrated Truss Structure
+Intelsat
+Interball
 IRAS
+Iridium
+IRIS
+IRNSS
+Isis
 ISO
 ISO Infrared
 ISS
 IUE
-Ice Cloud and Land
-Imaging Radar
-Infrared Space Observatory
-Integrated Truss Structure
+IXPE
+James Webb
+Jason
 Jason 1
 Jason 2
 Jason 3
+JPSS
+JUICE
 Juno
+Jupiter
 Kaguya
 Kepler
 Kibo
+Kiku
+Kliper
+Koreasat
+Kosmos
+Kounotori
+Kristall
+Kuafu
+Kuaizhou
+Kuiper
+Kvant
+Lageos
 Landsat
+Landsat 1
 Landsat 8
 Landsat 9
 Landsat Earth
+LauncherOne
 Leonardo
 Lidar
+LISA Pathfinder
+Long March
+Long March 5
+Lucy
+Luna
+Luna 16
+Luna 9
 Luna Program
+Lunar Orbiter
 Lunar Prospector
 Lunar Reconnaissance Orbiter
-MAVEN
-MESSENGER Mercury
-MISR
-MODIS
-MOPITT
+Lunokhod
 Magellan Venus Mapper
+Magsat
+Mangalyaan
+Mariner
 Mariner 10
+Mariner 4
+Mariner 9
 Mariner Venus Mercury
+Mars Express
+Mars Global Surveyor
+Mars Odyssey
 Mars Orbiter
+Mars Pathfinder
+MAVEN
+Mengtian
 Mercury
 Messenger
+MESSENGER Mercury
+Meteor
+Meteosat
+Michibiki
+Minotaur
 Mir
+Miranda
+MISR
+MMS
 Mobile Base System
+MODIS
+Molniya
 Moon Orbiter
+MOPITT
+Mozi
+Mu
 Multi-angle Imaging
-NOAA
-NOAA Weather
 Nadir
+Nancy Grace Roman
+Naro
 Nauka
+NAVSTAR
+NEAR Shoemaker
+Neutron
+New Glenn
 New Horizons
 New Shepard
+Nimbus
+NOAA
+NOAA Weather
+Nova-C
+Nozomi
+Nuri
 NuSTAR
 NuSTAR Hard X-ray
 NuSTAR Space
+Oceansat
 OCO
+Odysseus
+Ohsumi
+Okean
+OneWeb
+Opportunity
+Optus
+Orbcomm
+Orbiting Carbon Observatory
+Orel
+Orion
+Oscar
 OSIRIS-REx
 OSO
-Opportunity
-Orbiting Carbon Observatory
-Orion
-PROBA Solar
+Pageos
+Palapa
 Pallet Satellite
 Parker Solar Probe
+Pegasus
+Peregrine
 Perseverance
+Philae
+Phobos
+Phoenix
+Pioneer
 Pioneer 10
 Pioneer 11
+Pioneer 6
 Pioneer Venus
 Pirs
 Planck
 Planck Microwave
+PLATO
+Pleiades
+Poisk
+Polar
 Port
+Pragyan
+Prichal
+Priroda
 Proba
+PROBA Solar
+Prognoz
 Progress
+Prospero
+Proton
+PSLV
+Psyche
+Queqiao
 Quest
-RXTE
-RXTE Timing
+QuickBird
 Radar Satellite
 Radarsat 1
 Radarsat 2
 Radarsat Constellation
+Raduga
+Ranger
+Ranger 7
+RapidEye
 Rassvet
+Redstone
 Relativity
+Relay
+Resourcesat
+Resurs
+RHESSI
 Robonaut
 Rocket Lab
+Rohini
+Rokot
+Rosalind Franklin
+Rosetta
+RXTE
+RXTE Timing
+Safir
+Sakigake
+Sakura
+Salyut
+Salyut 7
 SAR Satellite
 SAS
-SIR-C
-SMS
-SOHO
-SOHO Solar
-SSM/I
-SSMIS
-STEREO
-STEREO Solar
-SUNSAT
-SWIFT
-SWOT
-Salyut
+Saturn I
+Saturn IB
+Saturn V
+Schiaparelli
+Score
+Scout
+SDO
 Sea-viewing Wide Field
-SeaWiFS
 Seasat
+SeaWiFS
 Selene
 Sentinel 1
 Sentinel 2
 Sentinel 3
 Sentinel 5
+Sentinel 6
 Sentinel SAR
+Shavit
 Shenzhou
+Shenzhou 5
+Shijian
 Shuttle Imaging Radar
 Sierra Space
-SkyMapper
+Simorgh
+SIR-C
 Skylab
+Skylab 4
+SkyMapper
+SLIM
 Smart 1
+SMOS
+SMS
+SOHO
+SOHO Solar
+Sojourner
 Solar Array
+Solar Dynamics Observatory
 Solar Orbiter
 Soyuz
+Soyuz MS
+Soyuz TMA
+Space Launch System
 Space Telescope
 SpaceHab
-SpaceShip One
-SpaceShip Two
 Spacehab Double Module
 Spacehab Integrated Cargo Carrier
 Spacehab Pressurized Module
 Spacehab Single Module
 Spacelab
+SpaceShip One
+SpaceShip Two
 Special Sensor Microwave
 Special Sensor Microwave Imager
+Spektr
+Spektr-RG
 Spirit
 Spitzer
 Spitzer Space Telescope
+SPOT
+Sputnik
+Sputnik 1
+SSMI
+SSMIS
 Starboard
+Stardust
+Starlette
+Starliner
+Starlink
 Starship
+STEREO
+STEREO Solar
+Suisei
+SUNSAT
+Suomi NPP
+Superbird
 Surface Water Ocean Topography
+Surveyor
+Surveyor 3
 Suzaku
 Suzaku Space
 Suzaku X-ray
+Swarm
+SWIFT
 Swift Gamma-ray
 Swift Space
+SWOT
+Syncom
+TanDEM
+Tansei
+Taurus
+Telstar
+Telstar 1
+Terra
+Terran
+TerraSAR
 TES
 TESS
-TOMS
-TRMM
-Terra
+Themis
+Thor
+Thuraya
 Tiangong
+Tianhe
+Tianwen
+Tianwen 1
+Tianzhou
+TIMED
+Tiros
+Titan
+Titan IIIC
+TOMS
 Topex Poseidon
 Total Ozone Mapping
+TRACE
+Trace Gas Orbiter
 Tranquility
 Tranquility Module
+Transit
+TRMM
 Tropical Rainfall Measuring
 Tropospheric Emission Spectrometer
 Truss
+Tsyklon
 Two Micron All Sky Survey
 Uhuru
 Uhuru Space
 Uhuru X-ray
+Ulysses
+Unha
 Unity
-VIIRS
+Uosat
+Van Allen Probes
+Vanguard
+Vanguard 1
+Vega
+Vega C
 Vela
 Vela Satellites
+Venera
+Venera 7
+Venera 9
 Venus Climate Orbiter
 Venus Express
+VIIRS
 Viking 1
 Viking 2
+Vikram
 Virgin Galactic
 Visible Infrared Imaging
+Voskhod
+Voskhod 2
+Vostok
+Vostok 1
+Voyager
 Voyager 1
 Voyager 2
+Vulcan
+Webb
+Wentian
+Wide-field Infrared Survey Explorer
+Wind
 WISE
 WISE Infrared
 WMAP
 WMAP Microwave
-Wide-field Infrared Survey Explorer
+WorldView
+Wukong
 XMM-Newton
 XMM-Newton Space
 XMM-Newton X-ray
+XRISM
+Xuntian
+Yaogan
+Yohkoh
+Yuri
+Yutu
 Zarya
+Zenit
 Zenith
+Zhuque
+Zhurong
+Ziyuan
+Zond 5
 Zond Program
 Zvezda
