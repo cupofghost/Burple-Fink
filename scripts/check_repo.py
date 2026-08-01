@@ -13,17 +13,21 @@ requires cleaning git history).
 Suppressing a *known-fake* match (WS-13)
 ----------------------------------------
 The scanner used to flag its own test fixtures and the STATUS.md paragraph describing
-that bug, which made the CI `hygiene` job red on every push. Two narrow mechanisms fix
-that without weakening the scanner against a real secret:
+that bug, which made the CI `hygiene` job red on every push. Two deliberately narrow
+mechanisms fix that without weakening the scanner against a real secret:
 
-1. **Reserved example domains.** An address at an RFC 2606 / RFC 6761 reserved name
-   (`example.com`, `*.test`, `*.invalid`, `*.localhost`, …) cannot belong to a real
-   person, so it is not PII. Real domains are unaffected.
-2. **Line-level pragma.** A line carrying the marker ``check_repo: allow`` is skipped —
+1. **Line-level pragma.** A line carrying the marker ``check_repo: allow`` is skipped —
    *only that line*. Deliberate fixture credentials opt out one at a time, so a
    genuinely new secret anywhere else in the same file is still caught.
+2. **Exact allowlist** (``KNOWN_FIXTURE_MATCHES``) for files that cannot carry a
+   pragma, keyed on the repo-relative path *and* the exact matched text. It exempts one
+   string in one file; the same string elsewhere, or any other match in that file, is
+   still reported.
 
-There is deliberately no file-level or directory-level exemption (no "skip tests/").
+There is deliberately no file-level, directory-level or domain-level exemption: no
+"skip tests/", and no "example.com addresses are always fine" (the hygiene suite has a
+test asserting `someone@example.com` is still reported when it turns up somewhere that
+has not opted out).
 """
 
 from __future__ import annotations
@@ -64,22 +68,27 @@ TEXT_SUFFIXES = {
 # still reported. See the module docstring.
 ALLOW_PRAGMA_RE = re.compile(r"check_repo:\s*allow\b")
 
-# RFC 2606 §3 reserved second-level domains and RFC 6761 reserved TLDs. Addresses here
-# are unregistrable by definition, so `someone@example.com` in a docstring, a test
-# fixture, or a STATUS.md paragraph is documentation — not the owner's PII.
-RESERVED_EMAIL_DOMAINS = ("example.com", "example.org", "example.net", "example.edu")
-RESERVED_EMAIL_TLDS = ("example", "invalid", "test", "localhost")
+# Exact exceptions for text that has to stay in the repo but is not a real secret, for
+# files that cannot carry an inline pragma. Keyed on (repo-relative path, exact matched
+# text): both must match, so this cannot quietly grow into a file-level skip.
+#
+# Keep this list short and justify every entry. Prefer the `check_repo: allow` pragma —
+# it lives next to the string it excuses and travels with it.
+KNOWN_FIXTURE_MATCHES = {
+    # STATUS.md quotes this deliberately fake address in its Known-issues entry while
+    # describing the very bug that made the hygiene job red. STATUS.md is unowned by any
+    # lane (the orchestrating session merges it), so it cannot carry a pragma. Any other
+    # address in STATUS.md, and this address in any other file, is still reported.
+    ("STATUS.md", "someone@example.com"),
+}
 
 
-def _is_reserved_example_email(address: str) -> bool:
-    """True for addresses no human can actually own (RFC 2606 / RFC 6761)."""
-    _, _, domain = address.rpartition("@")
-    domain = domain.rstrip(".").lower()
-    if not domain:
-        return False
-    if any(domain == d or domain.endswith("." + d) for d in RESERVED_EMAIL_DOMAINS):
-        return True
-    return domain.rsplit(".", 1)[-1] in RESERVED_EMAIL_TLDS
+def _repo_relative(path: Path, repo_root: Path) -> Optional[str]:
+    """`path` as a posix path relative to the repo, or None if it lies outside it."""
+    try:
+        return Path(path).resolve().relative_to(Path(repo_root).resolve()).as_posix()
+    except (ValueError, OSError):
+        return None
 
 
 def list_dataset_files(data_dir: Path = DATA_DIR) -> List[str]:

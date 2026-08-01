@@ -1,0 +1,10 @@
+{
+  "name": "sailing_ships",
+  "label": "Sailing Ships and Naval Vessels",
+  "domain": "Maritime",
+  "count": 468,
+  "provenance": "Recalled from knowledge of naval and merchant marine history: age-of-sail warships, clippers, tall ships, ocean liners, polar research vessels and twentieth-century capital ships. Non-Latin and accented names transliterated; hull numbers and honorifics dropped.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}

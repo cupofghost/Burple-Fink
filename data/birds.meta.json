@@ -1,0 +1,10 @@
+{
+  "name": "birds",
+  "label": "Bird species",
+  "domain": "Nature",
+  "count": 863,
+  "provenance": "Bird common names recalled from general ornithological and field-guide knowledge, weighted toward North America and Europe with worldwide coverage; possessive apostrophes dropped (Wilsons Warbler, Stellers Jay).",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}

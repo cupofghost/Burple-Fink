@@ -1,0 +1,10 @@
+{
+  "name": "cocktails",
+  "label": "Cocktails",
+  "domain": "Culture",
+  "count": 459,
+  "provenance": "Recalled from general knowledge of the IBA official cocktail list, the Savoy Cocktail Book canon, classic tiki drinks and widely-served modern bar standards; accented and punctuated names were transliterated to plain ASCII. Not cross-checked against a printed source in this session.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}
