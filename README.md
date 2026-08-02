@@ -303,7 +303,7 @@ Each lives in `data/` as a newline-separated `.txt` file with a `data/<stem>.met
 sidecar carrying its label, domain, count and provenance. `python scripts/check_data.py`
 validates every one of them.
 
-**30 datasets, 27,243 names.**
+**30 datasets, 27,226 names.**
 
 ### Vehicles & Transport — 3,774 names
 
@@ -371,7 +371,7 @@ validates every one of them.
 | Dataset file | Contents | Count |
 |---|---|---|
 | `english_words.txt` | Common English words | 8,631 |
-| `world_cities.txt` | World city and capital names | 1,691 |
+| `world_cities.txt` | World city and capital names | 1,674 |
 | `greek_myth.txt` | Greek and Roman Mythology | 755 |
 | `racehorses.txt` | Racehorse names | 355 |
 

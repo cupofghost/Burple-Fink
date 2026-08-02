@@ -90,28 +90,28 @@ RULE_SIDECAR = "sidecar"
 #
 # Verified against the tree on 2026-08-01; counts are offending lines at that time.
 # ---------------------------------------------------------------------------
-KNOWN_NONCONFORMING: Dict[str, Set[str]] = {
-    # --- character set: apostrophes, periods, ampersands, slashes, accents ----------
-    # 18/398 lines: 17 apostrophes ("Bell's Two Hearted") and one "ä".
-    "craft_beers.txt": {RULE_CHARSET},
-    # 5/355 lines: 4 apostrophes ("Man O' War", "Comet's Flash") and one period
-    # ("Dr. Fager").
-    "racehorses.txt": {RULE_CHARSET},
-    # 2/270 lines: "Chang'e" and one "/". Owned by WS-17 this wave.
-    "spacecraft.txt": {RULE_CHARSET},
-    # 1/391 lines: "Bells & Whistles" (line 148).
-    "paint_colors.txt": {RULE_CHARSET},
-    # 93/1691 lines, and the worst of the set: accented Latin (á í ç ã ê é ú ó â ñ É Ñ),
-    # 5 periods, 2 apostrophes, and one U+00AD SOFT HYPHEN that is invisible in every
-    # editor. These are the names shared_vocab.json already drops silently.
-    "world_cities.txt": {RULE_CHARSET},
-
-    # --- exact duplicate lines -------------------------------------------------------
-    # "Skoda" twice (lines 33 and 118). Owned by WS-17 this wave.
-    "car_manufacturers.txt": {RULE_DUPLICATE},
-    # "Wrangler" (106/174) and "Continental" (208/254). Owned by WS-17 this wave.
-    "car_models.txt": {RULE_DUPLICATE},
-}
+#
+# EMPTY, AND THAT IS THE POINT. Every entry this list was created to hold has been
+# paid off rather than tolerated (orchestrator, 2026-08-02):
+#
+#   craft_beers.txt   18 lines — apostrophes + one "ä"      -> normalized
+#   racehorses.txt     5 lines — apostrophes + "Dr. Fager"  -> normalized
+#   spacecraft.txt     2 lines — "Chang'e", one "/"         -> fixed by WS-17
+#   paint_colors.txt   1 line  — "Bells & Whistles"         -> "Bells and Whistles"
+#   world_cities.txt  93 lines — accented Latin, periods, apostrophes, and one
+#                               U+00AD SOFT HYPHEN invisible in every editor
+#                                                            -> normalized
+#   car_manufacturers.txt / car_models.txt — duplicate lines -> fixed by WS-17
+#
+# Normalizing world_cities.txt also collapsed 17 pairs that were the SAME city stored
+# twice, once accented and once not ("Belém" and "Belem" as separate lines) — debris
+# from the 2026-07-24 merge of two independently-built city lists, which deduplicated
+# case-insensitively and so could not see them. No city was lost; 1,691 lines became
+# 1,674 rows and one fewer silent trap.
+#
+# Leave this empty. An entry here means a dataset is exempt from the rule that keeps
+# data/shared_vocab.json honest; fix the data instead.
+KNOWN_NONCONFORMING: Dict[str, Set[str]] = {}
 
 
 class Finding(NamedTuple):
