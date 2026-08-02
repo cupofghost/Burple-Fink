@@ -150,13 +150,19 @@ class GrandfatherTests(unittest.TestCase):
         findings = check_lines("brand_new.txt", ["Man O' War"])
         self.assertEqual([f.level for f in findings], ["error"])
 
-    def test_known_nonconforming_names_only_pre_existing_files(self):
-        """Guards against a lane quietly adding its own file to the amnesty list."""
-        allowed = {
-            "craft_beers.txt", "racehorses.txt", "spacecraft.txt", "paint_colors.txt",
-            "world_cities.txt", "car_manufacturers.txt", "car_models.txt",
-        }
-        self.assertEqual(set(KNOWN_NONCONFORMING), allowed)
+    def test_amnesty_list_is_empty(self):
+        """Guards against a lane quietly adding its own file to the amnesty list.
+
+        This started life as an allowlist of the seven files that pre-dated the
+        validator. All seven were fixed on 2026-08-02 — the data was normalized rather
+        than exempted — so the guard is now the stronger statement: nothing is exempt.
+
+        If you are here because you added an entry to make a build pass, that is the
+        case this test exists to stop. An exemption means a dataset can carry characters
+        `data/shared_vocab.json` has no symbol for, which makes `filter_to_vocab` drop
+        those names at fine-tune time without saying so. Fix the data instead.
+        """
+        self.assertEqual(dict(KNOWN_NONCONFORMING), {})
 
 
 class SidecarTests(_TempData):
