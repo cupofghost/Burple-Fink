@@ -1,0 +1,14 @@
+{
+ "dataset": "car_models",
+ "train_size": 218,
+ "val_size": 183,
+ "checkpoint": "checkpoints/ws11_ladder_car_models_218.pt",
+ "best_val_loss": 2.6871315240859985,
+ "best_epoch": 17,
+ "epochs_run": 37,
+ "epoch_budget": 180,
+ "train_nll": 2.215262342426678,
+ "held_out_nll": 2.6774880446696208,
+ "gap": 0.46222570224294257,
+ "wall_seconds": 33.2
+}

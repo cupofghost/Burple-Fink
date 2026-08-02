@@ -1,0 +1,26 @@
+{
+ "dataset": "tech_startups",
+ "total_names": 400,
+ "train_names": 340,
+ "val_names": 60,
+ "best_val_loss": 2.718448281288147,
+ "best_epoch": 11,
+ "epochs_run": 31,
+ "epoch_budget": 180,
+ "train_nll": 2.3808380083635057,
+ "held_out_nll": 2.7167088826497396,
+ "gap": 0.33587087428623397,
+ "novelty": 1.0,
+ "near_dup_1": 0.015,
+ "near_dup_2": 0.15,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0605014693532775,
+ "avg_length": 7.02,
+ "samples5": [
+  "Adusta",
+  "Yipp",
+  "Iyleroal",
+  "EntibB",
+  "OpphB Sceacho"
+ ]
+}

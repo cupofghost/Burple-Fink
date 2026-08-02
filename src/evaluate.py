@@ -139,6 +139,45 @@ def mean_pairwise_edit_distance(names: List[str], max_pairs: int = 2000,
 
 # --- memorization: near-duplicates of the training set, not just exact copies -------
 
+def _within_edit_distance(a: str, b: str, max_dist: int) -> bool:
+    """Exactly ``_edit_distance(a, b) <= max_dist``, without computing the distance.
+
+    ``near_duplicate_rate`` asks this question millions of times — every generated name
+    against every plausibly-close training name — and never needs the actual distance,
+    only whether it clears a threshold of 1 or 2. That allows two exact shortcuts the
+    full DP cannot take: only the cells within ``max_dist`` of the diagonal can ever
+    hold a value <= ``max_dist``, so the inner loop walks a band of ``2*max_dist + 1``
+    cells instead of the whole row; and once every cell in a row exceeds ``max_dist``
+    the answer can only be "no", so the DP stops there.
+
+    For the 3- or 5-wide bands this module actually uses that turns an O(len(a)*len(b))
+    scan into an O(len(a)) one. The result is identical to
+    ``_edit_distance(a, b) <= max_dist`` for every input — ``tests/test_evaluate.py``
+    pins that against a brute-force sweep.
+    """
+    n, m = len(a), len(b)
+    if abs(n - m) > max_dist:      # every edit changes the length by at most one
+        return False
+    if a == b:
+        return True
+    inf = max_dist + 1
+    prev = [j if j <= max_dist else inf for j in range(m + 1)]
+    for i in range(1, n + 1):
+        cur = [i if i <= max_dist else inf] + [inf] * m
+        lo, hi = max(1, i - max_dist), min(m, i + max_dist)
+        ca = a[i - 1]
+        best = cur[0]
+        for j in range(lo, hi + 1):
+            d = min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != b[j - 1]))
+            cur[j] = d
+            if d < best:
+                best = d
+        if best > max_dist:        # no cell in this row can lead anywhere useful
+            return False
+        prev = cur
+    return prev[m] <= max_dist
+
+
 def near_duplicate_rate(names: List[str], training_names: List[str], max_dist: int = 1) -> float:
     """Fraction of ``names`` within edit distance <= ``max_dist`` of some training name.
 
@@ -159,7 +198,7 @@ def near_duplicate_rate(names: List[str], training_names: List[str], max_dist: i
         found = False
         for length in range(len(name) - max_dist, len(name) + max_dist + 1):
             for t in by_length.get(length, ()):
-                if _edit_distance(name, t) <= max_dist:
+                if _within_edit_distance(name, t, max_dist):
                     found = True
                     break
             if found:

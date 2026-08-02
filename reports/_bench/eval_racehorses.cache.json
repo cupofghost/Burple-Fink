@@ -1,0 +1,26 @@
+{
+ "dataset": "racehorses",
+ "total_names": 355,
+ "train_names": 302,
+ "val_names": 53,
+ "best_val_loss": 2.2975351810455322,
+ "best_epoch": 20,
+ "epochs_run": 40,
+ "epoch_budget": 180,
+ "train_nll": 1.6619946257438067,
+ "held_out_nll": 2.315751647949219,
+ "gap": 0.6537570222054121,
+ "novelty": 1.0,
+ "near_dup_1": 0.0,
+ "near_dup_2": 0.0,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0455443893998952,
+ "avg_length": 11.3,
+ "samples5": [
+  "Solicteol Sam",
+  "Skhim Tifron",
+  "Gane Cellia",
+  "Scarinine Ver",
+  "Hoot Oruple"
+ ]
+}

@@ -1,0 +1,26 @@
+{
+ "dataset": "board_games",
+ "total_names": 585,
+ "train_names": 497,
+ "val_names": 88,
+ "best_val_loss": 2.49396546681722,
+ "best_epoch": 13,
+ "epochs_run": 33,
+ "epoch_budget": 180,
+ "train_nll": 1.8276632409905988,
+ "held_out_nll": 2.4854381419994214,
+ "gap": 0.6577749010088225,
+ "novelty": 1.0,
+ "near_dup_1": 0.0,
+ "near_dup_2": 0.065,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.037887933215082,
+ "avg_length": 11.315,
+ "samples5": [
+  "Rixi",
+  "Sdice Induun",
+  "Bolama",
+  "Tchravein",
+  "Blice the Rinn "
+ ]
+}

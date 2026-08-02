@@ -1,0 +1,26 @@
+{
+ "dataset": "motorcycles",
+ "total_names": 359,
+ "train_names": 305,
+ "val_names": 54,
+ "best_val_loss": 1.344099223613739,
+ "best_epoch": 20,
+ "epochs_run": 40,
+ "epoch_budget": 180,
+ "train_nll": 0.5662341973278461,
+ "held_out_nll": 1.3571065893314156,
+ "gap": 0.7908723920035695,
+ "novelty": 0.8020304568527918,
+ "near_dup_1": 0.37055837563451777,
+ "near_dup_2": 0.5076142131979695,
+ "uniqueness": 0.985,
+ "plaus_ratio": 1.0120580993343269,
+ "avg_length": 13.695,
+ "samples5": [
+  "Honda Trail",
+  "Harley-Davadsy",
+  "Ninja Mojo",
+  "MV Agusta Rivale",
+  "Ducati Diapilen"
+ ]
+}

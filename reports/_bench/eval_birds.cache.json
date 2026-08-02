@@ -1,0 +1,26 @@
+{
+ "dataset": "birds",
+ "total_names": 863,
+ "train_names": 734,
+ "val_names": 129,
+ "best_val_loss": 1.4314461588859557,
+ "best_epoch": 15,
+ "epochs_run": 35,
+ "epoch_budget": 120,
+ "train_nll": 0.7554728908082421,
+ "held_out_nll": 1.645194184609007,
+ "gap": 0.8897212938007649,
+ "novelty": 0.96,
+ "near_dup_1": 0.055,
+ "near_dup_2": 0.08,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.005981566599251,
+ "avg_length": 14.13,
+ "samples5": [
+  "Rock Turk",
+  "Emiperin Hawk",
+  "Cap Torbler",
+  "Haucan Eagle-Wren",
+  "Townsend Penguin"
+ ]
+}

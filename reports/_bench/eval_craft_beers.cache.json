@@ -1,0 +1,26 @@
+{
+ "dataset": "craft_beers",
+ "total_names": 398,
+ "train_names": 338,
+ "val_names": 60,
+ "best_val_loss": 1.383058786392212,
+ "best_epoch": 20,
+ "epochs_run": 40,
+ "epoch_budget": 180,
+ "train_nll": 0.7381502238044718,
+ "held_out_nll": 1.3849105981398453,
+ "gap": 0.6467603743353735,
+ "novelty": 0.9595959595959596,
+ "near_dup_1": 0.06060606060606061,
+ "near_dup_2": 0.10606060606060606,
+ "uniqueness": 0.99,
+ "plaus_ratio": 1.0119336733141322,
+ "avg_length": 18.325,
+ "samples5": [
+  "Hopworpd Brees",
+  "Wper Edofte",
+  "Ma2nal ano Choat",
+  "Mash 5isc Brewing Company Tanky Ond",
+  "Diamond Rittiy"
+ ]
+}

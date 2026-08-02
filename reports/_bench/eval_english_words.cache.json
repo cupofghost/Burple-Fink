@@ -1,0 +1,26 @@
+{
+ "dataset": "english_words",
+ "total_names": 8631,
+ "train_names": 7336,
+ "val_names": 1295,
+ "best_val_loss": 2.0064260756097188,
+ "best_epoch": 6,
+ "epochs_run": 26,
+ "epoch_budget": 60,
+ "train_nll": 1.6058516000340477,
+ "held_out_nll": 1.9884764156256483,
+ "gap": 0.38262481559160055,
+ "novelty": 0.7738693467336684,
+ "near_dup_1": 0.5527638190954773,
+ "near_dup_2": 0.8241206030150754,
+ "uniqueness": 0.995,
+ "plaus_ratio": 0.9948134783188348,
+ "avg_length": 6.395,
+ "samples5": [
+  "tanza",
+  "complete",
+  "red",
+  "premiancy",
+  "lofder"
+ ]
+}

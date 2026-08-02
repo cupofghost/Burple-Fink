@@ -1,0 +1,26 @@
+{
+ "dataset": "metal_bands",
+ "total_names": 663,
+ "train_names": 564,
+ "val_names": 99,
+ "best_val_loss": 2.5229421854019165,
+ "best_epoch": 10,
+ "epochs_run": 30,
+ "epoch_budget": 180,
+ "train_nll": 2.052585814859908,
+ "held_out_nll": 2.596359614512367,
+ "gap": 0.5437737996524588,
+ "novelty": 1.0,
+ "near_dup_1": 0.0,
+ "near_dup_2": 0.05,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.051667558929181,
+ "avg_length": 10.01,
+ "samples5": [
+  "Rix Sadgrey",
+  "Kasvers",
+  "Kamand Argatis",
+  "Blirerow",
+  "Samon "
+ ]
+}

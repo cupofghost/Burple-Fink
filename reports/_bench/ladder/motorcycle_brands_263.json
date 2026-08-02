@@ -1,0 +1,14 @@
+{
+ "dataset": "motorcycle_brands",
+ "train_size": 263,
+ "val_size": 46,
+ "checkpoint": "checkpoints/ws11_ladder_motorcycle_brands_263.pt",
+ "best_val_loss": 2.7190747261047363,
+ "best_epoch": 12,
+ "epochs_run": 32,
+ "epoch_budget": 180,
+ "train_nll": 2.281435401509755,
+ "held_out_nll": 2.7307490153485032,
+ "gap": 0.44931361383874835,
+ "wall_seconds": 47.0
+}

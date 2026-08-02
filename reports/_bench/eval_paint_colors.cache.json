@@ -1,0 +1,26 @@
+{
+ "dataset": "paint_colors",
+ "total_names": 391,
+ "train_names": 332,
+ "val_names": 59,
+ "best_val_loss": 1.5773699283599854,
+ "best_epoch": 13,
+ "epochs_run": 33,
+ "epoch_budget": 180,
+ "train_nll": 1.0169030995124462,
+ "held_out_nll": 1.593365741032426,
+ "gap": 0.5764626415199798,
+ "novelty": 0.8534031413612565,
+ "near_dup_1": 0.46596858638743455,
+ "near_dup_2": 0.6701570680628273,
+ "uniqueness": 0.955,
+ "plaus_ratio": 1.0198459164263804,
+ "avg_length": 9.08,
+ "samples5": [
+  "Bemenis",
+  "Babem Blukt",
+  "Bemidnight",
+  "erco Blqie",
+  "Bemidjuaze"
+ ]
+}

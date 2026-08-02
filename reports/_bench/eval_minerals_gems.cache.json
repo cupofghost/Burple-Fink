@@ -1,0 +1,26 @@
+{
+ "dataset": "minerals_gems",
+ "total_names": 624,
+ "train_names": 530,
+ "val_names": 94,
+ "best_val_loss": 1.9272973934809368,
+ "best_epoch": 10,
+ "epochs_run": 30,
+ "epoch_budget": 180,
+ "train_nll": 1.716609611868924,
+ "held_out_nll": 1.924714425149478,
+ "gap": 0.20810481328055408,
+ "novelty": 0.995,
+ "near_dup_1": 0.025,
+ "near_dup_2": 0.28,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0525997277718189,
+ "avg_length": 9.345,
+ "samples5": [
+  "Salniarwite",
+  "Frlozancite",
+  "Lanborlitte",
+  "Manelsite",
+  "Waunbsomite"
+ ]
+}

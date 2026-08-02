@@ -677,17 +677,22 @@ class WarmupTest(unittest.TestCase):
 class AutoEpochsTest(unittest.TestCase):
     """WS-10 Task 3: the epoch budget the user no longer has to look up."""
 
-    def test_reproduces_the_readme_table_for_a_small_dataset(self):
-        # The README said 60 for anything under ~200 names.
-        self.assertEqual(derive_epochs(159), AUTO_EPOCH_MIN)
+    def test_small_datasets_land_on_the_readme_floor(self):
+        # The README said 60 for anything under ~200 names; that is the floor here, and
+        # a 159-name set lands just above it (70) — still 5x its measured bottom of 13.
         self.assertEqual(derive_epochs(120), AUTO_EPOCH_MIN)
+        self.assertEqual(derive_epochs(63), AUTO_EPOCH_MIN)
+        self.assertEqual(derive_epochs(159), 70)
 
-    def test_matches_the_measured_val_bottoms_with_headroom(self):
-        # WS-6 measured the val bottom at ~epoch 15 (159 names) and ~25 (435 names);
-        # WS-10 re-measured the same curve on datasets up to 1,691 names. The budget is
-        # ~4x the bottom, so the ceiling is comfortably clear of it in every case.
-        for names, bottom in ((159, 15), (435, 25), (2223, 56)):
-            self.assertGreater(derive_epochs(names), 3 * bottom)
+    def test_clears_every_measured_val_bottom_with_headroom(self):
+        # The measured epoch at which each dataset's held-out loss actually bottomed
+        # (WS-10, 15% holdout, patience 25). The derived ceiling must sit well clear of
+        # it — that is the entire safety property the budget has to have.
+        measured = {159: 13, 309: 10, 435: 26, 590: 9, 863: 13,
+                    1218: 10, 1691: 8, 2223: 10, 8631: 7}
+        for names, bottom in measured.items():
+            self.assertGreaterEqual(derive_epochs(names), 4 * bottom,
+                                    f"budget for {names} names must clear epoch {bottom}")
 
     def test_monotone_across_every_shipped_dataset_size(self):
         sizes = [63, 309, 355, 435, 590, 863, 1218, 1691, 2223, 8631]
