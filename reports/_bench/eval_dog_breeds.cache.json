@@ -1,0 +1,26 @@
+{
+ "dataset": "dog_breeds",
+ "total_names": 461,
+ "train_names": 392,
+ "val_names": 69,
+ "best_val_loss": 1.935300588607788,
+ "best_epoch": 16,
+ "epochs_run": 36,
+ "epoch_budget": 180,
+ "train_nll": 1.0476580698982232,
+ "held_out_nll": 1.896852266301482,
+ "gap": 0.8491941964032588,
+ "novelty": 0.995,
+ "near_dup_1": 0.01,
+ "near_dup_2": 0.04,
+ "uniqueness": 1.0,
+ "plaus_ratio": 0.9892303303241583,
+ "avg_length": 15.645,
+ "samples5": [
+  "Baston Cranche Kerter",
+  "Janich Spiin",
+  "Blue de BrajFer",
+  "GerrFolan Windong",
+  "Gaker Spaniel"
+ ]
+}

@@ -244,7 +244,13 @@ def verify(m: Dict, torch_model, vocab: Vocab, device: str = "cpu",
     # happen to contain a hardcoded letter. The long probe matters: quantization error
     # compounds through the recurrence, so a single step would not catch drift.
     real = vocab.itos[3:]
-    probes = ["", real[0] if real else "", "".join(real[:2]), "".join(real[:6])]
+    # Probe lengths matter: float16 error compounds through the recurrence, so a
+    # single-step check would understate it. Measured across all 30 shipped models, the
+    # worst error peaks between 6 and 12 characters (2.8e-3 -> 3.1e-3) and then *falls*
+    # again by 20 (1.9e-3) — the LSTM's tanh-bounded state stops it accumulating without
+    # limit. Probing out to 12 therefore covers the worst case, not just the easy one.
+    probes = ["", real[0] if real else "", "".join(real[:2]), "".join(real[:6]),
+              "".join((real * 4)[:12])]
     worst = 0.0
     worst_probe = ""
     for probe in probes:
@@ -428,7 +434,6 @@ def export_model(checkpoint: str, label: Optional[str] = None, device: str = "cp
         except RuntimeError as exc:            # this encoding is not faithful enough
             last_error = exc
             continue
-        candidate["bytes"] = model_bytes(candidate)
         return candidate
 
     raise RuntimeError(
@@ -437,7 +442,12 @@ def export_model(checkpoint: str, label: Optional[str] = None, device: str = "cp
 
 
 def model_bytes(m: Dict) -> int:
-    """Exact serialized size of one model inside the bundle."""
+    """Exact serialized size of one model inside the bundle.
+
+    Deliberately measured, not estimated, and deliberately *not* cached on the model dict:
+    a stored ``bytes`` field would itself add bytes to the JSON, so the recorded size
+    could never equal the real one. Everything that budgets or reports calls this.
+    """
     return len(json.dumps(m, ensure_ascii=True, separators=(",", ":")).encode("utf-8"))
 
 
@@ -454,7 +464,7 @@ def plan_bundle(models: List[Dict], budget_mb: float = DEFAULT_BUDGET_MB,
     skipped: List[Dict] = []
     total = overhead
     for m in models:
-        size = m.get("bytes") or model_bytes(m)
+        size = model_bytes(m)
         if max_models > 0 and len(kept) >= max_models:
             skipped.append(dict(m, skip_reason="over --max-models"))
             continue
@@ -475,7 +485,7 @@ def size_report(models: List[Dict], template_bytes: int = 0) -> Dict:
     for m in models:
         weights = len(m["weights"])
         names = len(m["training_names"].encode("utf-8"))
-        total = m.get("bytes") or model_bytes(m)
+        total = model_bytes(m)
         rows.append({
             "id": m["id"],
             "label": m["label"],
@@ -540,6 +550,11 @@ def build_html(models: List[Dict], template_path: str, out_path: str,
     bundle = json.dumps(build_bundle(models, skipped, catalog),
                         ensure_ascii=True, separators=(",", ":"))
     html = template.replace(TEMPLATE_MARKER, bundle)
+    # The static build keeps the in-browser engine, so there is nothing to splice here --
+    # but the marker itself is consumed rather than shipped, so a build artifact never
+    # looks half-finished.
+    html = html.replace(ENGINE_MARKER,
+                        "/* static export: the browser runs the net itself */")
     with open(out_path, "w", encoding="utf-8") as fh:
         fh.write(html)
     return out_path
@@ -592,7 +607,7 @@ def main() -> None:
                          precision=args.precision, data_dir=args.data_dir)
         exported.append(m)
         print(f"  ✓ {m['label']:<24} {m['domain']:<14} {m['dtype']} "
-              f"{_fmt(m['bytes']):>9}  (logit error {m['max_logit_error']:.2e})")
+              f"{_fmt(model_bytes(m)):>9}  (logit error {m['max_logit_error']:.2e})")
 
     with open(args.template, "r", encoding="utf-8") as fh:
         template_bytes = len(fh.read().encode("utf-8"))
@@ -622,7 +637,7 @@ def main() -> None:
     if skipped:
         print(f"\n  {len(skipped)} model(s) left out to stay inside the budget:")
         for m in skipped:
-            print(f"    - {m['label']} ({_fmt(m['bytes'])}, {m['skip_reason']})")
+            print(f"    - {m['label']} ({_fmt(model_bytes(m))}, {m['skip_reason']})")
         print("    They are still listed in the gallery, marked 'not in this file'.")
 
     budget = args.budget_mb * 1024 * 1024 if args.budget_mb > 0 else 0

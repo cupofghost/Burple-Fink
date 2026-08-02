@@ -1,0 +1,26 @@
+{
+ "dataset": "pharma_drugs",
+ "total_names": 2223,
+ "train_names": 1890,
+ "val_names": 333,
+ "best_val_loss": 2.0259898034009067,
+ "best_epoch": 10,
+ "epochs_run": 30,
+ "epoch_budget": 120,
+ "train_nll": 1.5679743033685594,
+ "held_out_nll": 1.9960746537208038,
+ "gap": 0.4281003503522445,
+ "novelty": 1.0,
+ "near_dup_1": 0.0,
+ "near_dup_2": 0.065,
+ "uniqueness": 1.0,
+ "plaus_ratio": 0.9836513020327559,
+ "avg_length": 9.785,
+ "samples5": [
+  "Ribicolyd",
+  "Elicalprexen",
+  "Eclofen",
+  "Vozafrotine",
+  "Etimpefene"
+ ]
+}

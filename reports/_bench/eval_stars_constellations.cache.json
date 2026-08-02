@@ -1,0 +1,26 @@
+{
+ "dataset": "stars_constellations",
+ "total_names": 503,
+ "train_names": 428,
+ "val_names": 75,
+ "best_val_loss": 2.1984376907348633,
+ "best_epoch": 12,
+ "epochs_run": 32,
+ "epoch_budget": 180,
+ "train_nll": 1.720188781947613,
+ "held_out_nll": 2.1795285140047604,
+ "gap": 0.4593397320571475,
+ "novelty": 0.99,
+ "near_dup_1": 0.08,
+ "near_dup_2": 0.345,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0274903497586787,
+ "avg_length": 7.57,
+ "samples5": [
+  "Talicar",
+  "Cakikala",
+  "Dycin Keltair",
+  "Alteran",
+  "Saraxis"
+ ]
+}

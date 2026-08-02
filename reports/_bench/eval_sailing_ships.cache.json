@@ -1,0 +1,26 @@
+{
+ "dataset": "sailing_ships",
+ "total_names": 468,
+ "train_names": 398,
+ "val_names": 70,
+ "best_val_loss": 2.3005021810531616,
+ "best_epoch": 10,
+ "epochs_run": 30,
+ "epoch_budget": 180,
+ "train_nll": 2.1466308884987964,
+ "held_out_nll": 2.4234281396677373,
+ "gap": 0.27679725116894094,
+ "novelty": 1.0,
+ "near_dup_1": 0.005,
+ "near_dup_2": 0.06,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0539888375395055,
+ "avg_length": 10.51,
+ "samples5": [
+  "HMS Aerwor",
+  "Skrloz",
+  "Bankar",
+  "Hyboule",
+  "Sevas el Con Wausber foles Pewte"
+ ]
+}

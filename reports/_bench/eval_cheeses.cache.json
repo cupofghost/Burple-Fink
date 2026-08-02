@@ -1,0 +1,26 @@
+{
+ "dataset": "cheeses",
+ "total_names": 421,
+ "train_names": 358,
+ "val_names": 63,
+ "best_val_loss": 2.4499489068984985,
+ "best_epoch": 12,
+ "epochs_run": 32,
+ "epoch_budget": 180,
+ "train_nll": 2.0421573885025515,
+ "held_out_nll": 2.450669955549569,
+ "gap": 0.4085125670470173,
+ "novelty": 1.0,
+ "near_dup_1": 0.005,
+ "near_dup_2": 0.025,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.06674245885727,
+ "avg_length": 10.925,
+ "samples5": [
+  "Rocte dole Giderin",
+  "Hofgres  do Vlentincave",
+  "Asgiatgirog",
+  "Dunnwerlo",
+  "Bayeuzla"
+ ]
+}

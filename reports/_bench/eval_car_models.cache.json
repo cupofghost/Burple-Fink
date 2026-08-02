@@ -1,0 +1,26 @@
+{
+ "dataset": "car_models",
+ "total_names": 1218,
+ "train_names": 1035,
+ "val_names": 183,
+ "best_val_loss": 2.4013739426930747,
+ "best_epoch": 10,
+ "epochs_run": 30,
+ "epoch_budget": 120,
+ "train_nll": 1.918926280331677,
+ "held_out_nll": 2.396891936794869,
+ "gap": 0.477965656463192,
+ "novelty": 0.97,
+ "near_dup_1": 0.2,
+ "near_dup_2": 0.51,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0212189389634494,
+ "avg_length": 6.48,
+ "samples5": [
+  "Supurba",
+  "Mimarin",
+  "GTa",
+  "Baxtrag",
+  "Boming"
+ ]
+}

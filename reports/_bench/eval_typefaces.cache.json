@@ -1,0 +1,26 @@
+{
+ "dataset": "typefaces",
+ "total_names": 463,
+ "train_names": 394,
+ "val_names": 69,
+ "best_val_loss": 2.372267564137777,
+ "best_epoch": 14,
+ "epochs_run": 34,
+ "epoch_budget": 180,
+ "train_nll": 1.709741408188005,
+ "held_out_nll": 2.3726109898919785,
+ "gap": 0.6628695817039736,
+ "novelty": 1.0,
+ "near_dup_1": 0.01,
+ "near_dup_2": 0.115,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0260786621187596,
+ "avg_length": 9.095,
+ "samples5": [
+  "Sabriar",
+  "Courkelad",
+  "Bankron",
+  "Pliplerter",
+  "Pollhitina"
+ ]
+}

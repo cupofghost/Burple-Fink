@@ -1,0 +1,26 @@
+{
+ "dataset": "aircraft",
+ "total_names": 435,
+ "train_names": 370,
+ "val_names": 65,
+ "best_val_loss": 0.773896594842275,
+ "best_epoch": 23,
+ "epochs_run": 43,
+ "epoch_budget": 180,
+ "train_nll": 0.43986727031888445,
+ "held_out_nll": 0.9430148884401484,
+ "gap": 0.503147618121264,
+ "novelty": 0.6310160427807486,
+ "near_dup_1": 0.6577540106951871,
+ "near_dup_2": 0.7700534759358288,
+ "uniqueness": 0.935,
+ "plaus_ratio": 1.006350453156315,
+ "avg_length": 15.9,
+ "samples5": [
+  "Bombardier Learjet 55",
+  "Piper eamhon",
+  "Boeing 787-9",
+  "Kecsna Citatiot CJ2",
+  "Karshing Piler ClRga Exper Pone"
+ ]
+}

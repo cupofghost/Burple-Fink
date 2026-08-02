@@ -1,0 +1,26 @@
+{
+ "dataset": "car_manufacturers",
+ "total_names": 590,
+ "train_names": 502,
+ "val_names": 88,
+ "best_val_loss": 2.5661553541819253,
+ "best_epoch": 11,
+ "epochs_run": 31,
+ "epoch_budget": 180,
+ "train_nll": 2.2822297287480797,
+ "held_out_nll": 2.5626423580545774,
+ "gap": 0.2804126293064977,
+ "novelty": 1.0,
+ "near_dup_1": 0.08,
+ "near_dup_2": 0.305,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0598436632417203,
+ "avg_length": 6.795,
+ "samples5": [
+  "Rictond",
+  "Wenanduvert",
+  "Kamanichi",
+  "Aiis",
+  "Binter"
+ ]
+}

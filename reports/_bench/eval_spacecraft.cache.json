@@ -1,0 +1,26 @@
+{
+ "dataset": "spacecraft",
+ "total_names": 593,
+ "train_names": 504,
+ "val_names": 89,
+ "best_val_loss": 2.484467347462972,
+ "best_epoch": 12,
+ "epochs_run": 32,
+ "epoch_budget": 180,
+ "train_nll": 1.7481227943635562,
+ "held_out_nll": 2.484911765110899,
+ "gap": 0.7367889707473427,
+ "novelty": 0.995,
+ "near_dup_1": 0.04,
+ "near_dup_2": 0.235,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0609728356559922,
+ "avg_length": 8.435,
+ "samples5": [
+  "Surpead",
+  "Sorek",
+  "Seraviosat",
+  "Arnarer  Inelai",
+  "SXSpawel 1"
+ ]
+}

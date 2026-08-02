@@ -1,0 +1,17 @@
+{
+ "dataset": "metal_bands",
+ "path": "data/metal_bands.txt",
+ "total_names": 663,
+ "train_names": 564,
+ "val_names": 99,
+ "checkpoint": "checkpoints/ws11_metal_bands.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 30,
+ "best_epoch": 10,
+ "best_val_loss": 2.5229421854019165,
+ "final_train_loss": 0.7369408243232303,
+ "train_loss_at_best": 2.176567210091485,
+ "stopped_early": true,
+ "wall_seconds": 59.0
+}

@@ -1,0 +1,26 @@
+{
+ "dataset": "mountains",
+ "total_names": 523,
+ "train_names": 445,
+ "val_names": 78,
+ "best_val_loss": 2.186505119005839,
+ "best_epoch": 10,
+ "epochs_run": 30,
+ "epoch_budget": 180,
+ "train_nll": 1.8614062866754277,
+ "held_out_nll": 2.1699348345194776,
+ "gap": 0.3085285478440498,
+ "novelty": 1.0,
+ "near_dup_1": 0.015,
+ "near_dup_2": 0.085,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0289783720723382,
+ "avg_length": 11.0,
+ "samples5": [
+  "Mount Kolu",
+  "Hiabain Paak",
+  "Han Lorba",
+  "Mount Weajugia",
+  "Mount Etgaru"
+ ]
+}

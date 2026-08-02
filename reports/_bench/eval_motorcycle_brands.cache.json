@@ -1,0 +1,26 @@
+{
+ "dataset": "motorcycle_brands",
+ "total_names": 309,
+ "train_names": 263,
+ "val_names": 46,
+ "best_val_loss": 2.730523467063904,
+ "best_epoch": 10,
+ "epochs_run": 30,
+ "epoch_budget": 180,
+ "train_nll": 2.4409124605324237,
+ "held_out_nll": 2.7501444988940134,
+ "gap": 0.30923203836158963,
+ "novelty": 1.0,
+ "near_dup_1": 0.025,
+ "near_dup_2": 0.235,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0948086511522772,
+ "avg_length": 6.42,
+ "samples5": [
+  "Rict",
+  "Segter",
+  "Kasunetd",
+  "Nanokcho",
+  "Aiin"
+ ]
+}

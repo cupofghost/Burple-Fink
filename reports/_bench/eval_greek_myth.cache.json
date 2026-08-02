@@ -1,0 +1,26 @@
+{
+ "dataset": "greek_myth",
+ "total_names": 755,
+ "train_names": 642,
+ "val_names": 113,
+ "best_val_loss": 2.1473652720451355,
+ "best_epoch": 10,
+ "epochs_run": 30,
+ "epoch_budget": 180,
+ "train_nll": 1.9445894511077664,
+ "held_out_nll": 2.1485502464153914,
+ "gap": 0.203960795307625,
+ "novelty": 1.0,
+ "near_dup_1": 0.09,
+ "near_dup_2": 0.455,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0524010536820614,
+ "avg_length": 6.8,
+ "samples5": [
+  "Taesthus",
+  "Lynala",
+  "Grissus",
+  "Mora",
+  "Tyrtomilion"
+ ]
+}

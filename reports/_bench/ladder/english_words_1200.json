@@ -1,0 +1,14 @@
+{
+ "dataset": "english_words",
+ "train_size": 1200,
+ "val_size": 1295,
+ "checkpoint": "checkpoints/ws11_ladder_english_words_1200.pt",
+ "best_val_loss": 2.296211335717178,
+ "best_epoch": 7,
+ "epochs_run": 27,
+ "epoch_budget": 120,
+ "train_nll": 1.833344144845727,
+ "held_out_nll": 2.27783713703296,
+ "gap": 0.4444929921872329,
+ "wall_seconds": 136.1
+}

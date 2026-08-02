@@ -45,19 +45,33 @@ from . import sample as sampling
 # LR always gets a chance to drop before the run gives up entirely.
 PLATEAU_PATIENCE = 10
 
-LR_SCHEDULES = ("none", "plateau", "cosine")
-
 # --- --auto-epochs (WS-10): the measured size -> budget rule -------------------------
-# WS-6 measured where held-out loss actually bottoms out: epoch ~12-19 on
-# car_manufacturers (159 names) and ~24-26 on aircraft (435 names). Those two points fit
-# best_epoch ~= 1.2 * sqrt(N) almost exactly (1.2*sqrt(159)=15.1, 1.2*sqrt(435)=25.0),
-# and WS-10 re-measured four more datasets from 63 to 1,691 names against that curve
-# (see the report; every measured best epoch landed inside AUTO_EPOCH_HEADROOM of it).
-# The budget is that estimate times a headroom factor, because a budget is a *ceiling*:
-# early stopping is what actually ends the run, and the ceiling only has to be
-# comfortably past the bottom of the val curve.
-AUTO_EPOCH_COEFF = 1.2       # best epoch ~= AUTO_EPOCH_COEFF * sqrt(dataset size)
-AUTO_EPOCH_HEADROOM = 4.0    # budget = headroom * that estimate
+# What WS-10 measured, on nine datasets spanning the whole shipped range, 159 to 8,631
+# names (15% holdout, patience 25, otherwise default config), best epoch of the held-out
+# loss:
+#
+#    159 -> 13    309 -> 10    435 -> 26    590 ->  9   863 -> 13
+#   1218 -> 10   1691 ->  8   2223 -> 10   8631 ->  7
+#
+# The bottom does NOT move later as a dataset grows — if anything it arrives sooner. It
+# sits between epoch 7 and 26 across a 54x range of dataset sizes. That is not a surprise
+# once stated: an epoch on 8,631 names is fifty times as many gradient steps as an epoch
+# on 159 names, so "epochs to convergence" holds roughly constant while the work done per
+# epoch grows with the data. The README's old table, which read "bigger dataset -> more
+# epochs" off two data points, was over-reading them.
+#
+# So the budget is NOT an estimate of where the bottom is. It is a ceiling on how far
+# past the bottom it is safe to keep going, and *that* does scale with dataset size:
+# running to epoch 300 costs car_manufacturers@159 +130% held-out loss but aircraft@435
+# only +35% (WS-6), because the larger the dataset the less damage the extra epochs do.
+# A sqrt curve gives a monotone ceiling that is ~4x the worst measured bottom at the
+# small end and grows gently from there, and is clamped so it can never be smaller than
+# the README's smallest suggestion or larger than today's default.
+#
+# Early stopping is what actually ends a run; the ceiling only has to be comfortably
+# clear of the bottom, which at every size measured it is by 4x or more.
+AUTO_EPOCH_COEFF = 1.2       # curve shape: COEFF * sqrt(dataset size)
+AUTO_EPOCH_HEADROOM = 4.0    # budget = headroom * that, i.e. ~4x the worst bottom seen
 AUTO_EPOCH_MIN = 60          # never below the README's smallest suggested budget
 AUTO_EPOCH_MAX = 300         # never above today's default, which is already too long
 AUTO_PATIENCE_DIVISOR = 6    # README pairs 60/10 and 120/20; both are budget/6
@@ -91,14 +105,19 @@ def derive_epochs(num_names: int) -> int:
 
     The README used to ship a lookup table — 60 epochs under 200 names, 120 for 200-500,
     300 for 1,000+ — that a human had to apply by hand, and that silently goes stale the
-    moment a dataset grows. This is the same measured relationship as a function.
+    moment a dataset grows. Three wave-3 lanes just grew ``data/`` from 12 datasets to
+    28, so it went stale immediately. This is the rule as a function instead.
 
-    The rule is ``4 x (1.2 * sqrt(N))``, clamped to 60..300 and rounded to the nearest
-    10: WS-6's measured val-loss bottoms (epoch ~15 at N=159, ~25 at N=435) are almost
-    exactly ``1.2 * sqrt(N)``, and the budget is that with 4x headroom. It reproduces the
-    README's 60 for a 159-name set and lands at 100 for a 435-name set where the table
-    said 120 — the difference does not matter, because ``--patience`` ends the run long
-    before the ceiling on any dataset this repo ships.
+    The rule is ``4 x (1.2 * sqrt(N))``, rounded *up* to the next 10 and clamped to
+    60..300. Read the comment on ``AUTO_EPOCH_COEFF`` for what that is and is not: it is
+    a *ceiling* that grows with dataset size because over-training hurts a big dataset
+    less than a small one, not a prediction of where the held-out loss bottoms out. The
+    bottom, measured on nine datasets from 159 to 8,631 names, does not move with size at
+    all — it lands between epoch 7 and 26 throughout.
+
+    Worked examples across the shipped range: 309 names -> 90 epochs, 435 -> 110,
+    590 -> 120, 863 -> 150, 1,218 -> 170, 2,223 -> 230, 8,631 -> 300. Every one of those
+    is at least 4x the epoch at which that dataset's held-out loss actually bottomed.
 
     The budget is a ceiling, not a promise: pair it with ``--val-fraction`` and
     ``--patience`` (see :func:`derive_patience`) and the run stops when it stops
@@ -107,7 +126,9 @@ def derive_epochs(num_names: int) -> int:
     if num_names <= 0:
         return AUTO_EPOCH_MIN
     raw = AUTO_EPOCH_HEADROOM * AUTO_EPOCH_COEFF * math.sqrt(num_names)
-    rounded = int(round(raw / 10.0)) * 10
+    # Round a *ceiling* up, never down: rounding 100.1 down to 100 would quietly shave
+    # the headroom on exactly the dataset whose bottom is latest (aircraft, epoch 26).
+    rounded = math.ceil(raw / 10.0) * 10
     return max(AUTO_EPOCH_MIN, min(AUTO_EPOCH_MAX, rounded))
 
 
@@ -135,12 +156,15 @@ def apply_auto_epochs(cfg: Config, num_names: int, log_prefix: str = "") -> None
     if cfg.early_stop_patience <= 0:
         cfg.early_stop_patience = derive_patience(cfg.epochs)
         note = f", patience {cfg.early_stop_patience}"
-    print(f"{log_prefix}auto-epochs: {cfg.epochs} epochs{note} for {num_names} names "
-          f"(~{AUTO_EPOCH_HEADROOM:.0f}x the measured val-loss bottom of "
-          f"~{AUTO_EPOCH_COEFF * math.sqrt(num_names):.0f} epochs at this size)")
+    print(f"{log_prefix}auto-epochs: {cfg.epochs} epochs{note} for {num_names} names")
+    # Say what the number is, not more than it is. It is a size-scaled ceiling; the
+    # measured val-loss bottoms sit at epoch 8-26 regardless of dataset size, so on a
+    # split run --patience is what should actually end this.
+    print(f"{log_prefix}  ceiling scaled from dataset size; held-out loss bottomed at "
+          f"epoch 7-26 on every dataset measured, so --patience should stop this first")
     if cfg.val_fraction <= 0:
-        print(f"{log_prefix}  note: the budget is a ceiling, not a promise — add "
-              f"--val-fraction 0.15 so --patience can actually end the run early")
+        print(f"{log_prefix}  note: nothing is held out, so --patience cannot fire and "
+              f"this budget IS the run — add --val-fraction 0.15 to make it a ceiling")
 
 
 def evaluate_loss(

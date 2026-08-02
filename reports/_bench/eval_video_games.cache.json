@@ -1,0 +1,26 @@
+{
+ "dataset": "video_games",
+ "total_names": 753,
+ "train_names": 640,
+ "val_names": 113,
+ "best_val_loss": 2.2795389890670776,
+ "best_epoch": 12,
+ "epochs_run": 32,
+ "epoch_budget": 180,
+ "train_nll": 1.6414888192174328,
+ "held_out_nll": 2.304724500140592,
+ "gap": 0.663235680923159,
+ "novelty": 1.0,
+ "near_dup_1": 0.01,
+ "near_dup_2": 0.04,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0425506296103706,
+ "avg_length": 11.56,
+ "samples5": [
+  "Rist",
+  "Skires of the Pars of Emalais",
+  "Blure ow tazon Showl",
+  "Oltiofy",
+  "Bonthalk"
+ ]
+}

@@ -1,0 +1,26 @@
+{
+ "dataset": "cocktails",
+ "total_names": 459,
+ "train_names": 390,
+ "val_names": 69,
+ "best_val_loss": 2.4640658696492515,
+ "best_epoch": 11,
+ "epochs_run": 31,
+ "epoch_budget": 180,
+ "train_nll": 1.932904210692854,
+ "held_out_nll": 2.4402159530751026,
+ "gap": 0.5073117423822486,
+ "novelty": 1.0,
+ "near_dup_1": 0.01,
+ "near_dup_2": 0.015,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0628548253144852,
+ "avg_length": 11.66,
+ "samples5": [
+  "Blond aol",
+  "Piiderin Doar",
+  "Cho Doeslang",
+  "Fuch Jaskiangwa",
+  "Soothardila"
+ ]
+}

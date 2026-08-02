@@ -1,0 +1,26 @@
+{
+ "dataset": "mushrooms",
+ "total_names": 441,
+ "train_names": 375,
+ "val_names": 66,
+ "best_val_loss": 1.8051739931106567,
+ "best_epoch": 16,
+ "epochs_run": 36,
+ "epoch_budget": 180,
+ "train_nll": 0.8986741016229415,
+ "held_out_nll": 1.703300114236133,
+ "gap": 0.8046260126131916,
+ "novelty": 0.98989898989899,
+ "near_dup_1": 0.030303030303030304,
+ "near_dup_2": 0.07575757575757576,
+ "uniqueness": 0.99,
+ "plaus_ratio": 1.0117042151256235,
+ "avg_length": 13.955,
+ "samples5": [
+  "Snincerwood Ealthanshorn",
+  "Pabittert Saly Crust",
+  "Waines Afushroom",
+  "Beychake",
+  "Stripk Porach"
+ ]
+}

@@ -36,6 +36,7 @@ from src.evaluate import (
     _edit_distance,
     _gap_verdict,
     _score_name,
+    _within_edit_distance,
     clear_checkpoint_cache,
     evaluate,
     generalization_gap,
@@ -109,6 +110,55 @@ class EditDistanceTest(unittest.TestCase):
 
     def test_symmetric(self):
         self.assertEqual(_edit_distance("gamma", "kappa"), _edit_distance("kappa", "gamma"))
+
+
+class WithinEditDistanceTest(unittest.TestCase):
+    """The banded threshold check must agree with the full DP on every input.
+
+    `near_duplicate_rate` runs this millions of times, so it takes two exact shortcuts
+    (a diagonal band and an early bail-out). Shortcuts that are only *nearly* exact
+    would quietly corrupt the memorization numbers in every report, so this is pinned
+    exhaustively on short strings and by random sweep on longer ones.
+    """
+
+    def test_agrees_with_full_dp_exhaustively_on_short_strings(self):
+        import itertools
+        alphabet = "ab"
+        strings = [""]
+        for n in range(1, 4):
+            strings += ["".join(p) for p in itertools.product(alphabet, repeat=n)]
+        for a, b in itertools.product(strings, repeat=2):
+            for dist in (0, 1, 2, 3):
+                with self.subTest(a=a, b=b, dist=dist):
+                    self.assertEqual(_within_edit_distance(a, b, dist),
+                                     _edit_distance(a, b) <= dist)
+
+    def test_agrees_with_full_dp_on_random_realistic_names(self):
+        import random
+        rng = random.Random(20260802)
+        alphabet = "abcdefgh "
+        for _ in range(600):
+            a = "".join(rng.choice(alphabet) for _ in range(rng.randint(0, 14)))
+            b = "".join(rng.choice(alphabet) for _ in range(rng.randint(0, 14)))
+            for dist in (1, 2):
+                self.assertEqual(_within_edit_distance(a, b, dist),
+                                 _edit_distance(a, b) <= dist,
+                                 f"disagreed on {a!r} vs {b!r} at max_dist={dist}")
+
+    def test_agrees_on_near_misses(self):
+        # The cases the band is most likely to get wrong: distance exactly at, just
+        # under, and just over the threshold.
+        # Volvo -> Vulvox is 2, not 3: substitute o->u and append x.
+        cases = [("Volvo", "Volvo", 0), ("Volvo", "Volvos", 1), ("Volvo", "Vulvos", 2),
+                 ("Volvo", "Vulvox", 2), ("Volvo", "Vulvoxy", 3), ("abcdef", "fedcba", 6)]
+        for a, b, true_dist in cases:
+            self.assertEqual(_edit_distance(a, b), true_dist)
+            for dist in range(0, 7):
+                self.assertEqual(_within_edit_distance(a, b, dist), true_dist <= dist)
+
+    def test_length_difference_short_circuit(self):
+        self.assertFalse(_within_edit_distance("ab", "abcdef", 1))
+        self.assertTrue(_within_edit_distance("ab", "abc", 1))
 
 
 class MeanPairwiseEditDistanceTest(unittest.TestCase):

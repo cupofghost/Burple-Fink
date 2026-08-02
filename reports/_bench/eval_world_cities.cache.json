@@ -1,0 +1,26 @@
+{
+ "dataset": "world_cities",
+ "total_names": 1691,
+ "train_names": 1437,
+ "val_names": 254,
+ "best_val_loss": 2.452164888381958,
+ "best_epoch": 8,
+ "epochs_run": 28,
+ "epoch_budget": 120,
+ "train_nll": 2.1710607234905033,
+ "held_out_nll": 2.452301531206837,
+ "gap": 0.28124080771633375,
+ "novelty": 0.995,
+ "near_dup_1": 0.035,
+ "near_dup_2": 0.195,
+ "uniqueness": 1.0,
+ "plaus_ratio": 1.0132693102618622,
+ "avg_length": 8.785,
+ "samples5": [
+  "Pricons",
+  "Guiyk",
+  "Re Semf Baba",
+  "Towhas\u00fa",
+  "Eulllat"
+ ]
+}
