@@ -12,7 +12,7 @@ Last consolidation: 2026-08-02 — Signed: Claude Code | Opus 5 | high
 | 2026-08-01 | WS-17 · `data/` (4 thin files) | ✅ Grew the four datasets wave 2 called too small: car_manufacturers 159→590, car_models 257→1218, motorcycle_brands 63→309, spacecraft 270→593. Weighted toward defunct/historical marques. Normalized `Chang'e` and `SSM/I`; dropped 3 duplicate lines. | Signed: Claude Code \| Opus 5 \| high |
 | 2026-08-01 | WS-13 · `scripts/`, `.github/`, `tests/test_repo_hygiene.py`, `tests/test_data_hygiene.py` | ✅ Fixed the red `hygiene` job (see Known issues, now resolved) with a line-scoped `# check_repo: allow` pragma + a one-entry `(path, string)` allowlist — no blanket skips, and `test_new_secret_in_a_non_fixture_file_is_still_caught` pins the invariant. New `scripts/check_data.py`. Hygiene tests 15 → 67. | Signed: Claude Code \| Opus 5 \| high |
 | 2026-08-02 | consolidation · `README.md`, `HANDOFF.md`, `data/*.meta.json`, `data/shared_vocab.json` | ✅ Normalized 4 lanes' inconsistent domain labels onto one 8-domain taxonomy; rebuilt both catalogs from the sidecars; re-armed the drift check (`--strict`) in CI. Paid off the entire `KNOWN_NONCONFORMING` list (see Resolved). Regenerated the shared vocab 66→67 symbols. | Signed: Claude Code \| Opus 5 \| high |
-| 2026-08-02 | WS-9 · `src/arch/`, `src/model.py`, `tests/test_arch.py` | ⏳ **Handoff.** `CharRNN` now dispatches on `cfg.arch` to lstm/gru/transformer cores; tests written. Interrupted by the session limit while running the three-way measurement — **the measurement table does not exist yet**, so no architecture recommendation has been earned. Resume by training the three archs on one held-out split. | Signed: Claude Code \| Opus 5 \| medium |
+| 2026-08-02 | WS-9 · `src/arch/`, `src/model.py`, `tests/test_arch.py` | ✅ `CharRNN` dispatches on `cfg.arch` to lstm/gru/transformer; stepwise decoding proven equivalent to a full forward pass. Lane was cut off by a session limit after its 17 runs finished but before writing the table; the orchestrator reconstructed it from the checkpoints into `reports/ARCH.md`. **GRU beats LSTM below ~500 names with 25% fewer params; transformer is last on all four despite 30% more.** | Signed: Claude Code \| Opus 5 \| high |
 | 2026-08-02 | WS-10 · `src/train.py`, `pretrain.py`, `finetune.py`, `tests/test_training_quality.py` | ✅ Seeded init proven: three identical runs now give **bitwise identical** checkpoints (`torch.equal` on every tensor); unseeded reproduced wave 2's 12/16/19 spread. Regularization measured on 3 datasets — **none of weight decay, label smoothing or warmup improves best held-out loss**; recommendation is to leave all three off. `--auto-epochs` added, and it corrected the README's premise (see Known issues). 79 tests green. | Signed: Claude Code \| Opus 5 \| high |
 | 2026-08-02 | WS-11 · `src/evaluate.py`, `tests/test_evaluate.py`, `reports/` | ✅ `reports/BENCHMARK.md`: all 30 datasets, plus a **controlled within-dataset size ladder** (validation set split once and held fixed across arms, nested training prefixes) and a re-run of wave 2's exact 300-epoch protocol with `aircraft` as an untouched control. Answers the wave's question — see Known issues → Resolved. Also caught a determinism bug in its own `evaluate()` (seeding before `load_checkpoint`, which consumes RNG). 42 tests. | Signed: Claude Code \| Opus 5 \| high |
 | 2026-08-02 | WS-12 · `web/`, `src/export_web.py`, `src/serve.py`, `tests/test_web.py` | ✅ All 30 datasets ship in one **5.25 MB** offline HTML: float16 encoding buys 3.1× at worst logit error 2.1e-4 (24× inside tolerance), falling back to float32 per-model on failure — bigger, never wronger. Gallery grouped by the 8 sidecar domains; decoding controls framed by wave 2's measurements, with truncation in a drawer labelled *measured worse here*. Fidelity check tested by **breaking** it six ways. 72 tests. | Signed: Claude Code \| Opus 5 \| high |
@@ -46,10 +46,6 @@ Last consolidation: 2026-08-02 — Signed: Claude Code | Opus 5 | high
   measured on 159/590/2,223-name datasets; none improves best held-out loss. Label smoothing
   cuts 300-epoch over-training damage (+91% → +27%) but that protects against a failure mode
   early stopping already removed. Leave all three off. Flagged 2026-08-02 — Claude Code | Opus 5 | high
-- **No architecture recommendation has been earned yet.** `src/arch/` implements gru and
-  transformer, and the tests cover the contracts, but WS-9 was interrupted before the
-  three-way measurement ran. Do not describe the transformer as better or worse than the
-  LSTM anywhere until that table exists. Flagged 2026-08-02 — Claude Code | Opus 5 | high
 - Every dataset added in wave 3 carries `"verified": false` — entries were recalled from
   model knowledge and are believed real, but were not cross-checked against a primary
   source. `periodic_elements.tsv` is the sole verified file. Good training data; not a
@@ -62,6 +58,14 @@ Last consolidation: 2026-08-02 — Signed: Claude Code | Opus 5 | high
   approximate. Flagged 2026-07-24 — Claude Code | Sonnet 5 | high
 
 ## Resolved this wave
+- ✅ **"No architecture recommendation has been earned"** (flagged earlier today). Earned:
+  `reports/ARCH.md`. The GRU wins below ~500 training names with 25% fewer parameters and
+  overfits less on 4 of 4 datasets; the LSTM wins above; the transformer is last on all four
+  while carrying 30% more parameters than the LSTM. Default stays `lstm`.
+- ✅ **Two independent measurements agree that the model, not just the data, is the problem.**
+  `reports/BENCHMARK.md` found flattening returns as data grew; `reports/ARCH.md` found the
+  *smaller* architecture winning on exactly the small datasets. Wave 4's obvious first move is
+  a capacity sweep (`hidden_dim`, `num_layers`) rather than more data.
 - ✅ **`scripts/check_repo.py` failed on `main`, so CI's `hygiene` job was red** (flagged
   2026-07-29). Fixed by WS-13 without weakening the scanner. Its own first attempt — a
   broad "`@example.com` is never PII" rule — was caught and reverted for swallowing a real

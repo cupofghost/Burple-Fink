@@ -214,6 +214,36 @@ three off** unless you have a reason the numbers above don't cover.
 Note validation is always scored *unsmoothed*, so best-val stays comparable across settings
 and against every number recorded in `STATUS.md`.
 
+### Choosing an architecture: `--arch lstm | gru | transformer`
+
+`src/arch/` implements all three behind one checkpoint format, one training loop and one
+sampler, so `--arch` is the only thing that changes. Measured on four datasets from 370 to
+7,336 training names ([`reports/ARCH.md`](reports/ARCH.md)):
+
+| dataset | train names | gru | lstm | transformer |
+|---|---:|---:|---:|---:|
+| `aircraft` | 370 | **0.7725** | 0.7786 | 0.9334 |
+| `typefaces` | 394 | **2.3471** | 2.3754 | 2.5410 |
+| `pharma_drugs` | 1,890 | 2.0331 | **2.0252** | 2.1172 |
+| `english_words` | 7,336 | 2.0487 | **2.0078** | 2.0904 |
+
+(held-out loss, lower is better)
+
+**The GRU wins below roughly 500 training names and the LSTM wins above it** — and the GRU
+does it with 25% fewer parameters, while overfitting less on all four datasets. That crossover
+is the same conclusion [`reports/BENCHMARK.md`](reports/BENCHMARK.md) reaches from the other
+direction: the small datasets aren't just short of data, the stock model is too big for them.
+Fifteen of the thirty datasets in `data/` sit under 500 names, so `--arch gru` is worth
+trying on half the library.
+
+The transformer is last on all four *while carrying 30% more parameters than the LSTM*, and
+posts the smallest train/val gap in the table next to its worst held-out loss — it underfits.
+Names are short, so there is no long-range dependency for attention to exploit, and the
+recurrent bottleneck turns out to be a useful inductive bias. It is implemented and correct
+(stepwise decoding is proven equivalent to a full forward pass), just not recommended here.
+
+`--arch lstm` remains the default.
+
 ### Dual-output: name + numeric attribute (Shane's paint-color trick)
 
 Shane's original char-rnn didn't just name paint colors — it predicted their RGB
