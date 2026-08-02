@@ -1,0 +1,10 @@
+{
+  "name": "pharma_drugs",
+  "label": "Pharmaceutical Drugs",
+  "domain": "Science & Medicine",
+  "count": 2223,
+  "provenance": "Recalled from knowledge of INN generic stems (-mab, -tinib, -prazole, -olol, -sartan, -gliflozin, -parib, -ciclib, -vir) plus widely marketed brand names. High confidence these are real approved or late-stage agents; a small number of recent investigational names may be less certain.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}

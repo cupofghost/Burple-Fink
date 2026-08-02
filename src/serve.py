@@ -13,10 +13,22 @@ It deliberately uses only the Python standard library (``http.server``) so there
 nothing extra to install — see the guardrails in HANDOFF §9. It binds ``0.0.0.0`` so a
 phone on the same network can open it at ``http://<your-computer-ip>:8000``.
 
+This is also the front end that scales: the static export can only bake in as many
+models as fit in a phone-sized file, but here the weights never leave the process, so
+the page stays ~40 KB whether you load 3 checkpoints or all 29. If the gallery shows a
+dataset marked "server", this is where to run it.
+
 Usage:
     python -m src.serve                                   # auto-loads checkpoints/*.pt
     python -m src.serve --checkpoint checkpoints/car_models_ft.pt:"Car models"
     python -m src.serve --port 8000 --host 0.0.0.0
+
+API:
+    GET /api/health    -> {"status","models","checkpoints":[…]}
+    GET /api/models    -> {"models":[{id,label,domain,verified,provenance,count}]}
+    GET /api/generate  -> {"names":[{name,novel,exact}]}
+        engine=<dataset id|index>  count  temperature  prefix  novel_only
+        top_k  top_p  repetition_penalty  min_length
 """
 
 from __future__ import annotations
@@ -31,45 +43,74 @@ from urllib.parse import parse_qs, urlparse
 
 import torch
 
+from .export_web import (
+    BUNDLE_FORMAT, ENGINE_MARKER, TEMPLATE_MARKER, dataset_catalog, resolve_dataset)
 from .sample import generate_one, load_checkpoint
 
 TEMPLATE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web", "app_template.html")
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 
 
 class Engine:
     """One loaded checkpoint plus the training-name set used to flag novelty."""
 
-    def __init__(self, path: str, label: str, device: str = "cpu"):
+    def __init__(self, path: str, label: str = "", device: str = "cpu"):
         self.path = path
-        self.label = label
         self.device = device
         self.model, self.vocab, self.cfg, training = load_checkpoint(path, device)
         self.training: Set[str] = set(training)
+        # Case-insensitive too: "Rolls-royce" is the same real name as "Rolls-Royce",
+        # and calling it an invention because one letter changed case would be dishonest.
+        # The exported app applies the identical rule (see noveltyOf in app_template.html).
+        self.training_lower: Set[str] = {n.lower() for n in self.training}
+        info = resolve_dataset(path, self.cfg)
+        self.id = info["id"]
+        self.label = label or info["label"]
+        self.domain = info["domain"]
+        self.verified = info["verified"]
+        self.provenance = info["provenance"]
 
-    def generate(self, count: int, temperature: float, prefix: str,
-                 novel_only: bool) -> List[Dict]:
-        """Sample distinct names from the real model, each tagged novel vs. training."""
+    def novelty(self, name: str) -> Dict:
+        if name in self.training:
+            return {"novel": False, "exact": True}
+        if name.lower() in self.training_lower:
+            return {"novel": False, "exact": False}
+        return {"novel": True, "exact": False}
+
+    def generate(self, count: int, temperature: float, prefix: str, novel_only: bool,
+                 *, top_k: int = 0, top_p: float = 1.0,
+                 repetition_penalty: float = 1.0, min_length: int = 2) -> List[Dict]:
+        """Sample distinct names from the real model, each tagged novel vs. training.
+
+        The decoding controls are passed straight through to ``src.sample.generate_one``
+        so the served UI drives exactly the same code path as ``python -m src.sample``.
+        """
         results, seen = [], set()
         attempts, cap = 0, count * 60
+        floor = max(2, min_length)
         while len(results) < count and attempts < cap:
             attempts += 1
-            name = generate_one(self.model, self.vocab, temperature,
-                                 self.cfg.max_length, prefix=prefix, device=self.device)
-            if len(name) < 2 or name in seen:
+            name = generate_one(
+                self.model, self.vocab, temperature, self.cfg.max_length,
+                prefix=prefix, device=self.device,
+                top_k=top_k, top_p=top_p,
+                repetition_penalty=repetition_penalty, min_length=min_length)
+            if len(name) < floor or name in seen:
                 continue
             seen.add(name)
-            novel = name not in self.training
-            if novel_only and not novel:
+            item = dict(self.novelty(name), name=name)
+            if novel_only and not item["novel"]:
                 continue
-            results.append({"name": name, "novel": novel})
+            results.append(item)
         return results
 
-
-def _pretty_label(path: str) -> str:
-    """Turn 'checkpoints/car_models_ft.pt' into 'Car models'."""
-    stem = os.path.splitext(os.path.basename(path))[0]
-    stem = stem[:-3] if stem.endswith("_ft") else stem
-    return stem.replace("_", " ").replace("-", " ").strip().capitalize()
+    def meta(self) -> Dict:
+        """What the gallery needs to list this engine (no weights: the model stays here)."""
+        return {
+            "id": self.id, "label": self.label, "domain": self.domain,
+            "verified": self.verified, "provenance": self.provenance,
+            "count": len(self.training),
+        }
 
 
 def discover_checkpoints(checkpoint_dir: str = "checkpoints") -> List[str]:
@@ -82,96 +123,71 @@ def discover_checkpoints(checkpoint_dir: str = "checkpoints") -> List[str]:
 
 # --- build the served page from the shared template ---------------------------------
 
-def _live_script(labels: List[str]) -> str:
-    """The browser-side script for the *server* build: same UI, but fetches the API."""
-    labels_json = json.dumps(labels)
+def _live_engine() -> str:
+    """The only JS the server build changes: where the names come from.
+
+    Everything else — the gallery, the decoding controls, favorites, novelty badges —
+    is the shared template's code, so the two front ends cannot drift apart.
+    """
     return """
-const LABELS = __LABELS__;
-const $ = (id) => document.getElementById(id);
-const root = document.documentElement;
-const state = { engine: 0, temp: 1.0, count: 12, prefix: "", novelOnly: false };
-
-function hexToRgb(h){return [1,3,5].map(i=>parseInt(h.slice(i,i+2),16));}
-function lerp(a,b,t){return a.map((v,i)=>Math.round(v+(b[i]-v)*t));}
-const COLD=hexToRgb("37b6ff"),MID=hexToRgb("ffc23a"),HOT=hexToRgb("ff4326");
-function accentFor(t){const x=(t-0.4)/1.2;return x<0.5?lerp(COLD,MID,x/0.5):lerp(MID,HOT,(x-0.5)/0.5);}
-function luminance([r,g,b]){return (0.299*r+0.587*g+0.114*b)/255;}
-function applyAccent(){
-  const rgb=accentFor(state.temp);
-  const hex="#"+rgb.map(v=>v.toString(16).padStart(2,"0")).join("");
-  root.style.setProperty("--accent",hex);
-  root.style.setProperty("--accent-soft",`rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.18)`);
-  root.style.setProperty("--accent-ink",luminance(rgb)>0.6?"#14161c":"#fff");
-}
-function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");
-  clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),1500);}
-function copy(text){
-  const done=()=>toast('Copied "'+text+'"');
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(()=>fb(text,done));}
-  else fb(text,done);
-}
-function fb(text,done){const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";
-  document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done();}catch(e){}document.body.removeChild(ta);}
-
-function buildSeg(host,options,current,onPick){
-  host.innerHTML="";
-  options.forEach((opt,i)=>{
-    const b=document.createElement("button");b.type="button";b.textContent=opt.label;
-    b.setAttribute("aria-pressed",String(i===current));
-    b.addEventListener("click",()=>{[...host.children].forEach((c,j)=>c.setAttribute("aria-pressed",String(j===i)));onPick(i,opt);});
-    host.appendChild(b);
+engineGenerate = async (model, opts) => {
+  const params = new URLSearchParams({
+    engine: model.id,
+    count: opts.count,
+    temperature: opts.temperature,
+    prefix: (opts.prefix || "").trim(),
+    novel_only: opts.novelOnly ? "1" : "0",
+    top_k: opts.topK,
+    top_p: opts.topP,
+    repetition_penalty: opts.repetitionPenalty,
+    min_length: opts.minLength,
   });
-}
-function render(batch){
-  const box=$("results");box.innerHTML="";
-  if(!batch.length){box.innerHTML='<p class="empty">The net drew a blank at this setting &mdash; try nudging the dial or clearing the prefix.</p>';$("stat").hidden=true;return;}
-  batch.forEach((item,i)=>{
-    const el=document.createElement("button");el.type="button";
-    el.className="name "+(item.novel?"novel":"known");el.style.animationDelay=(i*45)+"ms";
-    el.innerHTML='<span class="word"></span><span class="tag">'+(item.novel?"new":"real")+'</span><span class="copy">copy</span>';
-    el.querySelector(".word").textContent=item.name;
-    el.addEventListener("click",()=>copy(item.name));
-    box.appendChild(el);
-  });
-  const novelCount=batch.filter(b=>b.novel).length;
-  const stat=$("stat");stat.innerHTML="<b>"+novelCount+"</b> of "+batch.length+" never existed before";stat.hidden=false;
-}
-async function run(){
-  const go=$("go");go.disabled=true;go.textContent="Inventing\\u2026";
-  try{
-    const params=new URLSearchParams({engine:state.engine,count:state.count,temperature:state.temp,prefix:(state.prefix||"").trim(),novel_only:state.novelOnly?"1":"0"});
-    const res=await fetch("/api/generate?"+params.toString());
-    const data=await res.json().catch(()=>({}));
-    if(!res.ok) throw new Error(data.error||("server responded "+res.status));
-    render(data.names||[]);
-  }catch(e){
-    const msg=(e&&e.message)?e.message:"Could not reach the model server.";
-    $("results").innerHTML='<p class="empty">'+msg+' Is <code>python -m src.serve</code> still running?</p>';
-    $("stat").hidden=true;
-  }finally{
-    go.disabled=false;go.textContent="Invent names";
+  let res;
+  try {
+    res = await fetch("/api/generate?" + params.toString());
+  } catch (e) {
+    throw new Error("Could not reach the model server. Is `python -m src.serve` still running?");
   }
-}
-
-buildSeg($("engine"),LABELS.map(l=>({label:l})),state.engine,(i)=>{state.engine=i;});
-buildSeg($("count"),[6,12,24].map(n=>({label:String(n),value:n})),1,(i,opt)=>{state.count=opt.value;});
-$("temp").addEventListener("input",e=>{state.temp=parseFloat(e.target.value);$("tempVal").textContent=state.temp.toFixed(2);applyAccent();});
-$("prefix").addEventListener("input",e=>{state.prefix=e.target.value;});
-$("novelOnly").addEventListener("change",e=>{state.novelOnly=e.target.checked;});
-$("go").addEventListener("click",run);
-document.title="Burple-Fink \\u2014 live model";
-applyAccent();
-""".replace("__LABELS__", labels_json)
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || ("The server responded " + res.status + "."));
+  return data.names || [];
+};
+"""
 
 
-def build_page(labels: List[str]) -> str:
-    """Reuse the shared UI's CSS + markup, but swap in the fetch-based script."""
+def build_page(engines: List[Engine], data_dir: str = DATA_DIR) -> str:
+    """Build the served page from the *whole* shared template.
+
+    Before WS-12 this took only the template's ``<style>`` + markup and appended a
+    separately-maintained script, so every UI feature had to be written twice. Now both
+    builds use the same file and the same script; the server build differs in exactly two
+    spliced values — model metadata with no weights, and a fetch-based ``engineGenerate``.
+    """
     with open(TEMPLATE, "r", encoding="utf-8") as fh:
         template = fh.read()
-    # Everything up to the <script> tag (the <style> block and the markup) is shared
-    # verbatim; only the "brain" differs between the static export and the live server.
-    head = template.split("<script>", 1)[0]
-    return head + "<script>\n" + _live_script(labels) + "\n</script>\n"
+    for marker in (TEMPLATE_MARKER, ENGINE_MARKER):
+        if marker not in template:
+            raise ValueError(f"Template {TEMPLATE!r} is missing marker {marker}")
+
+    # The catalog lists every dataset that exists; a checkpoint is what makes one usable.
+    loaded = {e.id for e in engines}
+    catalog = [dict(c, bundled=c["id"] in loaded) for c in dataset_catalog(data_dir)]
+    for e in engines:
+        if e.id not in {c["id"] for c in catalog}:
+            catalog.append(dict(e.meta(), bundled=True))
+    catalog.sort(key=lambda c: (c["domain"].lower(), c["label"].lower()))
+
+    bundle = json.dumps({
+        "format": BUNDLE_FORMAT,
+        # No weights: on this path the real PyTorch model does the generating, so the
+        # browser needs nothing but labels. That is why the served page stays ~40 KB
+        # however many checkpoints are loaded.
+        "models": [e.meta() for e in engines],
+        "catalog": catalog,
+    }, ensure_ascii=True, separators=(",", ":"))
+
+    page = template.replace(TEMPLATE_MARKER, bundle).replace(ENGINE_MARKER, _live_engine())
+    return page + "\n<script>document.title = 'Burple-Fink \\u2014 live model';</script>\n"
 
 
 def make_handler(engines: List[Engine], page: str):
@@ -196,8 +212,7 @@ def make_handler(engines: List[Engine], page: str):
             elif parsed.path == "/api/health":
                 self._health()
             elif parsed.path == "/api/models":
-                body = json.dumps({"models": [e.label for e in engines]}).encode()
-                self._send(200, body, "application/json")
+                self._send_json(200, {"models": [e.meta() for e in engines]})
             elif parsed.path == "/api/generate":
                 self._generate(parse_qs(parsed.query))
             elif parsed.path == "/favicon.ico":
@@ -207,10 +222,12 @@ def make_handler(engines: List[Engine], page: str):
 
         def _health(self):
             checkpoints = [
-                {"label": e.label, "path": e.path, "training_names": len(e.training)}
+                {"label": e.label, "id": e.id, "domain": e.domain, "path": e.path,
+                 "training_names": len(e.training), "verified": e.verified}
                 for e in engines
             ]
-            self._send_json(200, {"status": "ok", "checkpoints": checkpoints})
+            self._send_json(200, {"status": "ok", "models": len(engines),
+                                  "checkpoints": checkpoints})
 
         def _generate(self, q: Dict[str, List[str]]):
             def one(key, default):
@@ -220,44 +237,70 @@ def make_handler(engines: List[Engine], page: str):
                 self._send_error_json(503, "No checkpoints are loaded on the server.")
                 return
 
+            # 'engine' accepts a dataset id ("dog_breeds") or a legacy positional index.
+            # The gallery sends ids, because an index silently means a different model as
+            # soon as the set of loaded checkpoints changes.
             raw_engine = one("engine", "0")
-            try:
-                engine_idx = int(raw_engine)
-            except ValueError:
-                self._send_error_json(
-                    400, f"'engine' must be a whole number, got {raw_engine!r}.")
-                return
-            if not (0 <= engine_idx < len(engines)):
-                self._send_error_json(
-                    400,
-                    f"'engine' {engine_idx} is out of range; there "
-                    f"{'is' if len(engines) == 1 else 'are'} {len(engines)} "
-                    f"loaded checkpoint(s) (0-{len(engines) - 1}).")
-                return
+            by_id = {e.id: i for i, e in enumerate(engines)}
+            if raw_engine in by_id:
+                engine_idx = by_id[raw_engine]
+            else:
+                try:
+                    engine_idx = int(raw_engine)
+                except ValueError:
+                    self._send_error_json(
+                        400, f"'engine' {raw_engine!r} is not a loaded model. "
+                             f"Known: {', '.join(sorted(by_id))}.")
+                    return
+                if not (0 <= engine_idx < len(engines)):
+                    self._send_error_json(
+                        400,
+                        f"'engine' {engine_idx} is out of range; there "
+                        f"{'is' if len(engines) == 1 else 'are'} {len(engines)} "
+                        f"loaded checkpoint(s) (0-{len(engines) - 1}).")
+                    return
 
-            raw_count = one("count", "12")
-            try:
-                count = int(raw_count)
-            except ValueError:
-                self._send_error_json(
-                    400, f"'count' must be a whole number, got {raw_count!r}.")
-                return
-            count = max(1, min(60, count))
+            def number(key, default, cast, lo, hi, what):
+                """Parse one bounded numeric query param, or send a 400 and return None."""
+                raw = one(key, default)
+                try:
+                    val = cast(raw)
+                except ValueError:
+                    kind = "a whole number" if cast is int else "a number"
+                    self._send_error_json(400, f"{key!r} must be {kind}, got {raw!r}.")
+                    return None
+                return max(lo, min(hi, val))
 
-            raw_temp = one("temperature", "0.8")
-            try:
-                temperature = float(raw_temp)
-            except ValueError:
-                self._send_error_json(
-                    400, f"'temperature' must be a number, got {raw_temp!r}.")
+            count = number("count", "12", int, 1, 60, "count")
+            if count is None:
                 return
-            temperature = max(0.05, min(2.0, temperature))
+            temperature = number("temperature", "0.8", float, 0.05, 2.0, "temperature")
+            if temperature is None:
+                return
+            # WS-7 decoding controls, all defaulting to off so an old client that does not
+            # send them gets exactly the pre-wave-3 plain-temperature behavior.
+            top_k = number("top_k", "0", int, 0, 1000, "top_k")
+            if top_k is None:
+                return
+            top_p = number("top_p", "1.0", float, 0.01, 1.0, "top_p")
+            if top_p is None:
+                return
+            repetition_penalty = number("repetition_penalty", "1.0", float, 1.0, 3.0,
+                                        "repetition_penalty")
+            if repetition_penalty is None:
+                return
+            min_length = number("min_length", "2", int, 0, 40, "min_length")
+            if min_length is None:
+                return
 
             prefix = one("prefix", "")
             novel_only = one("novel_only", "0") in ("1", "true", "True")
 
             try:
-                names = engines[engine_idx].generate(count, temperature, prefix, novel_only)
+                names = engines[engine_idx].generate(
+                    count, temperature, prefix, novel_only,
+                    top_k=top_k, top_p=top_p,
+                    repetition_penalty=repetition_penalty, min_length=min_length)
             except Exception as exc:  # keep the server alive; report cleanly to the UI
                 self._send_error_json(
                     500, f"Generation failed on the server: {exc}")
@@ -277,13 +320,14 @@ def serve(checkpoints: List[str], host: str = "0.0.0.0", port: int = 8000,
     engines = []
     for spec in checkpoints:
         path, label = (spec.split(":", 1) + [None])[:2]
-        engines.append(Engine(path, label or _pretty_label(path), device))
-        print(f"  loaded {engines[-1].label!r:22} <- {path} "
-              f"({len(engines[-1].training)} training names)")
+        engines.append(Engine(path, label or "", device))
+        e = engines[-1]
+        print(f"  loaded {e.label!r:24} [{e.domain}] <- {path} "
+              f"({len(e.training)} training names)")
     if not engines:
         raise SystemExit("No checkpoints to serve. Train one first (see README).")
 
-    page = build_page([e.label for e in engines])
+    page = build_page(engines)
     httpd = ThreadingHTTPServer((host, port), make_handler(engines, page))
     shown = "localhost" if host in ("0.0.0.0", "") else host
     print(f"\nBurple-Fink is live → http://{shown}:{port}")

@@ -1,0 +1,10 @@
+{
+  "name": "aircraft",
+  "label": "Aircraft models",
+  "domain": "Vehicles & Transport",
+  "count": 435,
+  "provenance": "Wave-1 WS-1 batch 2, added 2026-07-24 on branch claude/next-three-items-nj7dyj. Real aircraft and helicopter model names (Boeing, Airbus, Bombardier, Embraer, Gulfstream, Cessna, Piper, Learjet, Saab, Dassault and others) recalled from general aviation knowledge; not diffed against any manufacturer catalogue or type-certificate register. Mixes alphanumeric designations (Boeing 737, ATR 42-500) with named models (Dreamliner, Super King Air), so 330 of 435 lines contain digits - accepted by scripts/check_data.py, which allows letters, digits, spaces and hyphens. Worth knowing: 65 of those digits are the character '1', which the current (stale) data/shared_vocab.json omits, so those names are already being altered silently at encode time.",
+  "verified": false,
+  "added": "2026-07-24",
+  "signature": "Claude Code | Opus 5 | medium"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "minerals_gems",
+  "label": "Minerals and gemstones",
+  "domain": "Nature",
+  "count": 624,
+  "provenance": "Mineral species and gem trade names recalled from general mineralogy knowledge (Dana/Mindat-style naming); spellings believed correct but not checked against a database in this session.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "craft_beers",
+  "label": "Craft brewery and beer names",
+  "domain": "Food & Drink",
+  "count": 398,
+  "provenance": "Wave-1 WS-1 batch 2, added 2026-07-24 on branch claude/next-three-items-nj7dyj. US and international craft beer and brewery names recalled from general knowledge - descriptive (IPA, Porter, Stout), whimsical (Hoppy Beer, Belly Dance) and branded (Stone IPA, Founders All Day); no brewery database was consulted. Digits are fine (90 Minute), but 18 of 398 lines carry 17 apostrophes (Bell's Two Hearted) plus one umlaut, which scripts/check_data.py grandfathers pending normalisation by the data-cleanup lane.",
+  "verified": false,
+  "added": "2026-07-24",
+  "signature": "Claude Code | Opus 5 | medium"
+}

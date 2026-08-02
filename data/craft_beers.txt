@@ -35,7 +35,6 @@ Belgian IPA
 Belgian Pale Ale
 Belgian Strong
 Belgian Style
-Bell's Two Hearted
 Bells Brewery Amber Ale
 Bells Brewery Brown Ale
 Bells Brewery Kalamazoo Stout
@@ -43,6 +42,7 @@ Bells Brewery Oberon Ale
 Bells Brewery Porter
 Bells Brewery Two Hearted IPA
 Bells Kalamazoo Stout
+Bells Two Hearted
 Berliner Weisse
 Bitter
 Black Butte
@@ -95,8 +95,8 @@ Deschutes Brewing
 Diamond Knot Brewery Blonde Ale
 Diamond Knot Brewery Brown Ale
 Diamond Knot Brewery Hoppy Wheat
-Diamond Knot Brewery IPA
 Diamond Knot Brewery Imperial IPA
+Diamond Knot Brewery IPA
 Diamond Knot Brewery Porter
 Diamond Knot Brewery Red Ale
 Diamond Knot Brewery Stout
@@ -153,7 +153,7 @@ Georgetown Brewing Black Raven Porter
 Georgetown Brewing Bodhisattva
 Georgetown Brewing Cloudy Day IPA
 Georgetown Brewing Izzy Hoppiness IPA
-Georgetown Brewing Manny's Pale Ale
+Georgetown Brewing Mannys Pale Ale
 German Lager
 German Pilsner
 German Style
@@ -168,19 +168,19 @@ Grapefruit Sculpin
 Great Lakes
 Growler Brewing Company Blonde Ale
 Growler Brewing Company Brown Ale
-Growler Brewing Company IPA
 Growler Brewing Company Imperial IPA
+Growler Brewing Company IPA
 Growler Brewing Company Pale Ale
 Growler Brewing Company Porter
 Growler Brewing Company Red Ale
 Growler Brewing Company Stout
-Hale's Ales Black Cat
-Hale's Ales Export
-Hale's Ales Midnight Ale
-Hale's Ales Mongoose IPA
-Hale's Ales Oregon Amber
-Hale's Ales Pale American
-Hale's Ales Wunderbar
+Hales Ales Black Cat
+Hales Ales Export
+Hales Ales Midnight Ale
+Hales Ales Mongoose IPA
+Hales Ales Oregon Amber
+Hales Ales Pale American
+Hales Ales Wunderbar
 Hefeweizen
 Helles
 Herb Beer
@@ -197,8 +197,8 @@ Hood River Brewing Co Winter Porter
 Hop Beer
 Hop Experiment
 Hop Stoopid
-HopDevil
 Hopback
+HopDevil
 Hoppy Ale
 Hoppy Beer
 Hopworks Urban Brewery Cascadian Dark Ale
@@ -222,7 +222,7 @@ Iron Horse Brewery Full Nelson
 Iron Horse Brewery Irish Red
 Iron Horse Brewery Jasper Pumpkin
 Iron Horse Brewery Post Time Pumpkin Ale
-Iron Horse Brewery Quilter's Irish Stout
+Iron Horse Brewery Quilters Irish Stout
 Iron Horse Brewery Rib Tickler Amber
 Iron Horse Brewery Ridgeline Wheat
 Keg Only
@@ -254,18 +254,18 @@ Low Gravity
 Lucky Labrador Brewing Company Barley Wine
 Lucky Labrador Brewing Company Black Lab Stout
 Lucky Labrador Brewing Company Brown Ale
-Lucky Labrador Brewing Company IPA
 Lucky Labrador Brewing Company Imperial Stout
+Lucky Labrador Brewing Company IPA
 Lucky Labrador Brewing Company Pale Ale
 Lucky Labrador Brewing Company Red Ale
 Lucky Labrador Brewing Company Wheat Ale
-Mac and Jack's African Amber
-Mac and Jack's Brown Ale
-Mac and Jack's Fireside Ale
-Mac and Jack's Hefeweizen
-Mac and Jack's IPA
-Mac and Jack's Porter
-Mac and Jack's Seasonal Ale
+Mac and Jacks African Amber
+Mac and Jacks Brown Ale
+Mac and Jacks Fireside Ale
+Mac and Jacks Hefeweizen
+Mac and Jacks IPA
+Mac and Jacks Porter
+Mac and Jacks Seasonal Ale
 Mad Elf
 Magnolia Brewing Co Barley Hops Lager
 Magnolia Brewing Co Blackhook Imperial Porter
@@ -275,6 +275,7 @@ Magnolia Brewing Co Kalifornia Kolsch
 Magnolia Brewing Co Proving Ground IPA
 Magnolia Brewing Co Riptide Red Ale
 Magnolia Brewing Co Thunderhead IPA
+Marzen
 Mashup
 Mashup Ale
 Mashup IPA
@@ -284,8 +285,8 @@ Maximus
 Mazama Brewing Company Amber Ale
 Mazama Brewing Company Blonde Ale
 Mazama Brewing Company Brown Ale
-Mazama Brewing Company IPA
 Mazama Brewing Company Imperial IPA
+Mazama Brewing Company IPA
 Mazama Brewing Company Pale Ale
 Mazama Brewing Company Porter
 Mazama Brewing Company Red Ale
@@ -301,8 +302,8 @@ Midnight Sun Brewing Tanana Tan
 Milkshake IPA
 Mobile Bay Brewing Company Blonde Ale
 Mobile Bay Brewing Company Brown Ale
-Mobile Bay Brewing Company IPA
 Mobile Bay Brewing Company Imperial IPA
+Mobile Bay Brewing Company IPA
 Mobile Bay Brewing Company Pale Ale
 Mobile Bay Brewing Company Porter
 Mobile Bay Brewing Company Red Ale
@@ -316,7 +317,6 @@ Moose Jaw Brewing Company Red Ale
 Moose Jaw Brewing Company Rocker IPA
 Moose Jaw Brewing Company Seasonal
 Munich Helles
-Märzen
 Nano Brewery
 Natural Ingredients
 New Belgium

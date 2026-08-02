@@ -1,0 +1,459 @@
+Adonis
+Affinity
+Air Mail
+Alaska
+Alexander
+Algonquin
+Amaretto Sour
+Americano
+Ancient Mariner
+Angel Face
+Aperol Sour
+Aperol Spritz
+Apple Martini
+Applejack Rabbit
+Armillita Chico
+Astoria
+Aviation
+Bahama Mama
+Bamboo
+Banana Daiquiri
+Barbary Coast
+Barracuda
+Batida
+Beachcomber
+Bees Knees
+Bellini
+Belmont Breeze
+Bensonhurst
+Bermuda Rum Swizzle
+Between the Sheets
+Bijou
+Bishop
+Bitter Giuseppe
+Black Manhattan
+Black Russian
+Black Velvet
+Blackthorn
+Blinker
+Blood and Sand
+Bloody Mary
+Blue Blazer
+Blue Hawaii
+Blue Lagoon
+Blue Moon
+Bobby Burns
+Boilermaker
+Boulevardier
+Bourbon Renewal
+Bourbon Smash
+Bramble
+Brandy Alexander
+Brandy Crusta
+Brandy Flip
+Brave Bull
+Breakfast Martini
+Bronx
+Brooklyn
+Brown Derby
+Bucks Fizz
+Bull Shot
+Bumbo
+Byrrh Cassis
+Cable Car
+Caipirinha
+Caipiroska
+Camerons Kick
+Canchanchara
+Cape Codder
+Carajillo
+Cardinale
+Caribou Lou
+Casino
+Cement Mixer
+Champagne Cocktail
+Chartreuse Swizzle
+Chatham Hotel Special
+Cherry Blossom
+Cherry Bounce
+Chi Chi
+Chicago Fizz
+Chocolate Martini
+Cinderella
+Cloister
+Clover Club
+Clover Leaf
+Coffee Cocktail
+Coffee Nudge
+Cognac Sour
+Commodore
+Cooperstown
+Corn n Oil
+Coronation
+Corpse Reviver
+Cosmopolitan
+Cuba Libre
+Cynar Julep
+Daiquiri
+Daisy de Santiago
+Damn the Weather
+Dark and Stormy
+Dead Rabbit
+Death in the Afternoon
+Delmonico
+Dempsey
+Derby
+Deshler
+Diamond Fizz
+Diplomat
+Dirty Martini
+Dirty Shirley
+Doctor Funk
+Douglas Fairbanks
+Dry Martini
+Dubliner
+Dubonnet Cocktail
+Duchess
+Earthquake
+East India
+Eggnog
+El Diablo
+El Presidente
+Elder Fashion
+Emerald
+Enzoni
+Espresso Martini
+Fallen Angel
+Falling Leaves
+Fancy Free
+Fifty Fifty
+Fish House Punch
+Fitzgerald
+Flame of Love
+Flamingo
+Floradora
+Fluffy Duck
+Fog Cutter
+Foghorn
+Fourth Regiment
+French Connection
+French Martini
+French Pearl
+French Seventy Five
+Frisco Sour
+Frozen Daiquiri
+Frozen Margarita
+Garibaldi
+Gibson
+Gimlet
+Gin and Tonic
+Gin Basil Smash
+Gin Buck
+Gin Daisy
+Gin Fizz
+Gin Gin Mule
+Gin Rickey
+Gin Sling
+Ginger Rogers
+Godfather
+Godmother
+Gold Rush
+Golden Cadillac
+Golden Dream
+Golden Fizz
+Grand Street
+Grasshopper
+Green Beast
+Green Point
+Green Swizzle
+Greyhound
+Halekulani Cocktail
+Hanky Panky
+Harvard
+Harvey Wallbanger
+Havana Special
+Hemingway Daiquiri
+Hemingway Special
+Highball
+Honeymoon
+Hoop La
+Horses Neck
+Hot Buttered Rum
+Hot Toddy
+Hotel Nacional Special
+Hugo
+Hunter
+Hurricane
+Ideal Cocktail
+Improved Whiskey Cocktail
+Income Tax
+Irish Buck
+Irish Coffee
+Irish Maid
+Jack Rose
+Japanese Cocktail
+Jasmine
+Jet Pilot
+Jimmy Roosevelt
+Jockey Club
+John Collins
+Journalist
+Jungle Bird
+Junior
+Jupiter
+Kamikaze
+Kentucky Buck
+Kentucky Colonel
+Kentucky Mule
+Kicker
+Kingston Negroni
+Kir
+Kir Royale
+Knickerbocker
+Knickerbocker Special
+La Louisiane
+La Perla
+Last Word
+Leap Year
+Leatherneck
+Left Hand
+Lemon Drop Martini
+Liberal
+Lions Tail
+Little Italy
+Loch Lomond
+London Calling
+Long Island Iced Tea
+Lucien Gaudin
+Lynchburg Lemonade
+Madras
+Mai Tai
+Maidens Blush
+Maidens Prayer
+Mamie Taylor
+Mandeville
+Manhattan
+Maple Leaf
+Marconi Wireless
+Margarita
+Marmalade Cocktail
+Martinez
+Martini
+Mary Pickford
+Matador
+Mexican Firing Squad
+Mezcal Mule
+Mezcal Negroni
+Miami Vice
+Michelada
+Milk Punch
+Millionaire
+Mimosa
+Mint Julep
+Missionarys Downfall
+Modern Cocktail
+Mojito
+Monkey Gland
+Monte Carlo
+Montgomery
+Morning Glory Fizz
+Moscow Mule
+Mother-in-Law
+Mountain Cocktail
+Mudslide
+Nacional
+Naked and Famous
+Napoleon
+Navy Grog
+Negroni
+Negroni Sbagliato
+Nevada
+New York Sour
+Newark
+Nightcap
+Nikolaschka
+Nordic Summer
+Nuclear Daiquiri
+Nutty Irishman
+Oaxaca Old Fashioned
+Obituary Cocktail
+Oh Gosh
+Old Cuban
+Old Etonian
+Old Fashioned
+Old Pal
+Olympic
+Opera
+Orange Blossom
+Oriental
+Painkiller
+Palm Beach Special
+Palmetto
+Paloma
+Pan American Clipper
+Panama
+Papa Doble
+Paper Plane
+Paradise
+Parisian
+Park Avenue
+Parkeroo
+Pearl Diver
+Pearl Harbor
+Peggy Cocktail
+Pegu Club
+Pendennis Club
+Penicillin
+Perfect Manhattan
+Pichuncho Martini
+Pilgrim Cocktail
+Pimms Cup
+Pina Colada
+Pink Gin
+Pink Lady
+Pink Squirrel
+Pisco Punch
+Pisco Sour
+Planters Punch
+Poets Dream
+Polynesian
+Port Flip
+Port Light
+Pousse Cafe
+Prairie Oyster
+Preakness
+Presbyterian
+Prescription Julep
+Princeton
+Puerto Rico Rickey
+Quarter Deck
+Queen Elizabeth
+Queens Park Swizzle
+Racquet Club
+Ramos Gin Fizz
+Rattlesnake
+Rebujito
+Red Hook
+Red Lion
+Red Snapper
+Regents Punch
+Remember the Maine
+Revolver
+Rickey
+Ritz Cocktail
+Rob Roy
+Roffignac
+Rome with a View
+Rose
+Rosita
+Royal Bermuda Yacht Club
+Royal Hawaiian
+Royal Smile
+Rum Barrel
+Rum Runner
+Rum Swizzle
+Russian Spring Punch
+Rusty Nail
+Salt Air Margarita
+Salty Dog
+San Martin
+Sangria
+Sangrita
+Santiago
+Saratoga
+Satans Whiskers
+Savoy Tango
+Sazerac
+Scofflaw
+Scorpion
+Scotch and Soda
+Screwdriver
+Sea Breeze
+Seelbach
+Serpents Tooth
+Sex on the Beach
+Shamrock
+Shandy
+Sherry Cobbler
+Sherry Flip
+Sherry Twist
+Sidecar
+Sidewinders Fang
+Siesta
+Silk Stocking
+Silver Bullet
+Silver Fizz
+Silver Lining
+Singapore Sling
+Sloe Gin Fizz
+Smoky Martini
+Snakebite
+Snowball
+Southern Exposure
+Southside
+Spanish Coffee
+Spritz Veneziano
+Star Cocktail
+Stinger
+Stone Fence
+Stone Sour
+Straits Sling
+Suffering Bastard
+Sundowner
+Tabu
+Tailspin
+Tantris Sidecar
+Tequila Slammer
+Tequila Sunrise
+Test Pilot
+Third Degree
+Third Rail
+Three Dots and a Dash
+Ti Punch
+Tiger Tail
+Tipperary
+Toasted Almond
+Tom and Jerry
+Tom Collins
+Tommys Margarita
+Toronto
+Trident
+Trinidad Sour
+Tropical Itch
+Turf Cocktail
+Tuxedo
+Twelve Mile Limit
+Twentieth Century
+Twinkle
+Union Jack
+Valencia
+Vampiro
+Vancouver
+Velvet Hammer
+Vermouth Cassis
+Vesper
+Victory Collins
+Vieux Carre
+Vodka Collins
+Vodka Martini
+Waldorf
+Walters Cocktail
+Ward Eight
+Wet Hen
+Whiskey Smash
+Whiskey Sour
+Whisky Mac
+Whist
+White Lady
+White Lion
+White Negroni
+White Russian
+Wibble
+Widows Kiss
+Woo Woo
+Yacht Club
+Yale Cocktail
+Yankee Doodle
+Yellow Bird
+Yellow Parrot
+Zombie

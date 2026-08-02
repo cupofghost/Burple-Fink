@@ -10,7 +10,7 @@ Addis Ababa
 Adelaide
 Adelanto
 Aden
-Afonso Cláudio
+Afonso Claudio
 Agra
 Aguascalientes
 Ahmedabad
@@ -23,8 +23,8 @@ Alamo
 Alandroal
 Albufeira
 Albuquerque
+Alcacer Do Sal
 Alcoutim
-Alcácer Do Sal
 Aldershot
 Alegre
 Aleppo
@@ -68,8 +68,8 @@ Apple Valley
 Aracaju
 Aracruz
 Araquari
-Araucanía
-Araxá
+Araucania
+Araxa
 Arcata
 Arden Arcade
 Arequipa
@@ -77,7 +77,7 @@ Argonaut
 Arica
 Arivaca
 Arlington
-Armação De Pêra
+Armacao De Pera
 Arnold
 Arraiolos
 Ascot
@@ -90,9 +90,9 @@ Aswan
 Atami
 Athens
 Atico
+Atilio Vivacqua
 Atlanta
 Atwater
-Atílio Vivácqua
 Auburn
 Auckland
 Aurangabad
@@ -112,7 +112,7 @@ Bahi Blanca
 Baixo Guandu
 Bakersfield
 Baku
-Balneário
+Balneario
 Baltimore
 Bamako
 Banbury
@@ -137,10 +137,10 @@ Bath
 Batheaston
 Bathford
 Baton Rouge
-Be'Er Sheva
 Beaconsfield
 Bead Lake
 Beamsville
+Beer Sheva
 Beijing
 Beira
 Beirut
@@ -153,7 +153,6 @@ Bella Vista
 Belleville
 Belmonte
 Belo Horizonte
-Belém
 Benghazi
 Benson
 Bergen
@@ -179,10 +178,10 @@ Blantyre
 Bloemfontein
 Blumenau
 Boa Vista
-Bocaiúva
+Bocaiuva
 Bogota
 Boise
-Boletá
+Boleta
 Bologna
 Bom Jesus
 Bombas
@@ -198,7 +197,6 @@ Bradford On Avon
 Brampton
 Brantford
 Brasilia
-Brasília
 Bratislava
 Brawley
 Brazzaville
@@ -243,7 +241,7 @@ Calexico
 Calgary
 Cali
 Calipatria
-Camboriú
+Camboriu
 Cambridge
 Camino
 Camp Verde
@@ -334,14 +332,14 @@ Colorado Springs
 Columbus
 Compton Dando
 Conakry
-Conceição Da Barra
-Conceição Do Mato Dentro
+Conceicao Da Barra
+Conceicao Do Mato Dentro
 Concepcion
-Conchalí
+Conchali
 Concho
+Concon
 Concord
 Concordia
-Concón
 Congonhas
 Conguillio
 Constantine
@@ -349,7 +347,6 @@ Cool
 Coolidge
 Copenhagen
 Copiapo
-Copiapó
 Copperopolis
 Copplestone
 Coquimbo
@@ -359,25 +356,24 @@ Corona
 Coronado
 Corpus Christi
 Corrientes
-Corupá
+Corupa
 Cotonou
 Cottonwood
 Coulterville
 Coventry
-Covilhã
+Covilha
 Cozumel
 Crato
 Crediton
-Criciúma
+Criciuma
 Crowcombe
 Crown King
 Cucuta
 Cuenca
 Cuiaba
-Cuiabá
 Culiacan
 Cullompton
-Curacaví
+Curacavi
 Curarrehue
 Curitiba
 Cusco
@@ -394,7 +390,6 @@ Dana Point
 Danville
 Dar es Salaam
 Dartmouth
-Dart­mouth
 Darwin
 Datong
 Davao
@@ -416,7 +411,7 @@ Dhanbad
 Diamond Springs
 Dijon
 Dire Dawa
-Divinópolis
+Divinopolis
 Djibouti
 Doha
 Dongguan
@@ -460,10 +455,12 @@ Erbil
 Erie
 Erode
 Escada
-Estación Central
+Estacion Central
 Estombar
 Estremoz
 Eureka
+Evora
+Evoramonte
 Exeter
 Exmouth
 Eynsham
@@ -485,7 +482,6 @@ Firozabad
 Flagstaff
 Florence
 Florianopolis
-Florianópolis
 Folsom
 Fontana
 Foothill Farms
@@ -503,16 +499,16 @@ Frome
 Fruitland
 Fukuoka
 Fukushima
-Fundão
+Fundao
 Fushun
 Fuzhou
 Gaborone
 Galena
-Galletué
+Galletue
 Garden Grove
 Garland
 Garuva
-Gavião
+Gaviao
 Gaza
 Gdansk
 Geelong
@@ -531,7 +527,6 @@ Glendale
 Globe
 Goderich
 Goiania
-Goiânia
 Gold Coast
 Gold River
 Goodyear
@@ -624,22 +619,22 @@ Houston
 Hsinchu
 Huachuca City
 Huancayo
+Huanuco
 Hubli
 Huizhou
 Humboldt
 Huntington Beach
-Huánuco
 Hyderabad
 Iasi
 Ibadan
 Ibaraki
 Ibarra
-Ibiraçu
+Ibiracu
 Ica
 Ichikawa
 Iconha
 Idanha-A-Nova
-Iguazú Falls
+Iguazu Falls
 Imperial Beach
 Incheon
 Indianapolis
@@ -661,10 +656,10 @@ Isla Negra
 Islamabad
 Istanbul
 Itabira
-Itaguaçu
+Itaguacu
 Itajai
 Itapemirim
-Itapoá
+Itapoa
 Ituporanga
 Ivybridge
 Iwate
@@ -673,13 +668,13 @@ Jabalpur
 Jackson
 Jacksonville
 Jacob Lake
-Jaguaré
+Jaguare
 Jaipur
 Jakarta
 Jalandhar
 Jamestown
 Jamshedpur
-Januária
+Januaria
 Jeddah
 Jerome
 Jersey City
@@ -695,7 +690,6 @@ Johannesburg
 Johor Bahru
 Joinville
 Joshua Tree
-João Pessoa
 Juarez
 Juba
 Juiz De Fora
@@ -820,7 +814,7 @@ Livermore
 Liverpool
 Livingston
 Ljubljana
-Llafquén
+Llafquen
 Lo Barnechea
 Lodi
 Lodz
@@ -835,7 +829,7 @@ Los Angeles
 Los Banos
 Los Cabos
 Louisville
-Loulé
+Loule
 Luanda
 Lubbock
 Lucknow
@@ -850,10 +844,9 @@ Luxor
 Lydeard St Lawrence
 Lyme Regis
 Lyon
-Macapá
+Macapa
 Macau
 Maceio
-Maceió
 Machala
 Macul
 Madison
@@ -861,7 +854,7 @@ Madrid
 Madurai
 Maebashi
 Maidenhead
-Maipú
+Maipu
 Makati
 Malabo
 Malaga
@@ -885,7 +878,7 @@ Maquehue
 Maqui
 Mar del Plata
 Maracaibo
-Marataízes
+Marataizes
 Marble Canyon
 Mariana
 Mariposa
@@ -894,7 +887,7 @@ Marksbury
 Marlow
 Marrakesh
 Marseille
-Marvão
+Marvao
 Marysville
 Maseru
 Massaranduba
@@ -1037,12 +1030,13 @@ Novosibirsk
 Nuevo Laredo
 Nukualofa
 Numazu
+Nunoa
 Nuremberg
 Nutrioso
 Oakland
 Oakville
 Oaxaca
-Oberá
+Obera
 Oceanside
 Odemira
 Odense
@@ -1055,7 +1049,7 @@ Okehampton
 Okitsu
 Oklahoma City
 Oleiros
-Olhão
+Olhao
 Omaha
 Omsk
 Ontario
@@ -1098,9 +1092,9 @@ Panjachoque
 Papeete
 Papudo
 Paradise
-Paraná
+Parana
 Paris
-Parnaíba
+Parnaiba
 Parral
 Paso De Los Libres
 Paso Robles
@@ -1111,7 +1105,8 @@ Patna
 Patras
 Payson
 Peach Springs
-Pedro Canário
+Pedro Canario
+Penalolen
 Penamacor
 Penha
 Pensford
@@ -1120,13 +1115,13 @@ Perm
 Perth
 Peshawar
 Peterborough
-Peñalolén
 Phagwara
 Philadelphia
 Phnom Penh
 Phoenix
 Phuket
-Pichilafquén
+Picarras
+Pichilafquen
 Pichilemu
 Pilot Hill
 Pimpri
@@ -1141,8 +1136,7 @@ Piripiri
 Pirque
 Pisco
 Pittsburgh
-Piçarras
-Piúma
+Piuma
 Placerville
 Plano
 Playa Del Carmen
@@ -1154,15 +1148,15 @@ Pokhara
 Pollock Pines
 Pomaire
 Poole
+Port au Prince
 Port Elizabeth
 Port Harcourt
 Port Louis
 Port Moresby
-Port au Prince
 Port of Spain
 Portalegre
 Portbury
-Portimão
+Portimao
 Portishead
 Portland
 Porto
@@ -1181,19 +1175,18 @@ Prescott Valley
 Presidente Kennedy
 Pretoria
 Pristina
-Proença-A-Nova
+Proenca-A-Nova
 Providence
 Providencia
 Pucallpa
 Puchuncavi
 Pucon
-Pucón
 Puebla
 Puente Alto
 Puente Eltit
 Puert Nueva
-Puerto Iguazú
-Puerto López
+Puerto Iguazu
+Puerto Lopez
 Puerto Montt
 Puerto Nuevo
 Puerto Penasco
@@ -1208,12 +1201,11 @@ Qiqihar
 Quanzhou
 Quebec City
 Queretaro
-Querétaro
 Quetta
 Quevedo
 Quezon City
 Quillota
-Quilpué
+Quilpue
 Quinchol
 Quintero
 Quito
@@ -1256,10 +1248,10 @@ Richmond Hill
 Ridgecrest
 Riga
 Rio Branco
+Rio de Janeiro
 Rio Novo Do Sul
 Rio Rancho
 Rio Rico
-Rio de Janeiro
 Riobamba
 Riverside
 Riyadh
@@ -1272,10 +1264,10 @@ Rosario
 Roseville
 Rostov on Don
 Rotterdam
-Rucatué
-Rucatué Sur
+Rucatue
+Rucatue Sur
 Rucu-Hueico
-Rudán
+Rudan
 Rupnagar
 Rye
 Sabugal
@@ -1309,9 +1301,9 @@ San Diego
 San Francisco
 San Ignacio
 San Isidro
-San Joaquín
+San Joaquin
 San Jose
-San José De Maipo
+San Jose De Maipo
 San Juan
 San Leandro
 San Luis
@@ -1323,13 +1315,11 @@ San Miguel
 San Miguel De Allende
 San Pedro De Atacama
 San Ramon
-San Ramón
 San Salvador
 Sanaa
 Sanostee
 Santa Ana
 Santa Barbara
-Santa Bárbara
 Santa Catarina
 Santa Clarita
 Santa Cruz
@@ -1337,11 +1327,16 @@ Santa Fe
 Santa Monica
 Santa Tereza
 Santiago
-Santiago Do Cacém
+Santiago Do Cacem
 Santo Domingo
 Santos Dumont
+Sao Bras De Alportel
+Sao Joao Del Rey
 Sao Luis
+Sao Mateus
 Sao Paulo
+Sao Roque Do Canion
+Sao Teotonio
 Sapporo
 Sarajevo
 Saratov
@@ -1406,14 +1401,13 @@ Southampton
 Spokane
 Springerville
 Srinagar
+St Catharines
+St David
 St Johns
 St Louis
+St Michaels
 St Paul
-St. Catharines
-St. David
-St. Johns
-St. Michaels
-St. Thomas
+St Thomas
 Stockholm
 Stockton
 Stogumber
@@ -1441,11 +1435,6 @@ Sydney
 Sylhet
 Syracuse
 Szczecin
-São Brás De Alportel
-São João Del Rey
-São Mateus
-São Roque Do Cânion
-São Teotonio
 Tacna
 Tacoma
 Tahara
@@ -1479,8 +1468,8 @@ Temecula
 Tempe
 Temuco
 Tena
+Teofilo Otoni
 Teresina
-Teófilo Otoni
 Thame
 Thane
 Thermal
@@ -1528,7 +1517,7 @@ Truxton
 Tsu
 Tuba City
 Tubac
-Tubarão
+Tubarao
 Tucson
 Tucuman
 Tulsa
@@ -1540,8 +1529,8 @@ Turku
 Turlock
 Twentynine Palms
 Tyre
-Uberlândia
-Ubá
+Uba
+Uberlandia
 Udaipur
 Ufa
 Ukiah
@@ -1563,7 +1552,6 @@ Vallejo
 Vallenar
 Valletta
 Valparaiso
-Valparaíso
 Vancouver
 Varanasi
 Varna
@@ -1574,6 +1562,7 @@ Vera Cruz
 Veracruz
 Vernon
 Viana
+Vicosa
 Victoria
 Victorville
 Vienna
@@ -1581,20 +1570,18 @@ Vientiane
 Vijayawada
 Vila Do Bispo
 Vila Velha
-Vila Viçosa
+Vila Vicosa
 Villa Alemana
 Villarrica
 Villarrica Sector
 Vilnius
+Vina Del Mar
 Vineyard
 Virginia Beach
 Visakhapatnam
 Visalia
 Vitacura
 Vitoria
-Vitória
-Viçosa
-Viña Del Mar
 Vladivostok
 Volcano
 Volgograd
@@ -1649,7 +1636,6 @@ Wroclaw
 Wuhan
 Wuxi
 Xalapa
-Xi'an
 Xiamen
 Xian
 Xining
@@ -1686,6 +1672,3 @@ Zhuhai
 Zibo
 Zirakpur
 Zurich
-Évora
-Évoramonte
-Ñuñoa

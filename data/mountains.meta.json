@@ -1,0 +1,10 @@
+{
+  "name": "mountains",
+  "label": "Mountains and peaks",
+  "domain": "Nature",
+  "count": 523,
+  "provenance": "Named peaks worldwide recalled from general geography and mountaineering knowledge; accented and non-Latin names transliterated (Popocatepetl, Gerlachovsky Stit), and peaks whose usual names contain digits (K2) were omitted.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "cheeses",
+  "label": "Cheeses",
+  "domain": "Food & Drink",
+  "count": 421,
+  "provenance": "Recalled from general knowledge of European PDO and AOP cheese registers plus well-known British, American, Middle Eastern, Nordic and Latin American cheeses; accents and apostrophes were transliterated to plain ASCII. Not cross-checked against a register in this session.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}

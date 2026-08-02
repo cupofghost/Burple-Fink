@@ -1,0 +1,10 @@
+{
+  "name": "greek_myth",
+  "label": "Greek and Roman Mythology",
+  "domain": "Words, Names & Places",
+  "count": 755,
+  "provenance": "Recalled from standard classical mythology reference (Hesiod, Homer, Ovid, Apollodorus and common handbooks): Olympians, Titans, primordials, heroes, nymphs, monsters, rivers and places, with Roman equivalents. High confidence; Latin transliterations used and variant spellings collapsed to one form.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}

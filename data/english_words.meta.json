@@ -1,0 +1,10 @@
+{
+  "name": "english_words",
+  "label": "Common English words",
+  "domain": "Words, Names & Places",
+  "count": 8631,
+  "provenance": "Added on branch claude/plausible-words-dataset-53qyyg before the 2026-07-24 consolidation; the exact date is not recorded in STATUS.md or HANDOFF.md, so 'added' is the consolidation date rather than the true one. Frequency-ranked common words from the Google Web Trillion Word Corpus via the first20hours/google-10000-english list (MIT licensed), then curated to lowercase a-z, length 3-10, vowel-bearing. The only fully machine-sourced dataset in the repo and the largest by an order of magnitude; used as base-model fuel for fine-tuning. Fully conforms to the character rule.",
+  "verified": false,
+  "added": "2026-07-24",
+  "signature": "Claude Code | Opus 5 | medium"
+}

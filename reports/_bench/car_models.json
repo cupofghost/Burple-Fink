@@ -1,0 +1,17 @@
+{
+ "dataset": "car_models",
+ "path": "data/car_models.txt",
+ "total_names": 1218,
+ "train_names": 1035,
+ "val_names": 183,
+ "checkpoint": "checkpoints/ws11_car_models.pt",
+ "epoch_budget": 120,
+ "patience": 20,
+ "epochs_run": 30,
+ "best_epoch": 10,
+ "best_val_loss": 2.4013739426930747,
+ "final_train_loss": 1.0890196290883152,
+ "train_loss_at_best": 2.0755206310387813,
+ "stopped_early": true,
+ "wall_seconds": 39.5
+}

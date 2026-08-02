@@ -1,0 +1,10 @@
+{
+  "name": "dog_breeds",
+  "label": "Dog breeds",
+  "domain": "Nature",
+  "count": 461,
+  "provenance": "Recalled from general knowledge of AKC, FCI, UKC and Kennel Club breed registers plus well-known landrace and regional breeds; not cross-checked against a register in this session.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}

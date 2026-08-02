@@ -1,0 +1,10 @@
+{
+  "name": "paint_colors",
+  "label": "Paint color names",
+  "domain": "Design & Brands",
+  "count": 391,
+  "provenance": "Wave-1 WS-1 batch 1, added 2026-07-24 on branch claude/next-three-items-nj7dyj. Real and invented paint color names in the style of major manufacturers, ranging from descriptive (Alabaster, Apricot) to poetic (Aurora Red, Crystal Clear); recalled from general knowledge, not taken from any manufacturer fan deck, so some entries are plausible rather than real. Homage to Janelle Shane's original neural-network paint-color project. Distinct from data/paint_colors.tsv (the WS-4 dual-output demo, CSS keyword names + luminance) - same stem, different dataset, which is why that file's sidecar is paint_colors_tsv.meta.json. One line, 'Bells & Whistles', carries an ampersand and is grandfathered in scripts/check_data.py.",
+  "verified": false,
+  "added": "2026-07-24",
+  "signature": "Claude Code | Opus 5 | medium"
+}

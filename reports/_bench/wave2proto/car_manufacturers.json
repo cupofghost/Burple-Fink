@@ -1,0 +1,16 @@
+{
+ "dataset": "car_manufacturers",
+ "total_names": 590,
+ "train_names": 502,
+ "val_names": 88,
+ "epochs": 300,
+ "final_train_loss": 0.8385472185909748,
+ "final_val_loss": 4.789061387379964,
+ "final_gap": 3.950514168788989,
+ "best_epoch": 10,
+ "best_val_loss": 2.5815959771474204,
+ "train_loss_at_best": 2.392734542489052,
+ "gap_at_best": 0.18886143465836858,
+ "val_degradation_pct": 85.50778006215057,
+ "wall_seconds": 333.6
+}

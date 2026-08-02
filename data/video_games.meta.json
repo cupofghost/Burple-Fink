@@ -1,0 +1,10 @@
+{
+  "name": "video_games",
+  "label": "Video games",
+  "domain": "Games & Music",
+  "count": 753,
+  "provenance": "Recalled from general knowledge of arcade, console and PC releases from the late nineteen-seventies to the present, across major franchises and indie titles; series numerals and post-colon subtitles were dropped so entries carry only the base title. Not cross-checked against a games database in this session.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | medium"
+}

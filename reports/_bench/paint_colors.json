@@ -1,0 +1,17 @@
+{
+ "dataset": "paint_colors",
+ "path": "data/paint_colors.txt",
+ "total_names": 391,
+ "train_names": 332,
+ "val_names": 59,
+ "checkpoint": "checkpoints/ws11_paint_colors.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 33,
+ "best_epoch": 13,
+ "best_val_loss": 1.5773699283599854,
+ "final_train_loss": 0.6299322572621432,
+ "train_loss_at_best": 1.1189397139982744,
+ "stopped_early": true,
+ "wall_seconds": 17.5
+}

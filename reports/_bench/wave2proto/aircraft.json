@@ -1,0 +1,16 @@
+{
+ "dataset": "aircraft",
+ "total_names": 435,
+ "train_names": 370,
+ "val_names": 65,
+ "epochs": 300,
+ "final_train_loss": 0.37729393939177197,
+ "final_val_loss": 1.083106776078542,
+ "final_gap": 0.70581283668677,
+ "best_epoch": 21,
+ "best_val_loss": 0.8094084163506826,
+ "train_loss_at_best": 0.4949856574336688,
+ "gap_at_best": 0.3144227589170138,
+ "val_degradation_pct": 33.81461746615659,
+ "wall_seconds": 210.6
+}

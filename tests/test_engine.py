@@ -18,7 +18,8 @@ from src.data import Vocab, make_pairs, make_batches
 from src.model import CharRNN
 from src.sample import generate_many, load_checkpoint
 from src.train import fit, save_checkpoint
-from src.export_web import export_model, build_html, TEMPLATE_MARKER
+from src.export_web import (
+    export_model, build_html, TEMPLATE_MARKER, weight_count, unpack_floats)
 
 
 # A tiny synthetic "domain": short, patterned pseudo-names the net can learn fast.
@@ -104,9 +105,19 @@ class WebExportTests(unittest.TestCase):
             # so a clean return *is* the assertion that JS-math == torch-math.
             m = export_model(ckpt, "Tiny")
             self.assertEqual(len(m["itos"]), len(vocab))
-            self.assertEqual(len(m["layers"]), cfg.num_layers)
+            self.assertEqual(m["num_layers"], cfg.num_layers)
+            # WS-12 changed the wire format: weights are one base64 blob (float16, or
+            # float32 if float16 misses the tolerance) instead of nested JSON arrays,
+            # and training_names is newline-joined rather than a list. The blob must
+            # hold exactly the number of floats the declared dimensions imply.
+            self.assertIn(m["dtype"], ("f16", "f32"))
+            n = weight_count(len(vocab), m["embedding_dim"], cfg.hidden_dim, cfg.num_layers)
+            self.assertEqual(len(unpack_floats(m["weights"], n, m["dtype"])), n)
             # order is irrelevant — the browser only tests set membership for novelty
-            self.assertEqual(set(m["training_names"]), set(NAMES))
+            self.assertEqual(set(m["training_names"].split("\n")), set(NAMES))
+            # export_model only returns once the fidelity check passed, and it records
+            # the margin it passed by.
+            self.assertLess(m["max_logit_error"], 5e-3)
 
             # a minimal template with the marker should splice cleanly
             template = os.path.join(d, "tpl.html")

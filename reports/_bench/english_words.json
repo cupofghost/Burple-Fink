@@ -1,0 +1,17 @@
+{
+ "dataset": "english_words",
+ "path": "data/english_words.txt",
+ "total_names": 8631,
+ "train_names": 7336,
+ "val_names": 1295,
+ "checkpoint": "checkpoints/ws11_english_words.pt",
+ "epoch_budget": 60,
+ "patience": 20,
+ "epochs_run": 26,
+ "best_epoch": 6,
+ "best_val_loss": 2.0064260756097188,
+ "final_train_loss": 1.3910142152205758,
+ "train_loss_at_best": 1.7609428084414938,
+ "stopped_early": true,
+ "wall_seconds": 341.6
+}

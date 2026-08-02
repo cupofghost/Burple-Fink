@@ -1,0 +1,10 @@
+{
+  "name": "motorcycle_brands",
+  "label": "Motorcycle brands",
+  "domain": "Vehicles & Transport",
+  "count": 309,
+  "provenance": "Was 63 lines weighted toward current makers and Chinese factories; grew it with real historical marques - British interwar makes, Italian and German firms, Czech, Polish, Hungarian and Soviet plants, pre-war Japanese and American makers, French and Spanish marques, and modern electric brands. Every addition is a marque I believe actually existed; none are invented. Confidence high, not checked against a source.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | high"
+}

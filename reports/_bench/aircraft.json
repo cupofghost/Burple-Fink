@@ -1,0 +1,17 @@
+{
+ "dataset": "aircraft",
+ "path": "data/aircraft.txt",
+ "total_names": 435,
+ "train_names": 370,
+ "val_names": 65,
+ "checkpoint": "checkpoints/ws11_aircraft.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 43,
+ "best_epoch": 23,
+ "best_val_loss": 0.773896594842275,
+ "final_train_loss": 0.40826685974995297,
+ "train_loss_at_best": 0.4745885481437047,
+ "stopped_early": true,
+ "wall_seconds": 36.3
+}

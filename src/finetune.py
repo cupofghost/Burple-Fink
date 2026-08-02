@@ -21,10 +21,16 @@ The 60 epochs / 5e-4 below were always a guess. Since WS-6 you can measure inste
 best-scoring epoch's weights, and stops when it stops improving. Off by default, so an
 un-flagged fine-tune behaves exactly as it did before.
 
+Since WS-10 you can stop guessing the 60 as well: ``--auto-epochs`` derives the budget
+from the size of the fine-tune dataset. ``--weight-decay`` / ``--label-smoothing`` /
+``--warmup-epochs`` are available here too, and — like the WS-6 flags — are reset to
+their defaults rather than inherited from the base checkpoint.
+
 Usage:
     python -m src.finetune --base checkpoints/base.pt --data data/car_models.txt --name car_models
     python -m src.finetune --base checkpoints/base.pt --data data/car_models.txt --name car_models --epochs 80 --lr 3e-4
     python -m src.finetune --base checkpoints/base.pt --data data/car_models.txt --name car_models --val-fraction 0.15 --patience 10
+    python -m src.finetune --base checkpoints/base.pt --data data/car_models.txt --name car_models --auto-epochs --val-fraction 0.15
 """
 
 from __future__ import annotations
@@ -37,7 +43,7 @@ import torch
 from .config import Config
 from .data import filter_to_vocab, load_names, split_names
 from .sample import load_checkpoint
-from .train import fit, save_checkpoint
+from .train import add_regimen_args, apply_auto_epochs, fit, save_checkpoint
 
 # Fine-tuning defaults: much shorter and gentler than pretraining, so the base
 # model is *nudged* toward the domain rather than overwritten. Overridable on the CLI.
@@ -56,11 +62,29 @@ def finetune(
     val_fraction: float | None = None,
     early_stop_patience: int | None = None,
     lr_schedule: str | None = None,
+    weight_decay: float | None = None,
+    label_smoothing: float | None = None,
+    warmup_epochs: int | None = None,
+    arch: str | None = None,
+    auto_epochs: bool = False,
 ) -> str:
+    """Fine-tune ``base_path`` onto ``data_path`` and write ``<name>_ft.pt``.
+
+    ``arch`` is accepted for symmetry with the other two entry points, but it can only
+    *confirm* the base checkpoint's architecture — the weights being loaded are that
+    architecture's weights, so asking to fine-tune an LSTM base as a transformer is a
+    mistake, not a request, and it is rejected rather than silently mislabelled.
+    """
     # Load the base model together with the exact config + shared vocab it was built
     # with. Architecture fields must stay as-is or the loaded weights won't fit; we
     # only override the training knobs below.
     model, vocab, cfg, _base_names = load_checkpoint(base_path, device)
+    if arch is not None and arch != cfg.arch:
+        raise ValueError(
+            f"--arch {arch} does not match the base checkpoint's architecture "
+            f"({cfg.arch!r}). Fine-tuning starts from the base model's weights, so the "
+            f"architecture is fixed by {base_path}. Pretrain a {arch} base first."
+        )
     cfg.epochs = epochs if epochs is not None else FINETUNE_EPOCHS
     cfg.learning_rate = learning_rate if learning_rate is not None else FINETUNE_LR
 
@@ -69,11 +93,19 @@ def finetune(
     # corpus* was held out says nothing about this dataset, and silently splitting a
     # 66-name fine-tune set because the base run used 15% would be a nasty surprise.
     # This is also what keeps fine-tuning byte-identical to its pre-WS-6 behavior.
+    # WS-10's regimen knobs follow exactly the same rule and for the same reason: the
+    # weight decay that suited a 24,000-name pretraining corpus is not automatically the
+    # weight decay for a 400-name fine-tune.
     defaults = Config()
     cfg.val_fraction = val_fraction if val_fraction is not None else defaults.val_fraction
     cfg.early_stop_patience = (early_stop_patience if early_stop_patience is not None
                                else defaults.early_stop_patience)
     cfg.lr_schedule = lr_schedule if lr_schedule is not None else defaults.lr_schedule
+    cfg.weight_decay = weight_decay if weight_decay is not None else defaults.weight_decay
+    cfg.label_smoothing = (label_smoothing if label_smoothing is not None
+                           else defaults.label_smoothing)
+    cfg.warmup_epochs = (warmup_epochs if warmup_epochs is not None
+                         else defaults.warmup_epochs)
 
     names = load_names(data_path)
     names, dropped = filter_to_vocab(names, vocab)
@@ -86,6 +118,12 @@ def finetune(
     if dropped:
         print(f"  (skipped {len(dropped)} names with characters outside the base "
               f"model's shared vocab)")
+
+    if auto_epochs:
+        # Derived from the *fine-tune* dataset, not the base corpus: this run only ever
+        # sees these names. It still lands well above the 60-epoch default on anything
+        # bigger than ~250 names, which is the point — 60 was always a guess.
+        apply_auto_epochs(cfg, len(names), log_prefix="ft ")
 
     train_names, val_names = split_names(names, cfg.val_fraction, cfg.seed)
     split_note = f" | {len(train_names)} train / {len(val_names)} val" if val_names else ""
@@ -129,12 +167,23 @@ def main() -> None:
     parser.add_argument("--lr-schedule", choices=("none", "plateau", "cosine"),
                         default=None, dest="lr_schedule",
                         help="Learning-rate schedule. Default 'none' = constant LR.")
+    # No --seed-init here: fine-tuning starts from the base checkpoint's weights, so
+    # there is no random initialization to seed. --arch is accepted only to confirm the
+    # base's architecture (see finetune()).
+    add_regimen_args(parser, include_seed_init=False)
+    parser.add_argument("--auto-epochs", action="store_true",
+                        help="Derive the epoch budget from the fine-tune dataset's size "
+                             f"instead of the fixed {FINETUNE_EPOCHS}. Ignored if "
+                             "--epochs is also given.")
     args = parser.parse_args()
 
     if not os.path.exists(args.base):
         parser.error(
             f"Base checkpoint not found: {args.base}. Run `python -m src.pretrain` first."
         )
+
+    if args.auto_epochs and args.epochs is not None:
+        print(f"--epochs {args.epochs} was given explicitly; ignoring --auto-epochs.")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     finetune(
@@ -148,6 +197,11 @@ def main() -> None:
         val_fraction=args.val_fraction,
         early_stop_patience=args.early_stop_patience,
         lr_schedule=args.lr_schedule,
+        weight_decay=args.weight_decay,
+        label_smoothing=args.label_smoothing,
+        warmup_epochs=args.warmup_epochs,
+        arch=args.arch,
+        auto_epochs=args.auto_epochs and args.epochs is None,
     )
 
 

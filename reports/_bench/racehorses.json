@@ -1,0 +1,17 @@
+{
+ "dataset": "racehorses",
+ "path": "data/racehorses.txt",
+ "total_names": 355,
+ "train_names": 302,
+ "val_names": 53,
+ "checkpoint": "checkpoints/ws11_racehorses.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 40,
+ "best_epoch": 20,
+ "best_val_loss": 2.2975351810455322,
+ "final_train_loss": 0.5737486183643341,
+ "train_loss_at_best": 1.7755079984664917,
+ "stopped_early": true,
+ "wall_seconds": 19.1
+}

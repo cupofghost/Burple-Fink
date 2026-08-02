@@ -1,0 +1,463 @@
+Adobe Caslon
+Adobe Garamond
+Adobe Jenson
+Aktiv Grotesk
+Akzidenz Grotesk
+Albertus
+Aldus
+Alegreya
+Alegreya Sans
+Alex Brush
+Alfa Slab One
+Algerian
+Allura
+Amatic SC
+Amelia
+Amiri
+Andale Mono
+Anonymous Pro
+Antique Olive
+Anton
+Apercu
+Arabella
+Archer
+Architects Daughter
+Archivo
+Arial
+Arial Black
+Arial Narrow
+Arimo
+Arnhem
+Arno Pro
+Arvo
+Assistant
+Athelas
+Auriol
+Avant Garde Gothic
+Avenir
+Avenir Next
+Baloo
+Bank Gothic
+Barlow
+Baskerville
+Baskerville Old Face
+Bauhaus
+Bebas Neue
+Bell Centennial
+Bell Gothic
+Bell MT
+Belwe
+Bembo
+Benguiat
+Benton Sans
+Berkeley Old Style
+Berling
+Bickham Script
+Birch
+Bitter
+Blackoak
+Blippo
+Bodoni
+Bookman Old Style
+Boton
+Bradley Hand
+Brandon Grotesque
+Bree Serif
+Bremen
+Brioso
+Broadway
+Brush Script
+Bulmer
+Bungee
+Bureau Grotesque
+Cabin
+Caecilia
+Caledonia
+Calibri
+Calisto MT
+Cambria
+Candara
+Cantarell
+Cardo
+Cascadia Code
+Caslon
+Castellar
+Catamaran
+Caveat
+Centaur
+Century Gothic
+Century Old Style
+Century Schoolbook
+Chaparral
+Charlemagne
+Charter
+Cheltenham
+Chewy
+Chicago
+Chiller
+Chronicle Text
+Circular
+Clarendon
+Cloister Black
+Comfortaa
+Comic Neue
+Comic Sans MS
+Coming Soon
+Concorde
+Consolas
+Constantia
+Cooper Black
+Copperplate Gothic
+Corbel
+Cormorant
+Cornerstone
+Courgette
+Courier
+Courier New
+Cousine
+Coustard
+Covered By Your Grace
+Crimson Text
+Curlz MT
+Dancing Script
+Dante
+Data Seventy
+Dax
+De Vinne
+DejaVu Sans
+DejaVu Serif
+Didot
+DIN Next
+Diotima
+DM Sans
+DM Serif Display
+Domine
+Dosis
+Droid Sans
+Droid Serif
+Duc De Berry
+Eb Garamond
+Edwardian Script
+Egyptienne
+Ehrhardt
+Electra
+Elephant
+Engravers
+Enriqueta
+Eurostile
+Excelsior
+Exo
+Fago
+Fairfield
+Fette Fraktur
+Figtree
+Fira Code
+Fira Sans
+Fjalla One
+Folio
+Formata
+Founders Grotesk
+Fournier
+Franklin Gothic
+Fredoka
+Freight Text
+Friz Quadrata
+Frutiger
+Futura
+Gabriola
+Galliard
+Garamond
+Gentium
+Georgia
+Gill Sans
+Giza
+Gloria Hallelujah
+Gotham
+Gotham Narrow
+Goudy Old Style
+Goudy Stout
+Goudy Text
+Grand Hotel
+Granjon
+Graphik
+Great Vibes
+Grotesque
+GT America
+GT Walsheim
+Guardian Egyptian
+Gudea
+Haettenschweiler
+Handel Gothic
+Harrington
+Heebo
+Helvetica
+Helvetica Inserat
+Helvetica Neue
+Helvetica Now
+Hightower Text
+Hind
+Hobo
+Hoefler Text
+Homemade Apple
+IBM Plex Mono
+IBM Plex Sans
+IBM Plex Serif
+Impact
+Imprint
+Inconsolata
+Indie Flower
+Info
+Input Mono
+Inter
+Interstate
+Iosevka
+Iowan Old Style
+Istok Web
+ITC Officina Sans
+Janson
+JetBrains Mono
+Johnston
+Jokerman
+Josefin Sans
+Josefin Slab
+Jost
+Juniper
+Just Another Hand
+Kalam
+Karla
+Karmina
+Kaushan Script
+Kepler
+Klavika
+Knockout
+Kochi Gothic
+Korinna
+Kreon
+Kunstler Script
+Lato
+Leckerli One
+Legacy Serif
+Letter Gothic
+Liberation Mono
+Liberation Sans
+Liberation Serif
+Libre Baskerville
+Libre Franklin
+Lilita One
+Literata
+Lithos
+Lobster
+Lobster Two
+Lora
+Lucida Bright
+Lucida Console
+Lucida Grande
+Lucida Sans
+Lyon
+Maison Neue
+Manrope
+Marcellus
+Marck Script
+Marlett
+Meiryo
+Melior
+Memphis
+Menlo
+Meridien
+Merienda
+Merriweather
+Mesquite
+Meta
+Microgramma
+Miller
+Minion
+Mistral
+Modern No Twenty
+Monaco
+Monoton
+Montserrat
+Mrs Eaves
+Mukta
+Muli
+Museo
+Museo Sans
+Myriad
+Neue Haas Grotesk
+Neue Haas Unica
+Neue Montreal
+Neuland
+Neuton
+News Gothic
+Newsreader
+Niconne
+Nimbus Roman
+Nimbus Sans
+Nitti
+Nobel
+Nofret
+Norican
+Noticia Text
+Noto Sans
+Noto Serif
+Nunito
+Nunito Sans
+Officina Serif
+Old English Text
+Old Standard
+Olympian
+Ondine
+Open Sans
+Operator Mono
+Optima
+Oswald
+Outfit
+Overpass
+Oxygen
+Pacifico
+Palatino
+Papyrus
+Parisienne
+Passion One
+Patrick Hand
+Peignot
+Pericles
+Permanent Marker
+Perpetua
+Photina
+Pinyon Script
+Plantin
+Playbill
+Playfair Display
+Plus Jakarta Sans
+Poliphilus
+Pompeijana
+Ponderosa
+Poppins
+PragmataPro
+Prata
+Praxis
+Prestige Elite
+Proxima Nova
+PT Mono
+PT Sans
+PT Serif
+Public Sans
+Publico
+Pump
+Quadraat
+Quattrocento
+Quicksand
+Radley
+Raleway
+Ravie
+Recursive
+Red Hat Display
+Reenie Beanie
+Renard
+Reporter
+Requiem
+Revue
+Righteous
+Roboto
+Roboto Condensed
+Roboto Mono
+Roboto Slab
+Rochester
+Rockwell
+Rokkitt
+Romulus
+Rosewood
+Rotis
+Rouge Script
+Rubik
+Rufina
+Sabon
+Sabon Next
+Sacramento
+Sanchez
+Sassoon
+Satisfy
+Scala
+Scala Sans
+Scheherazade
+Schoolbell
+Scotch Roman
+Seaweed Script
+Segoe Script
+Segoe UI
+Sentinel
+Serifa
+Serpentine
+Shadows Into Light
+Sharp Grotesk
+Shelley Script
+Signika
+Snell Roundhand
+Sora
+Sorts Mill Goudy
+Source Code Pro
+Source Sans Pro
+Source Serif Pro
+Souvenir
+Space Grotesk
+Space Mono
+Spectrum
+Stempel Schneidler
+Stencil
+Stone Sans
+Stone Serif
+Suisse International
+Sunflower
+Swift
+Syntax
+Tahoma
+Taliesin
+Tangerine
+Tekton
+Tempus Sans
+Thesis
+Tiffany
+Times New Roman
+Times Roman
+Tinos
+Tisa
+Titillium Web
+Today Sans
+Trade Gothic
+Trajan
+Trebuchet MS
+Trinite
+Trirong
+Trump Mediaeval
+Tungsten
+Ubuntu
+Ubuntu Mono
+Unica
+Univers
+Urbanist
+Utopia
+Van Dijck
+Varela Round
+Verdana
+Verlag
+Vibes
+Victor Mono
+Vidaloka
+Vollkorn
+Walbaum
+Warnock
+Webdings
+Weiss
+Whitman
+Whitney
+Willow
+Windsor
+Wingdings
+Work Sans
+Yellowtail
+Yeseva One
+Zapf Chancery
+Zapf Dingbats
+Zapfino
+Zebrawood
+Zilla Slab

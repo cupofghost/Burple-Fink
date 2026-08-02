@@ -1,0 +1,17 @@
+{
+ "dataset": "car_manufacturers",
+ "path": "data/car_manufacturers.txt",
+ "total_names": 590,
+ "train_names": 502,
+ "val_names": 88,
+ "checkpoint": "checkpoints/ws11_car_manufacturers.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 31,
+ "best_epoch": 11,
+ "best_val_loss": 2.5661553541819253,
+ "final_train_loss": 0.9780259542167187,
+ "train_loss_at_best": 2.388373777270317,
+ "stopped_early": true,
+ "wall_seconds": 22.4
+}

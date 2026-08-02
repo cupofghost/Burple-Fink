@@ -1,0 +1,10 @@
+{
+  "name": "car_models",
+  "label": "Car models",
+  "domain": "Vehicles & Transport",
+  "count": 1218,
+  "provenance": "Was 259 lines (257 unique) of mainstream US, Japanese and European nameplates; grew it with real model names from other markets and earlier eras - JDM-only Toyota, Honda, Nissan, Mazda, Mitsubishi, Subaru, Suzuki, Daihatsu and Isuzu names, European Fiat, Lancia, Renault, Citroen, Opel, Skoda and Seat lines, and defunct American nameplates. Dropped two duplicate lines (Continental, Wrangler). Every addition is a model name I believe was actually sold; none are invented. Confidence high, not checked against a source.",
+  "verified": false,
+  "added": "2026-08-01",
+  "signature": "Claude Code | Opus 5 | high"
+}

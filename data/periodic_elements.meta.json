@@ -1,0 +1,13 @@
+{
+  "name": "periodic_elements",
+  "label": "Chemical elements + atomic number",
+  "domain": "Science",
+  "file": "periodic_elements.tsv",
+  "format": "name_value",
+  "value_label": "Atomic number (proton count, 1-118)",
+  "count": 118,
+  "provenance": "WS-4 dual-output demo, added 2026-07-24 on branch claude/next-task-tnbsmq and kept during that day's consolidation. Tab-separated name<TAB>value. All 118 IUPAC-named elements in atomic-number order - a closed, exactly verifiable list, which is the only reason this one is marked verified. Checked on 2026-08-01 by WS-13: 118 rows, the value column is exactly 1..118 in order with no gaps or repeats, no duplicate names, and the names use IUPAC spellings (Aluminium, Sulfur) - elements 1-20 and 114-118 were compared name by name, the middle of the table was not.",
+  "verified": true,
+  "added": "2026-07-24",
+  "signature": "Claude Code | Opus 5 | medium"
+}

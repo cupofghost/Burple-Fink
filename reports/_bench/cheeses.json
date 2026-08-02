@@ -1,0 +1,17 @@
+{
+ "dataset": "cheeses",
+ "path": "data/cheeses.txt",
+ "total_names": 421,
+ "train_names": 358,
+ "val_names": 63,
+ "checkpoint": "checkpoints/ws11_cheeses.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 32,
+ "best_epoch": 12,
+ "best_val_loss": 2.4499489068984985,
+ "final_train_loss": 0.7023631930351257,
+ "train_loss_at_best": 2.164631426334381,
+ "stopped_early": true,
+ "wall_seconds": 20.5
+}

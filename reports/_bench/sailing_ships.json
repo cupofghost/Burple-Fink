@@ -1,0 +1,17 @@
+{
+ "dataset": "sailing_ships",
+ "path": "data/sailing_ships.txt",
+ "total_names": 468,
+ "train_names": 398,
+ "val_names": 70,
+ "checkpoint": "checkpoints/ws11_sailing_ships.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 30,
+ "best_epoch": 10,
+ "best_val_loss": 2.3005021810531616,
+ "final_train_loss": 0.6973111629486084,
+ "train_loss_at_best": 2.2357669793642483,
+ "stopped_early": true,
+ "wall_seconds": 21.9
+}

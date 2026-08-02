@@ -1,0 +1,17 @@
+{
+ "dataset": "spacecraft",
+ "path": "data/spacecraft.txt",
+ "total_names": 593,
+ "train_names": 504,
+ "val_names": 89,
+ "checkpoint": "checkpoints/ws11_spacecraft.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 32,
+ "best_epoch": 12,
+ "best_val_loss": 2.484467347462972,
+ "final_train_loss": 0.7628569193184376,
+ "train_loss_at_best": 1.9234274476766586,
+ "stopped_early": true,
+ "wall_seconds": 66.5
+}

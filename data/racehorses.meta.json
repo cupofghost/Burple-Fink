@@ -1,0 +1,10 @@
+{
+  "name": "racehorses",
+  "label": "Racehorse names",
+  "domain": "Words, Names & Places",
+  "count": 355,
+  "provenance": "Wave-1 WS-1 batch 1, added 2026-07-24 on branch claude/next-three-items-nj7dyj. Thoroughbred racehorse names spanning classic legends (Secretariat, Man O' War) to modern winners, recalled from general racing knowledge; not checked against a stud book or Jockey Club register, so some spellings and some horses may be approximate. Valued for creative, varied naming patterns. 5 of 355 lines carry apostrophes or a period (Man O' War, Dr. Fager) and are grandfathered in scripts/check_data.py.",
+  "verified": false,
+  "added": "2026-07-24",
+  "signature": "Claude Code | Opus 5 | medium"
+}

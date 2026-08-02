@@ -1,0 +1,17 @@
+{
+ "dataset": "motorcycles",
+ "path": "data/motorcycles.txt",
+ "total_names": 359,
+ "train_names": 305,
+ "val_names": 54,
+ "checkpoint": "checkpoints/ws11_motorcycles.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 40,
+ "best_epoch": 20,
+ "best_val_loss": 1.344099223613739,
+ "final_train_loss": 0.4440471589565277,
+ "train_loss_at_best": 0.6287002325057983,
+ "stopped_early": true,
+ "wall_seconds": 27.0
+}
