@@ -13,9 +13,9 @@ Last consolidation: 2026-08-02 — Signed: Claude Code | Opus 5 | high
 | 2026-08-01 | WS-13 · `scripts/`, `.github/`, `tests/test_repo_hygiene.py`, `tests/test_data_hygiene.py` | ✅ Fixed the red `hygiene` job (see Known issues, now resolved) with a line-scoped `# check_repo: allow` pragma + a one-entry `(path, string)` allowlist — no blanket skips, and `test_new_secret_in_a_non_fixture_file_is_still_caught` pins the invariant. New `scripts/check_data.py`. Hygiene tests 15 → 67. | Signed: Claude Code \| Opus 5 \| high |
 | 2026-08-02 | consolidation · `README.md`, `HANDOFF.md`, `data/*.meta.json`, `data/shared_vocab.json` | ✅ Normalized 4 lanes' inconsistent domain labels onto one 8-domain taxonomy; rebuilt both catalogs from the sidecars; re-armed the drift check (`--strict`) in CI. Paid off the entire `KNOWN_NONCONFORMING` list (see Resolved). Regenerated the shared vocab 66→67 symbols. | Signed: Claude Code \| Opus 5 \| high |
 | 2026-08-02 | WS-9 · `src/arch/`, `src/model.py`, `tests/test_arch.py` | ⏳ **Handoff.** `CharRNN` now dispatches on `cfg.arch` to lstm/gru/transformer cores; tests written. Interrupted by the session limit while running the three-way measurement — **the measurement table does not exist yet**, so no architecture recommendation has been earned. Resume by training the three archs on one held-out split. | Signed: Claude Code \| Opus 5 \| medium |
-| 2026-08-02 | WS-10 · `src/train.py`, `pretrain.py`, `finetune.py`, `tests/test_training_quality.py` | ⏳ **Handoff.** `seed_init` implemented and flipped to `True` (see Shared-file touches); `weight_decay`/`label_smoothing`/`warmup_epochs`/`--arch` wired. Interrupted while writing tests. Outstanding: does regularization actually close the train/val gap, and the `--auto-epochs` rule. | Signed: Claude Code \| Opus 5 \| medium |
-| 2026-08-02 | WS-11 · `src/evaluate.py`, `tests/test_evaluate.py`, `reports/` | ⏳ **Handoff.** Held-out NLL against `val_names`, markdown `--report`, and per-dataset benchmark JSON for **29 of 30 datasets** in `reports/_bench/`. Interrupted before writing `reports/BENCHMARK.md`. See Known issues for what the raw numbers do and don't say. | Signed: Claude Code \| Opus 5 \| medium |
-| 2026-08-02 | WS-12 · `web/`, `src/export_web.py`, `src/serve.py` | ⏳ **Handoff.** Exporter reworked for multi-model output; server holds at 70 KB regardless of model count. Interrupted before finishing the gallery UI and `tests/test_web.py`. | Signed: Claude Code \| Opus 5 \| medium |
+| 2026-08-02 | WS-10 · `src/train.py`, `pretrain.py`, `finetune.py`, `tests/test_training_quality.py` | ✅ Seeded init proven: three identical runs now give **bitwise identical** checkpoints (`torch.equal` on every tensor); unseeded reproduced wave 2's 12/16/19 spread. Regularization measured on 3 datasets — **none of weight decay, label smoothing or warmup improves best held-out loss**; recommendation is to leave all three off. `--auto-epochs` added, and it corrected the README's premise (see Known issues). 79 tests green. | Signed: Claude Code \| Opus 5 \| high |
+| 2026-08-02 | WS-11 · `src/evaluate.py`, `tests/test_evaluate.py`, `reports/` | ✅ `reports/BENCHMARK.md`: all 30 datasets, plus a **controlled within-dataset size ladder** (validation set split once and held fixed across arms, nested training prefixes) and a re-run of wave 2's exact 300-epoch protocol with `aircraft` as an untouched control. Answers the wave's question — see Known issues → Resolved. Also caught a determinism bug in its own `evaluate()` (seeding before `load_checkpoint`, which consumes RNG). 42 tests. | Signed: Claude Code \| Opus 5 \| high |
+| 2026-08-02 | WS-12 · `web/`, `src/export_web.py`, `src/serve.py`, `tests/test_web.py` | ✅ All 30 datasets ship in one **5.25 MB** offline HTML: float16 encoding buys 3.1× at worst logit error 2.1e-4 (24× inside tolerance), falling back to float32 per-model on failure — bigger, never wronger. Gallery grouped by the 8 sidecar domains; decoding controls framed by wave 2's measurements, with truncation in a drawer labelled *measured worse here*. Fidelity check tested by **breaking** it six ways. 72 tests. | Signed: Claude Code \| Opus 5 \| high |
 
 ## Shared-file touches
 - `src/config.py`: wave-3 fields pre-declared 2026-08-01 before any lane started (`arch`/`num_heads`/`ff_dim`/`max_position`, `seed_init`/`weight_decay`/`label_smoothing`/`warmup_epochs`, `dataset_label`/`dataset_path`). Deliberate, for the same reason as wave 2 — so parallel agents never edit this file concurrently. — Claude Code | Opus 5 | high
@@ -24,16 +24,28 @@ Last consolidation: 2026-08-02 — Signed: Claude Code | Opus 5 | high
 - `data/*.meta.json`: `domain` normalized across all 30 sidecars onto one taxonomy. — Claude Code | Opus 5 | high
 
 ## Known issues
-- **The wave-3 benchmark does not yet prove "more data fixes overfitting", and the raw
-  numbers must not be read as if it does.** All 29 runs in `reports/_bench/` early-stopped
-  (best epoch 6–23, patience 20), so their train/val gaps (0.07–0.79) are *gaps at the best
-  epoch*. Wave 2's notorious 6.15-nat gap was measured at **epoch 300**. Those are different
-  measurements and comparing them directly is wrong. The one honest apples-to-apples
-  comparison available today: `car_manufacturers` best val loss was **2.98 at 135 training
-  names** (wave 2) and is **2.566 at 502** (now) — a real improvement from 3.7× the data.
-  Cross-dataset gap comparisons are confounded by domain entropy: `aircraft` reaches val
-  0.774 and `motorcycle_brands` 2.731, which reflects how predictable each domain is, not
-  how much either overfits. Flagged 2026-08-02 — Claude Code | Opus 5 | high
+- **More data does NOT reduce overfitting per epoch — only the 300-epoch collapse.** This is
+  the wave's central result and it is easy to overstate in the other direction, so state it
+  precisely. `reports/BENCHMARK.md` §1 ran a controlled ladder (one validation set split
+  once and held fixed across arms, nested training prefixes, same vocab and seed): best
+  held-out loss fell monotonically with training-set size in **5 of 5 domains**, but the
+  train/val gap at the best epoch shrank in only 1 of 5, and on `english_words` it grew
+  (+0.276 at 500 names → +0.500 at 2,500). Early stopping already halts before the
+  divergence, so the surviving gap mostly measures domain entropy. Returns also flatten
+  (`car_models` gains 0.143 nats from 218→400 training names but only 0.049 from 700→1035).
+  Wave 2's diagnosis was **half** right: the datasets were too small *and* a 2-layer
+  256-wide LSTM is too large for them. Flagged 2026-08-02 — Claude Code | Opus 5 | high
+- **The `--epochs` guidance in every doc before 2026-08-02 was built on a false premise.**
+  It said bigger datasets need more epochs. The val-loss bottom measured across nine
+  datasets from 159 to 8,631 names is 13, 10, 26, 9, 13, 10, 8, 10, 7 — it does not move
+  with size, and arrives marginally *earlier*, because one epoch over 8,631 names is fifty
+  times the gradient steps of one epoch over 159. The old table was two data points
+  over-read. `--auto-epochs` now derives a **ceiling on over-training damage** (which does
+  scale with size) rather than predicting the bottom. Flagged 2026-08-02 — Claude Code | Opus 5 | high
+- **Regularization does not help this model.** Weight decay, label smoothing and warmup were
+  measured on 159/590/2,223-name datasets; none improves best held-out loss. Label smoothing
+  cuts 300-epoch over-training damage (+91% → +27%) but that protects against a failure mode
+  early stopping already removed. Leave all three off. Flagged 2026-08-02 — Claude Code | Opus 5 | high
 - **No architecture recommendation has been earned yet.** `src/arch/` implements gru and
   transformer, and the tests cover the contracts, but WS-9 was interrupted before the
   three-way measurement ran. Do not describe the transformer as better or worse than the
