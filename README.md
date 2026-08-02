@@ -38,11 +38,27 @@ colliding with other agents. Repo-wide conventions and commands for agents also 
 | **4. Dual-output** | Emit a name **and** an attribute (Shane's name+RGB trick) | ✅ Done |
 | **5. Serving** | CLI ✅ → live server ✅ → in-browser web app ✅ | ✅ Done |
 | **6. Training quality** | Held-out split, per-epoch val loss, early stopping, best-epoch weights, LR schedules | ✅ Done |
+| **7. Dataset library at scale** | 30 datasets / 27,226 names, each with a `.meta.json` sidecar and a validator | ✅ Done |
+| **8. Architecture options** | LSTM / GRU / transformer behind `--arch`, sharing one checkpoint format | ✅ Done |
+| **9. Reproducibility** | Seeded initialization — identical commands give bitwise-identical checkpoints | ✅ Done |
 
-**Wave 2 (planned 2026-07-29)** upgrades the quality of what's already built rather than
-adding stages: honest held-out validation + early stopping (WS-6), top-k/nucleus sampling
-and a decoding sweep (WS-7), and the repo's first CI (WS-8). Three parallel agents, one
-brief each — see [`docs/UPGRADE_PLAN.md`](docs/UPGRADE_PLAN.md).
+**Wave 2 (2026-07-29)** upgraded quality rather than adding stages: honest held-out
+validation + early stopping (WS-6), top-k/nucleus sampling and a decoding sweep (WS-7), and
+the repo's first CI (WS-8). See [`docs/UPGRADE_PLAN.md`](docs/UPGRADE_PLAN.md).
+
+**Wave 3 (2026-08-01/02)** acted on wave 2's loudest finding — *"a 135-name dataset cannot
+support a 2-layer, 256-wide LSTM"* — with nine parallel lanes. The dataset library went from
+12 files / 13,412 names to **30 / 27,226**; the four thinnest datasets were grown in place;
+`src/arch/` added GRU and transformer cores behind `--arch`; and
+[`reports/BENCHMARK.md`](reports/BENCHMARK.md) settles the size question with a controlled
+within-dataset ladder. See [`docs/WAVE3_PLAN.md`](docs/WAVE3_PLAN.md).
+
+> **The benchmark's answer splits in two.** More data reliably makes a *better model* —
+> held-out loss improved monotonically with training-set size in 5 of 5 domains. But it does
+> **not** make the model overfit less per epoch: the train/val gap at the best epoch didn't
+> shrink, and on `english_words` it moved the wrong way. Returns also flatten. So wave 2's
+> diagnosis was half right — these datasets were too small *and* this model is too large for
+> them.
 
 The full rationale and design for each stage lives in [`docs/PLAN.md`](docs/PLAN.md).
 
@@ -131,30 +147,72 @@ Every flag defaults to off, so leaving them out trains exactly as before —
 `tests/test_training_quality.py` pins the default loss trajectory against the pre-WS-6
 one to prove it.
 
-**What this measured, and what to type instead of `--epochs 300`.** Held-out loss on both
-test datasets bottoms out early and then gets *worse* for the remaining ~90% of the budget:
+**What this measured, and what to type instead of `--epochs 300`.** Held-out loss bottoms
+out early and then gets *worse* for the rest of the budget. Wave 2 measured this on two
+datasets; wave 3 re-ran the same protocol after growing the data:
 
 | Dataset | Names | Val loss bottoms at | Val loss by epoch 300 | Train/val gap at 300 |
 |---|---|---|---|---|
-| `car_manufacturers.txt` | 159 | epoch **12–19** | 2.98 → **6.87** (130% worse) | 6.15 nats |
-| `aircraft.txt` | 435 | epoch **24–26** | 0.76 → **1.02** (35% worse) | 0.64 nats |
+| `car_manufacturers.txt` (wave 2) | 159 | epoch **12–19** | 2.98 → **6.87** (130% worse) | 6.15 nats |
+| `car_manufacturers.txt` (grown) | 590 | epoch **10** | 2.58 → **4.79** (86% worse) | 3.95 nats |
+| `aircraft.txt` — *unchanged file, protocol control* | 435 | epoch **21** | 0.81 → **1.08** (34% worse) | 0.71 nats |
 
-(Ranges, not single epochs, because the best epoch is not reproducible run to run — see the
-first entry under STATUS.md **Known issues** for why, and why it wasn't fixed here.)
+`aircraft.txt` is the control: wave 3's data lanes never touched it, and re-running wave 2's
+protocol reproduces wave 2's numbers within noise. That is what licenses reading the
+`car_manufacturers` improvement as an effect of more data rather than of a changed
+measurement.
 
-Suggested starting points — and note the honest caveat below them:
+Best epochs are now single values, not ranges: since wave 3, initialization is seeded before
+the model is built (`Config.seed_init`, default `True`), so identical commands produce
+**bitwise identical** checkpoints. Pass `--no-seed-init` for the old, unreproducible
+behavior.
 
-| Dataset size | `--epochs` | `--patience` |
-|---|---|---|
-| under ~200 names | 60 | 10 |
-| ~200–500 names | 120 | 20 |
-| 1,000+ names (e.g. `english_words.txt`) | 300 (unmeasured — measure it) | 30 |
+### Stop guessing the epoch budget: `--auto-epochs`
 
-The caveat: on `car_manufacturers` the val-optimal epoch arrives *before* the model has
-learned to spell, so early-stopped samples are rougher than 300-epoch ones. That is not an
-argument for a smaller epoch default — it is an argument that 135 training names cannot
-support a 2-layer, 256-wide LSTM. Prefer bigger datasets. See
-[`STATUS.md`](STATUS.md) for the full numbers and two caveats worth reading.
+```bash
+python -m src.train --data data/motorcycle_brands.txt --auto-epochs --val-fraction 0.15
+#  -> auto-epochs: 90 epochs, patience 15 for 309 names
+#  -> early stop at epoch 25 (best val 2.7486 at epoch 10)
+```
+
+This replaces a hand-applied lookup table, **and it corrects the premise that table was
+built on.** That table said bigger datasets need more epochs. Measuring the val-loss bottom
+across nine datasets from 159 to 8,631 names gives: 13, 10, 26, 9, 13, 10, 8, 10, **7**. The
+bottom does not move with dataset size — if anything it arrives *earlier*, because one epoch
+over 8,631 names is fifty times the gradient steps of one epoch over 159.
+
+So the derived budget is **not** a prediction of where the bottom is. It is a ceiling on how
+far past the bottom it is safe to run, and *that* does scale with size: over-training damage
+was +130% at 159 names versus +35% at 435. Every derived budget clears its measured bottom
+by at least 4×, and `--patience` is expected to stop the run first.
+
+`--epochs N` on its own is unchanged. Passing both prints a notice and honors `--epochs`.
+
+### Regularization: measured, and it doesn't help here
+
+`--weight-decay` (switches the optimizer to AdamW), `--label-smoothing` and
+`--warmup-epochs` are all available and all default to off. Wave 3 measured them on three
+datasets (159, 590 and 2,223 names) and the honest result is that **none of them improves
+the best achievable held-out loss**:
+
+| setting | @159 | @590 | `pharma_drugs` @2223 |
+|---|---|---|---|
+| baseline | 2.9696 | **2.5756** | **2.0252** |
+| `--weight-decay 0.01` | 2.9698 | 2.5759 | 2.0279 |
+| `--label-smoothing 0.1` | **2.9358** | 2.6157 | 2.0745 |
+| `--warmup-epochs 10` | 2.9747 | 2.5823 | 2.0464 |
+
+Weight decay is inert at 0.01 and mildly harmful at 0.1 — on a model that reaches its best
+epoch in single digits, decay has had roughly 150 updates to act and hasn't. Label smoothing
+wins only on the smallest set and loses on both larger ones. Warmup never helps.
+
+Label smoothing *does* cut over-training damage at a full 300-epoch budget (+91% → +27% on
+`car_manufacturers`), but since wave 2 the trainer already keeps the best epoch's weights and
+stops early — so that protects against a failure mode that no longer exists. **Leave all
+three off** unless you have a reason the numbers above don't cover.
+
+Note validation is always scored *unsmoothed*, so best-val stays comparable across settings
+and against every number recorded in `STATUS.md`.
 
 ### Dual-output: name + numeric attribute (Shane's paint-color trick)
 
