@@ -1,0 +1,17 @@
+{
+ "dataset": "greek_myth",
+ "path": "data/greek_myth.txt",
+ "total_names": 755,
+ "train_names": 642,
+ "val_names": 113,
+ "checkpoint": "checkpoints/ws11_greek_myth.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 30,
+ "best_epoch": 10,
+ "best_val_loss": 2.1473652720451355,
+ "final_train_loss": 1.0511339590663002,
+ "train_loss_at_best": 2.0128120467776345,
+ "stopped_early": true,
+ "wall_seconds": 17.1
+}

@@ -1,0 +1,17 @@
+{
+ "dataset": "stars_constellations",
+ "path": "data/stars_constellations.txt",
+ "total_names": 503,
+ "train_names": 428,
+ "val_names": 75,
+ "checkpoint": "checkpoints/ws11_stars_constellations.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 32,
+ "best_epoch": 12,
+ "best_val_loss": 2.1984376907348633,
+ "final_train_loss": 0.761576099055154,
+ "train_loss_at_best": 1.8583178775651115,
+ "stopped_early": true,
+ "wall_seconds": 29.1
+}

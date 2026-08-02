@@ -1,0 +1,17 @@
+{
+ "dataset": "mushrooms",
+ "path": "data/mushrooms.txt",
+ "total_names": 441,
+ "train_names": 375,
+ "val_names": 66,
+ "checkpoint": "checkpoints/ws11_mushrooms.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 36,
+ "best_epoch": 16,
+ "best_val_loss": 1.8051739931106567,
+ "final_train_loss": 0.47765963276227313,
+ "train_loss_at_best": 1.0170247505108516,
+ "stopped_early": true,
+ "wall_seconds": 26.0
+}

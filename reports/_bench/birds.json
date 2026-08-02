@@ -1,0 +1,17 @@
+{
+ "dataset": "birds",
+ "path": "data/birds.txt",
+ "total_names": 863,
+ "train_names": 734,
+ "val_names": 129,
+ "checkpoint": "checkpoints/ws11_birds.pt",
+ "epoch_budget": 120,
+ "patience": 20,
+ "epochs_run": 35,
+ "best_epoch": 15,
+ "best_val_loss": 1.4314461588859557,
+ "final_train_loss": 0.5054936875467715,
+ "train_loss_at_best": 0.8679657345232756,
+ "stopped_early": true,
+ "wall_seconds": 52.2
+}

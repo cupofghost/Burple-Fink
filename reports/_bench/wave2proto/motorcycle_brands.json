@@ -1,0 +1,16 @@
+{
+ "dataset": "motorcycle_brands",
+ "total_names": 309,
+ "train_names": 263,
+ "val_names": 46,
+ "epochs": 300,
+ "final_train_loss": 0.762768440776401,
+ "final_val_loss": 5.462599992752075,
+ "final_gap": 4.699831551975674,
+ "best_epoch": 10,
+ "best_val_loss": 2.7623908519744873,
+ "train_loss_at_best": 2.550154129664103,
+ "gap_at_best": 0.21223672231038426,
+ "val_degradation_pct": 97.74898938893989,
+ "wall_seconds": 76.8
+}

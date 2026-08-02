@@ -1,0 +1,17 @@
+{
+ "dataset": "mountains",
+ "path": "data/mountains.txt",
+ "total_names": 523,
+ "train_names": 445,
+ "val_names": 78,
+ "checkpoint": "checkpoints/ws11_mountains.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 30,
+ "best_epoch": 10,
+ "best_val_loss": 2.186505119005839,
+ "final_train_loss": 0.6922606783253806,
+ "train_loss_at_best": 1.9351428576878138,
+ "stopped_early": true,
+ "wall_seconds": 35.0
+}

@@ -1,0 +1,16 @@
+{
+ "dataset": "spacecraft",
+ "total_names": 593,
+ "train_names": 504,
+ "val_names": 89,
+ "epochs": 300,
+ "final_train_loss": 0.6683998741209507,
+ "final_val_loss": 4.01263952255249,
+ "final_gap": 3.3442396484315395,
+ "best_epoch": 15,
+ "best_val_loss": 2.4810518423716226,
+ "train_loss_at_best": 1.6182491108775139,
+ "gap_at_best": 0.8628027314941087,
+ "val_degradation_pct": 61.731385617353006,
+ "wall_seconds": 256.8
+}

@@ -1,0 +1,17 @@
+{
+ "dataset": "typefaces",
+ "path": "data/typefaces.txt",
+ "total_names": 463,
+ "train_names": 394,
+ "val_names": 69,
+ "checkpoint": "checkpoints/ws11_typefaces.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 34,
+ "best_epoch": 14,
+ "best_val_loss": 2.372267564137777,
+ "final_train_loss": 0.7082436772493216,
+ "train_loss_at_best": 1.8483788967132568,
+ "stopped_early": true,
+ "wall_seconds": 21.7
+}

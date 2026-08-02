@@ -13,10 +13,22 @@ It deliberately uses only the Python standard library (``http.server``) so there
 nothing extra to install — see the guardrails in HANDOFF §9. It binds ``0.0.0.0`` so a
 phone on the same network can open it at ``http://<your-computer-ip>:8000``.
 
+This is also the front end that scales: the static export can only bake in as many
+models as fit in a phone-sized file, but here the weights never leave the process, so
+the page stays ~40 KB whether you load 3 checkpoints or all 29. If the gallery shows a
+dataset marked "server", this is where to run it.
+
 Usage:
     python -m src.serve                                   # auto-loads checkpoints/*.pt
     python -m src.serve --checkpoint checkpoints/car_models_ft.pt:"Car models"
     python -m src.serve --port 8000 --host 0.0.0.0
+
+API:
+    GET /api/health    -> {"status","models","checkpoints":[…]}
+    GET /api/models    -> {"models":[{id,label,domain,verified,provenance,count}]}
+    GET /api/generate  -> {"names":[{name,novel,exact}]}
+        engine=<dataset id|index>  count  temperature  prefix  novel_only
+        top_k  top_p  repetition_penalty  min_length
 """
 
 from __future__ import annotations
@@ -99,13 +111,6 @@ class Engine:
             "verified": self.verified, "provenance": self.provenance,
             "count": len(self.training),
         }
-
-
-def _pretty_label(path: str) -> str:
-    """Turn 'checkpoints/car_models_ft.pt' into 'Car models'."""
-    stem = os.path.splitext(os.path.basename(path))[0]
-    stem = stem[:-3] if stem.endswith("_ft") else stem
-    return stem.replace("_", " ").replace("-", " ").strip().capitalize()
 
 
 def discover_checkpoints(checkpoint_dir: str = "checkpoints") -> List[str]:
@@ -217,10 +222,12 @@ def make_handler(engines: List[Engine], page: str):
 
         def _health(self):
             checkpoints = [
-                {"label": e.label, "path": e.path, "training_names": len(e.training)}
+                {"label": e.label, "id": e.id, "domain": e.domain, "path": e.path,
+                 "training_names": len(e.training), "verified": e.verified}
                 for e in engines
             ]
-            self._send_json(200, {"status": "ok", "checkpoints": checkpoints})
+            self._send_json(200, {"status": "ok", "models": len(engines),
+                                  "checkpoints": checkpoints})
 
         def _generate(self, q: Dict[str, List[str]]):
             def one(key, default):
@@ -230,44 +237,70 @@ def make_handler(engines: List[Engine], page: str):
                 self._send_error_json(503, "No checkpoints are loaded on the server.")
                 return
 
+            # 'engine' accepts a dataset id ("dog_breeds") or a legacy positional index.
+            # The gallery sends ids, because an index silently means a different model as
+            # soon as the set of loaded checkpoints changes.
             raw_engine = one("engine", "0")
-            try:
-                engine_idx = int(raw_engine)
-            except ValueError:
-                self._send_error_json(
-                    400, f"'engine' must be a whole number, got {raw_engine!r}.")
-                return
-            if not (0 <= engine_idx < len(engines)):
-                self._send_error_json(
-                    400,
-                    f"'engine' {engine_idx} is out of range; there "
-                    f"{'is' if len(engines) == 1 else 'are'} {len(engines)} "
-                    f"loaded checkpoint(s) (0-{len(engines) - 1}).")
-                return
+            by_id = {e.id: i for i, e in enumerate(engines)}
+            if raw_engine in by_id:
+                engine_idx = by_id[raw_engine]
+            else:
+                try:
+                    engine_idx = int(raw_engine)
+                except ValueError:
+                    self._send_error_json(
+                        400, f"'engine' {raw_engine!r} is not a loaded model. "
+                             f"Known: {', '.join(sorted(by_id))}.")
+                    return
+                if not (0 <= engine_idx < len(engines)):
+                    self._send_error_json(
+                        400,
+                        f"'engine' {engine_idx} is out of range; there "
+                        f"{'is' if len(engines) == 1 else 'are'} {len(engines)} "
+                        f"loaded checkpoint(s) (0-{len(engines) - 1}).")
+                    return
 
-            raw_count = one("count", "12")
-            try:
-                count = int(raw_count)
-            except ValueError:
-                self._send_error_json(
-                    400, f"'count' must be a whole number, got {raw_count!r}.")
-                return
-            count = max(1, min(60, count))
+            def number(key, default, cast, lo, hi, what):
+                """Parse one bounded numeric query param, or send a 400 and return None."""
+                raw = one(key, default)
+                try:
+                    val = cast(raw)
+                except ValueError:
+                    kind = "a whole number" if cast is int else "a number"
+                    self._send_error_json(400, f"{key!r} must be {kind}, got {raw!r}.")
+                    return None
+                return max(lo, min(hi, val))
 
-            raw_temp = one("temperature", "0.8")
-            try:
-                temperature = float(raw_temp)
-            except ValueError:
-                self._send_error_json(
-                    400, f"'temperature' must be a number, got {raw_temp!r}.")
+            count = number("count", "12", int, 1, 60, "count")
+            if count is None:
                 return
-            temperature = max(0.05, min(2.0, temperature))
+            temperature = number("temperature", "0.8", float, 0.05, 2.0, "temperature")
+            if temperature is None:
+                return
+            # WS-7 decoding controls, all defaulting to off so an old client that does not
+            # send them gets exactly the pre-wave-3 plain-temperature behavior.
+            top_k = number("top_k", "0", int, 0, 1000, "top_k")
+            if top_k is None:
+                return
+            top_p = number("top_p", "1.0", float, 0.01, 1.0, "top_p")
+            if top_p is None:
+                return
+            repetition_penalty = number("repetition_penalty", "1.0", float, 1.0, 3.0,
+                                        "repetition_penalty")
+            if repetition_penalty is None:
+                return
+            min_length = number("min_length", "2", int, 0, 40, "min_length")
+            if min_length is None:
+                return
 
             prefix = one("prefix", "")
             novel_only = one("novel_only", "0") in ("1", "true", "True")
 
             try:
-                names = engines[engine_idx].generate(count, temperature, prefix, novel_only)
+                names = engines[engine_idx].generate(
+                    count, temperature, prefix, novel_only,
+                    top_k=top_k, top_p=top_p,
+                    repetition_penalty=repetition_penalty, min_length=min_length)
             except Exception as exc:  # keep the server alive; report cleanly to the UI
                 self._send_error_json(
                     500, f"Generation failed on the server: {exc}")
@@ -287,13 +320,14 @@ def serve(checkpoints: List[str], host: str = "0.0.0.0", port: int = 8000,
     engines = []
     for spec in checkpoints:
         path, label = (spec.split(":", 1) + [None])[:2]
-        engines.append(Engine(path, label or _pretty_label(path), device))
-        print(f"  loaded {engines[-1].label!r:22} <- {path} "
-              f"({len(engines[-1].training)} training names)")
+        engines.append(Engine(path, label or "", device))
+        e = engines[-1]
+        print(f"  loaded {e.label!r:24} [{e.domain}] <- {path} "
+              f"({len(e.training)} training names)")
     if not engines:
         raise SystemExit("No checkpoints to serve. Train one first (see README).")
 
-    page = build_page([e.label for e in engines])
+    page = build_page(engines)
     httpd = ThreadingHTTPServer((host, port), make_handler(engines, page))
     shown = "localhost" if host in ("0.0.0.0", "") else host
     print(f"\nBurple-Fink is live → http://{shown}:{port}")

@@ -1,0 +1,17 @@
+{
+ "dataset": "minerals_gems",
+ "path": "data/minerals_gems.txt",
+ "total_names": 624,
+ "train_names": 530,
+ "val_names": 94,
+ "checkpoint": "checkpoints/ws11_minerals_gems.pt",
+ "epoch_budget": 180,
+ "patience": 20,
+ "epochs_run": 30,
+ "best_epoch": 10,
+ "best_val_loss": 1.9272973934809368,
+ "final_train_loss": 0.757769360261805,
+ "train_loss_at_best": 1.7759214499417473,
+ "stopped_early": true,
+ "wall_seconds": 38.1
+}

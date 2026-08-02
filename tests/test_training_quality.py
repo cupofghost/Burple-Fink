@@ -592,7 +592,24 @@ class LabelSmoothingTest(unittest.TestCase):
         plain = run_fit(self.TRAIN, tiny_cfg(epochs=4), val_names=self.VAL)[2]
         smooth = run_fit(self.TRAIN, tiny_cfg(epochs=4, label_smoothing=0.3),
                          val_names=self.VAL)[2]
-        self.assertGreater(smooth["train_losses"][0], plain["train_losses"][0])
+        self.assertNotEqual(plain["train_losses"], smooth["train_losses"],
+                            "smoothing must reach the training criterion")
+
+    def test_smoothing_raises_the_floor_which_is_why_val_stays_unsmoothed(self):
+        # The concrete reason the decision matters. Once a model is actually confident,
+        # a smoothed criterion scores it *worse* than an unsmoothed one on the very same
+        # data — the smoothed loss cannot reach zero. Score validation that way and a
+        # "best val loss" would be a different quantity for every smoothing setting.
+        model, vocab, _ = run_fit(self.TRAIN, tiny_cfg(epochs=60))
+        pairs = make_pairs(self.TRAIN, vocab)
+        cfg = tiny_cfg()
+        plain = evaluate_loss(model, vocab, pairs, cfg,
+                              nn.CrossEntropyLoss(ignore_index=vocab.pad_id))
+        smoothed = evaluate_loss(
+            model, vocab, pairs, cfg,
+            nn.CrossEntropyLoss(ignore_index=vocab.pad_id, label_smoothing=0.3))
+        self.assertGreater(smoothed, plain,
+                           "a confident model scores worse under a smoothed criterion")
 
 
 class WarmupTest(unittest.TestCase):
