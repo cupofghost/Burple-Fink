@@ -463,13 +463,25 @@ validates every one of them.
 | `greek_myth.txt` | Greek and Roman Mythology | 755 |
 | `racehorses.txt` | Racehorse names | 355 |
 
-### Dual-output demos (`name<TAB>value`)
+### Dual-output datasets (`name<TAB>value`)
+
+Wave 4 took this from three demo files to nine real ones — 3,246 pairs. Each sidecar
+records an honest **signal assessment**: whether the numeric value is actually predictable
+from the spelling of the name, which is the only thing a char-RNN can learn from. A value
+statistically independent of the characters trains the head to predict the mean and teaches
+nothing.
 
 | Dataset file | Contents | Count |
 |---|---|---|
 | `car_manufacturers_founding_year.tsv` | Car brands + founding year | 66 |
 | `paint_colors.tsv` | CSS named colors + luminance | 141 |
 | `periodic_elements.tsv` | Chemical elements + atomic number | 118 |
+| `birds_wingspan.tsv` | Bird species + typical wingspan (cm) | 617 |
+| `dinosaurs_length.tsv` | Dinosaur genera + body length (m) | 405 |
+| `dog_breeds_weight.tsv` | Dog breeds + typical adult weight (kg) | 348 |
+| `mountains_height.tsv` | Mountains + elevation (m) | 386 |
+| `pharma_drugs_year.tsv` | Drug INNs + year of first approval | 795 |
+| `spacecraft_year.tsv` | Spacecraft + launch year | 370 |
 
 **Provenance caveat.** Every dataset added in wave 3 carries `"verified": false`
 in its sidecar: the entries were recalled from model knowledge and are believed real,

@@ -203,9 +203,18 @@ datasets were too small *and* a 2-layer 256-wide LSTM is too large for them", an
 
 ### 2. The size of the effect: a few percent, and on the small datasets it is inside the noise.
 
-Sweeping the whole 8-cell grid moves held-out loss by **1.9%** on `motorcycle_brands`
-(2.7164 → 2.7678, best to worst), **6.2%** on `typefaces` (2.2873 → 2.4301) and **2.4%** on
-`pharma_drugs` (2.0301 → 2.0793).
+Sweeping the whole 8-cell grid, best cell to worst, moves held-out loss by:
+
+| dataset | best | worst | spread |
+|---|---:|---:|---:|
+| `car_models` (1,035 train) | 2.3815 `h256/l1` | 2.4056 `h128/l2` | **1.0%** |
+| `motorcycle_brands` (263) | 2.7164 `h64/l2` | 2.7678 `h384/l2` | **1.9%** |
+| `typefaces` (394) | 2.2873 `h128/l1` | 2.4301 `h128/l2` | **6.3%** |
+| `aircraft` (370) | 0.7608 `h384/l2` | 0.8226 `h256/l1` | **8.1%** |
+
+So capacity is worth 1–8% depending on the dataset, against the 7–14% that
+`reports/BENCHMARK.md` got from adding data. It is a real lever and a smaller one, and on
+`car_models` it is almost nothing at all.
 
 Set that against the measured noise floor. Re-running the *same cells* under three different
 seeds — which, because `src/train.train` passes `cfg.seed` to `split_names`, redraws the
@@ -234,12 +243,14 @@ how findings 3 and 4 are stated.
   1337 and 8/8 again when the whole grid is re-run at seed 7** — by up to 0.143 nats
   (lstm h=128: 2.2873 vs 2.4301). That is the largest margin any single knob produces
   anywhere in this sweep.
-- On `aircraft`, the reverse, nearly as strongly: `l=2` wins **6 of 7** matched pairs, and
-  dropping the stock model to one layer costs **+5.7%** (lstm h=256: 0.7786 → 0.8226).
+- On `aircraft`, the reverse and just as strongly: `l=2` wins **7 of 8** matched pairs
+  (4/4 in the GRU, 3/4 in the LSTM), and dropping the stock model to one layer costs
+  **+5.7%** (lstm h=256: 0.7786 → 0.8226).
 - `motorcycle_brands`: `l=1` wins 5/8 at seed 1337 and 8/8 at seed 7. `pharma_drugs` is a
   wash (`l=2` by 0.28% at h=256).
 
-Tallied honestly across every complete grid, `l=1` is better in **3 of 6** — a coin flip.
+Tallied honestly across every complete grid — best-at-`l=1` against best-at-`l=2`, width
+tuned within each — `l=1` is better in **4 of 7**. A coin flip.
 The per-dataset results are not noise (they replicate across seeds and are far larger than
 the noise floor); they simply point in opposite directions, and which direction is the same
 learnability axis as finding 1: the domain that wants maximum capacity wants the second
@@ -323,12 +334,14 @@ it does not hold up.
 ## What I would change about the repo's defaults
 
 **1. Change nothing about `hidden_dim` or `num_layers`.** This lane was chartered to find a
-better default and the evidence does not support one. `h=256` is never the best width on any
-dataset measured and never disastrous either; `l=2` is better on 3 of 6 complete grids and
-worse on 3. Every alternative fixed default I can construct from this data is beaten by the
-current one on some dataset by more than it wins on another, because the variable that would
-let you choose — how learnable the domain is — is not known until after you have trained
-something. **A wrong-but-central default beats a rule fitted to the wrong variable.**
+better default and the evidence does not support one. `h=256` is the winning width outright
+on `car_models`, `pharma_drugs` and `aircraft`-GRU, and where it loses it loses by 1–3%;
+`l=1` is better on 4 of 7 complete grids and worse on 3. Every alternative fixed default I
+can construct from this data is beaten by the current one on some dataset by more than it
+wins on another, because the variable that would let you choose — how learnable the domain
+is — is not known until after you have trained something. **A wrong-but-central default
+beats a rule fitted to the wrong variable**, and `256 × 2` turns out to be a defensible
+centre rather than the mistake two wave-3 reports took it for.
 
 That is a negative result, and it is the honest one. It also directly answers the question
 this lane was asked: there is no clean parameters-per-name rule, and the reason is not that
