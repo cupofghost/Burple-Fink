@@ -1,0 +1,13 @@
+{
+  "name": "birds_wingspan_tsv",
+  "label": "Bird species + typical wingspan",
+  "domain": "Animals",
+  "file": "birds_wingspan.tsv",
+  "format": "name_value",
+  "value_label": "Typical adult wingspan in centimetres",
+  "count": 617,
+  "provenance": "WS-21 dual-output corpus expansion, 2026-08-05. English common names follow IOC/AOS usage, covering seabirds, raptors, owls, waterfowl, waders, herons and storks, cranes and bustards, gamebirds, pigeons, parrots, near-passerines and passerines, weighted towards Holarctic species. Wingspans are APPROXIMATE: each is a rounded central figure for the species, typically the midpoint of the published range, in whole centimetres. Real wingspans vary by sex, subspecies and measurement method (flat chord versus live spread), so treat each number as accurate to roughly plus or minus 10 percent, not as a measurement. Flightless species are excluded because wingspan is not a meaningful size proxy for them. Possessive apostrophes are stripped to fit the shared 67-symbol alphabet (Wilsons Storm Petrel, Coopers Hawk, Stellers Sea Eagle); the very few species whose only common name needs an apostrophe mid-word were dropped rather than mangled. Signal assessment: STRONG, probably the strongest in this batch. The group noun that ends almost every name is a near-deterministic size class - Albatross, Condor, Crane, Pelican and Eagle sit at the top, Warbler, Wren, Kinglet, Tit and Hummingbird at the bottom - and modifiers such as Great, Greater, Giant, Little, Lesser and Least shift the value in a consistent direction. A char-RNN reading left to right gets the size cue late, at the tail of the string, which suits an RNN value head that reads the final hidden state.",
+  "verified": false,
+  "added": "2026-08-05",
+  "signature": "Claude Code | Opus 5 | high"
+}

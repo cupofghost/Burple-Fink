@@ -1,0 +1,60 @@
+{
+  "base_split": {
+    "train": 22602,
+    "val": 3989
+  },
+  "corpus_dropped_by_shared_vocab": 0,
+  "corpus_names_deduped": 26591,
+  "datasets": 30,
+  "shared_vocab_size": 67,
+  "targets": {
+    "motorcycle_brands": {
+      "auto_epochs": 90,
+      "auto_patience": 15,
+      "dropped_by_shared_vocab": 0,
+      "leak_fraction": 1.0,
+      "names": 309,
+      "own_vocab_size": 57,
+      "splits_identical": true,
+      "val_in_base_corpus": 46,
+      "val_in_base_train_half": 39,
+      "val_names": 46
+    },
+    "pharma_drugs": {
+      "auto_epochs": 230,
+      "auto_patience": 30,
+      "dropped_by_shared_vocab": 0,
+      "leak_fraction": 1.0,
+      "names": 2223,
+      "own_vocab_size": 56,
+      "splits_identical": true,
+      "val_in_base_corpus": 333,
+      "val_in_base_train_half": 280,
+      "val_names": 333
+    },
+    "spacecraft": {
+      "auto_epochs": 120,
+      "auto_patience": 20,
+      "dropped_by_shared_vocab": 0,
+      "leak_fraction": 1.0,
+      "names": 593,
+      "own_vocab_size": 67,
+      "splits_identical": true,
+      "val_in_base_corpus": 89,
+      "val_in_base_train_half": 76,
+      "val_names": 89
+    },
+    "typefaces": {
+      "auto_epochs": 110,
+      "auto_patience": 18,
+      "dropped_by_shared_vocab": 0,
+      "leak_fraction": 1.0,
+      "names": 463,
+      "own_vocab_size": 55,
+      "splits_identical": true,
+      "val_in_base_corpus": 69,
+      "val_in_base_train_half": 59,
+      "val_names": 69
+    }
+  }
+}

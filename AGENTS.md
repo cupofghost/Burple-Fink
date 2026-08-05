@@ -83,3 +83,22 @@ When the owner starts a chat with "run consolidation":
 - Never rewrite a file to change one section.
 - Keep `STATUS.md` under ~100 lines by archiving during consolidation.
 - Ask before doing anything expensive (large refactor, full test run, dependency changes).
+
+## 10. Surviving the usage window (all agents, always)
+Usage limits are a hard stop, not a slowdown: when the rolling 5-hour or the weekly window
+runs out, requests are blocked until the stated reset time. Assume you can be killed
+mid-sentence and lose everything held only in context.
+1. Write each finished artifact to disk BEFORE starting the next. Never hold a deliverable
+   in context. Many small permanent files beat one big final write.
+2. Write a first complete draft of your deliverable early, then improve it in place.
+3. Prefer durable side-effects — checkpoints, partial `.tsv`/`.json`, per-run result files.
+   Work that exists only in a transcript is work that can vanish.
+4. Match the model to the lane: Sonnet or Haiku for bulk generation and mechanical edits;
+   Opus only for architecture, measurement design, and hard debugging.
+5. Cap concurrency at 4 lanes and stagger their starts by 10-15 minutes. Nine parallel Opus
+   agents exhausted a window in about twenty minutes.
+6. Check `/usage` before any long run. Past ~70% of the 5-hour window, do the durable write
+   first and the exploration second; start no new lane.
+7. When resuming a killed agent, tell it what changed on disk, what is already committed,
+   what NOT to re-run, and what is still owed.
+See `docs/AGENT_BUDGETING.md` for mechanics, sources, and the resume-message template.

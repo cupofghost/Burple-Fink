@@ -1,0 +1,13 @@
+{
+  "name": "dog_breeds_weight_tsv",
+  "label": "Dog breeds + typical adult weight",
+  "domain": "Animals",
+  "file": "dog_breeds_weight.tsv",
+  "format": "name_value",
+  "value_label": "Typical adult body weight in kilograms (both sexes averaged)",
+  "count": 348,
+  "provenance": "WS-21 dual-output corpus expansion, 2026-08-05. Breed list assembled from the FCI/AKC/KC/UKC recognised-breed universe plus a handful of widely-kept landraces and eight established crossbreeds (Labradoodle, Goldendoodle, Bernedoodle, Cockapoo, Cavapoo, Maltipoo, Puggle, Pomsky). Weights are APPROXIMATE: each is a single defensible central figure - the midpoint of the published breed-standard range, averaged across sexes - rounded to a whole kilogram, not a measured mean. Sexual dimorphism in dogs is 10-20 percent, so the true per-dog spread around each value is wide; the figure is meant to place a breed in the right size class, not to be exact. Names were normalised to the shared 67-symbol alphabet: apostrophes, accents and periods removed (Saint Bernard rather than St. Bernard, Alano Espanol rather than Alano Espanol with a tilde), and a few breeds whose only common name contains an apostrophe (Cirneco dell'Etna) were dropped rather than mangled. Signal assessment: STRONG. Size words appear literally in the names (Toy, Miniature, Standard, Giant, Grand, Petit, Small, Large, Great) and breed-group morphemes are strongly size-bound - Terrier and -poo skew light, Mastiff, Hound, Sennenhund, Ovcharka and Shepherd Dog skew heavy. A char-RNN should beat mean-prediction on this comfortably.",
+  "verified": false,
+  "added": "2026-08-05",
+  "signature": "Claude Code | Opus 5 | high"
+}
