@@ -95,14 +95,19 @@ DEFAULT_SEED = 1337
 
 
 def cell_id(dataset: str, arch: str, hidden_dim: int, num_layers: int,
-            seed: int = DEFAULT_SEED) -> str:
+            seed: int = DEFAULT_SEED, split_seed: int | None = None) -> str:
     """The stable filename stem for one cell. Also its key in the summary table.
 
-    The seed is only appended when it is not the repo default, so the main grid's
-    filenames stay short and the replicate runs are obvious at a glance.
+    The seeds are only appended when they are not the repo default, so the main grid's
+    filenames stay short and the replicate runs are obvious at a glance. ``__s<n>`` is
+    the training seed; ``__x<n>`` is a split seed pinned away from it.
     """
     stem = f"{dataset}__{arch}__h{hidden_dim}_l{num_layers}"
-    return stem if seed == DEFAULT_SEED else f"{stem}__s{seed}"
+    if seed != DEFAULT_SEED:
+        stem += f"__s{seed}"
+    if split_seed is not None and split_seed != seed:
+        stem += f"__x{split_seed}"
+    return stem
 
 
 def run_cell(
@@ -117,6 +122,7 @@ def run_cell(
     patience: int | None = None,
     val_fraction: float = 0.15,
     seed: int = DEFAULT_SEED,
+    split_seed: int | None = None,
     save_checkpoints: bool = False,
     checkpoint_dir: str = "checkpoints",
 ) -> dict:
@@ -146,7 +152,14 @@ def run_cell(
     # nothing this sweep reads. (`fit` still previews once on the final epoch.)
     cfg.sample_every = 10 ** 9
 
-    train_names, val_names = split_names(names, cfg.val_fraction, cfg.seed)
+    # `seed` drives *both* the train/val split and the initialization, because
+    # src/train.train passes cfg.seed to split_names. That conflates two very different
+    # uncertainties on a small dataset: "would another initialization have said this?"
+    # and "would another 46-name validation set have said this?". `split_seed` pins the
+    # split so a replicate can vary the initialization alone -- which is the only way to
+    # tell those two apart, and on the small datasets they are not the same size.
+    effective_split_seed = cfg.seed if split_seed is None else split_seed
+    train_names, val_names = split_names(names, cfg.val_fraction, effective_split_seed)
 
     # Seed before construction so the initial weights are reproducible (WS-10). Not
     # calling src.train.seed_for_init only because that would hide the one line that
@@ -156,7 +169,7 @@ def run_cell(
     model = CharRNN(len(vocab), cfg, pad_id=vocab.pad_id)
     params = sum(p.numel() for p in model.parameters())
 
-    label = cell_id(dataset, arch, hidden_dim, num_layers, cfg.seed)
+    label = cell_id(dataset, arch, hidden_dim, num_layers, cfg.seed, split_seed)
     print(f"\n=== {label} | {len(train_names)} train / {len(val_names)} val "
           f"| {params:,} params | budget {cfg.epochs}/patience {cfg.early_stop_patience}",
           flush=True)
@@ -207,6 +220,7 @@ def run_cell(
         "gap": val_nll - train_nll,
         "seconds": round(seconds, 1),
         "seed": cfg.seed,
+        "split_seed": effective_split_seed,
         "val_fraction": cfg.val_fraction,
         "learning_rate": cfg.learning_rate,
         "batch_size": cfg.batch_size,
@@ -293,7 +307,8 @@ def print_pivot(out_dir: str = DEFAULT_OUT_DIR, seed: int = DEFAULT_SEED) -> Non
     what capacity minimizes held-out loss" -- so it is worth having as its own view
     rather than reading it off the flat table by eye.
     """
-    rows = [r for r in load_results(out_dir) if r["seed"] == seed]
+    rows = [r for r in load_results(out_dir)
+            if r["seed"] == seed and r.get("split_seed", r["seed"]) == seed]
     if not rows:
         print("no results yet")
         return
@@ -349,6 +364,11 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED,
                         help="Replicate the grid under a different seed to measure "
                              "seed variance; the cell filename gains an __s<seed> suffix.")
+    parser.add_argument("--split-seed", type=int, default=None,
+                        help="Pin the train/val split to this seed while --seed still "
+                             "drives initialization and batch order. Use it to separate "
+                             "initialization noise from which-names-were-held-out noise; "
+                             "the cell filename gains an __x<seed> suffix.")
     parser.add_argument("--save-checkpoints", action="store_true",
                         help=f"Also write checkpoints/{CHECKPOINT_PREFIX}<cell>.pt. Off "
                              "by default: the sweep needs the metrics, not the weights, "
@@ -383,7 +403,8 @@ def main() -> None:
                for h in args.hidden_dims]
     done = skipped = 0
     for dataset, arch, hidden_dim, num_layers in planned:
-        label = cell_id(dataset, arch, hidden_dim, num_layers, args.seed)
+        label = cell_id(dataset, arch, hidden_dim, num_layers, args.seed,
+                        args.split_seed)
         out_path = os.path.join(args.out_dir, f"{label}.json")
         if os.path.exists(out_path) and not args.force:
             print(f"skip (exists) {label}", flush=True)
@@ -394,6 +415,7 @@ def main() -> None:
             data_dir=args.data_dir, out_dir=args.out_dir,
             epochs=args.epochs, patience=args.patience,
             val_fraction=args.val_fraction, seed=args.seed,
+            split_seed=args.split_seed,
             save_checkpoints=args.save_checkpoints,
         )
         done += 1

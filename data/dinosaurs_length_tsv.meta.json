@@ -1,0 +1,13 @@
+{
+  "name": "dinosaurs_length_tsv",
+  "label": "Dinosaur genera + estimated body length",
+  "domain": "Palaeontology",
+  "file": "dinosaurs_length.tsv",
+  "format": "name_value",
+  "value_label": "Estimated adult body length in metres, snout to tail tip",
+  "count": 405,
+  "provenance": "WS-21 dual-output corpus expansion, 2026-08-05. Substituted for the suggested cities_population dataset, which was rejected because city population is only very weakly tied to the spelling of a city name and would have produced a dataset that trains to the mean; dinosaur genus names, by contrast, are Greek and Latin compounds whose morphemes encode size directly. Genera span all major clades - tyrannosauroids, carcharodontosaurids, spinosaurids, abelisaurids, coelurosaurs, dromaeosaurids, troodontids, oviraptorosaurs, therizinosaurs, alvarezsaurs, ornithomimosaurs, early birds, sauropodomorphs from prosauropods to titanosaurs, stegosaurs, ankylosaurs, ceratopsians, hadrosaurs, iguanodonts, pachycephalosaurs and heterodontosaurs - and lengths range from 0.4 to 35 metres. Values are APPROXIMATE and this matters more here than in any other file in this batch: dinosaur body length is an estimate reconstructed from incomplete skeletons, published figures for the same genus routinely differ by 20 percent or more, and for fragmentary giants such as Argentinosaurus, Puertasaurus and Bahariasaurus the real uncertainty is larger still. Each value is a central figure from the mainstream literature, rounded to whole metres above 3 metres and to one decimal below it, deliberately avoiding false precision. Nothing here was checked against a source during this session, so verified is false. Signal assessment: STRONG on morphology, MODERATE in practice. Real character-level signal exists: -raptor almost always means a metre-to-five-metre animal, -titan, -colossus and -saurophaganax mean giant, -ceratops means small to mid-sized, Micro-, Nano-, Mini- and -don diminutives mean small, and Giganto-, Megalo-, Super- and Titano- mean large. The catch is that -saurus, by far the commonest ending, covers the entire 1 to 26 metre range and is nearly uninformative, and the clade signal a human reads (Ankylo-, Stego-, Hadro-) is only learnable insofar as the model memorises specific prefixes. Expect the value head to separate small theropods from large sauropods cleanly and to do poorly in the crowded 4 to 9 metre middle.",
+  "verified": false,
+  "added": "2026-08-05",
+  "signature": "Claude Code | Opus 5 | high"
+}
