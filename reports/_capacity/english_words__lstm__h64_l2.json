@@ -9,7 +9,7 @@
   "embedding_dim": 32,
   "epoch_budget": 300,
   "epochs_run": 50,
-  "gap": -0.2675592098610273,
+  "gap": 0.2675592098610273,
   "hidden_dim": 64,
   "learning_rate": 0.003,
   "num_layers": 2,

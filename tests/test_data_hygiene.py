@@ -23,6 +23,7 @@ from scripts.check_data import (
     DatasetReport,
     check_lines,
     check_sidecar,
+    read_lines,
     collect,
     format_table,
     run,
@@ -343,6 +344,46 @@ class TableTests(unittest.TestCase):
         offsets |= {len("a_very_long_dataset_name.txt") + 2}
         self.assertEqual(len(offsets), 1, lines)
         self.assertIn("100,000", lines[3])
+
+
+class TsvCommentCountingTests(unittest.TestCase):
+    """Regression: `read_lines` must count a .tsv the way its loader reads it.
+
+    `src/data.py` has two loaders with genuinely different rules. `load_names` (.txt)
+    treats a leading `#` as an ordinary character — a "comment" in a name list is a name.
+    `load_name_value_pairs` (.tsv) skips blanks and `#` comments.
+
+    Counting raw lines in a .tsv made all six wave-4 dual-output datasets report three
+    more entries than the trainer would ever see, because each carries a three-line
+    header comment — and `check_data` then reported the *sidecar* as wrong. It wasn't.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.dir = Path(self.tmp.name)
+
+    def test_tsv_comments_and_blanks_are_not_counted(self):
+        p = self.dir / "x.tsv"
+        p.write_text("# header\n# more\n\nAlpha\t1\nBeta\t2\n", encoding="utf-8")
+        self.assertEqual(read_lines(p), ["Alpha\t1", "Beta\t2"])
+
+    def test_txt_hash_lines_are_still_counted_as_names(self):
+        # Not symmetric with the .tsv case, and deliberately so: load_names would read
+        # "#Alpha" as a name, so the validator must too.
+        p = self.dir / "x.txt"
+        p.write_text("#Alpha\nBeta\n", encoding="utf-8")
+        self.assertEqual(read_lines(p), ["#Alpha", "Beta"])
+
+    def test_counts_match_the_real_tsv_loader(self):
+        """The invariant that actually matters, checked against the live loader."""
+        try:
+            from src.data import load_name_value_pairs
+        except Exception:  # torch missing — this suite must stay stdlib-only
+            self.skipTest("src.data unavailable (torch not installed)")
+        for tsv in sorted(Path("data").glob("*.tsv")):
+            with self.subTest(dataset=tsv.name):
+                self.assertEqual(len(read_lines(tsv)), len(load_name_value_pairs(tsv)))
 
 
 class RealDataDirTests(unittest.TestCase):

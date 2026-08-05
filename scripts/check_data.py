@@ -158,8 +158,24 @@ def load_vocab(data_dir: Path = DATA_DIR) -> Optional[Set[str]]:
 
 
 def read_lines(path: Path) -> List[str]:
-    """Raw lines, newline stripped, trailing empty line from a final \\n discarded."""
-    return Path(path).read_text(encoding="utf-8").splitlines()
+    """The dataset's usable entries, newline stripped.
+
+    For ``.txt`` this is every raw line — ``src/data.py:load_names`` treats a leading
+    ``#`` as an ordinary character, so a "comment" in a name list really is a name.
+
+    For ``.tsv`` it is every line ``src/data.py:load_name_value_pairs`` would keep, i.e.
+    blank lines and ``#``-prefixed comments removed. The two loaders genuinely differ,
+    and this function has to match whichever one will actually read the file.
+
+    Getting this wrong is not cosmetic. Counting raw lines in a ``.tsv`` made every
+    wave-4 dual-output dataset report a count three higher than the number of pairs the
+    trainer would see, because each carries a three-line header comment — and the
+    validator then blamed the *sidecar* for the mismatch. The sidecars were right.
+    """
+    lines = Path(path).read_text(encoding="utf-8").splitlines()
+    if Path(path).suffix == ".tsv":
+        return [ln for ln in lines if ln.strip() and not ln.lstrip().startswith("#")]
+    return lines
 
 
 # ---------------------------------------------------------------------------

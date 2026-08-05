@@ -51,12 +51,24 @@ command; `--force` re-runs cells that already have output.
 
 Usage
 -----
+    # the main grid behind reports/CAPACITY.md
     OMP_NUM_THREADS=1 python scripts/sweep_capacity.py \
-        --datasets motorcycle_brands typefaces pharma_drugs english_words \
-        --hidden-dims 64 128 256 384 --layers 1 2 --archs lstm
+        --datasets motorcycle_brands aircraft typefaces car_models pharma_drugs \
+                   english_words \
+        --hidden-dims 64 128 256 384 --layers 1 2 --archs lstm gru
 
-    # what the report's tables were built from, cell by cell:
+    # replicates behind the noise floor in finding 2: --seed alone redraws the
+    # validation split too, --split-seed pins it so initialization varies alone
+    OMP_NUM_THREADS=1 python scripts/sweep_capacity.py \
+        --datasets motorcycle_brands typefaces --archs lstm gru --seed 7
+    OMP_NUM_THREADS=1 python scripts/sweep_capacity.py \
+        --datasets motorcycle_brands typefaces --archs lstm gru --seed 7 \
+        --split-seed 1337
+
+    # views: the report's tables, regenerated from reports/_capacity/
+    OMP_NUM_THREADS=1 python scripts/sweep_capacity.py --pivot
     OMP_NUM_THREADS=1 python scripts/sweep_capacity.py --summary
+    OMP_NUM_THREADS=1 python scripts/sweep_capacity.py --summary --all-seeds
 """
 
 from __future__ import annotations
@@ -284,9 +296,17 @@ def normalize_gaps(out_dir: str = DEFAULT_OUT_DIR) -> int:
     return fixed
 
 
-def print_summary(out_dir: str = DEFAULT_OUT_DIR) -> None:
-    """Dump every finished cell as one markdown table, ready to paste into the report."""
+def print_summary(out_dir: str = DEFAULT_OUT_DIR, seed: int | None = DEFAULT_SEED) -> None:
+    """Dump finished cells as one markdown table, ready to paste into the report.
+
+    Defaults to the main grid (training seed and split seed both at the repo default).
+    Pass ``seed=None`` for every cell including the replicate sweeps, which outnumber the
+    main grid roughly two to one and are what `reports/_capacity/` is for.
+    """
     rows = load_results(out_dir)
+    if seed is not None:
+        rows = [r for r in rows
+                if r["seed"] == seed and r.get("split_seed", r["seed"]) == seed]
     if not rows:
         print("no results yet")
         return
@@ -377,6 +397,9 @@ def main() -> None:
                         help="Re-run cells whose JSON already exists.")
     parser.add_argument("--summary", action="store_true",
                         help="Print a markdown table of finished cells and exit.")
+    parser.add_argument("--all-seeds", action="store_true",
+                        help="--summary only: include the replicate sweeps, not just the "
+                             "main grid at --seed.")
     parser.add_argument("--pivot", action="store_true",
                         help="Print best held-out loss as a hidden x layers grid per "
                              "dataset and arch (for --seed), and exit.")
@@ -390,7 +413,7 @@ def main() -> None:
         print(f"normalized {normalize_gaps(args.out_dir)} cell file(s)")
         return
     if args.summary:
-        print_summary(args.out_dir)
+        print_summary(args.out_dir, None if args.all_seeds else args.seed)
         return
     if args.pivot:
         print_pivot(args.out_dir, args.seed)
