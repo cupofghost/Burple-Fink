@@ -1,5 +1,15 @@
 # Architecture comparison — LSTM vs GRU vs transformer
 
+> **⚠ Superseded in part by [`CAPACITY.md`](CAPACITY.md) (wave 4).** Every measurement below
+> is taken at the stock `hidden_dim=256, num_layers=2`, and at that fixed size it is correct
+> and reproduces exactly. But its *recommendation* — "reach for `--arch gru` on datasets
+> under roughly 500 names" — does not survive letting each architecture choose its own size.
+> When it can, the ordering reverses on both small datasets and the LSTM wins 23 of 24 paired
+> comparisons across three seeds. The GRU was winning because it was **smaller**, not because
+> it was gated. Read §"Three findings" below as a fixed-capacity result, and take the
+> recommendation from `CAPACITY.md`.
+
+
 **Lane WS-9 · wave 3.** Reconstructed by the orchestrating session from WS-9's twelve
 best-epoch checkpoints after the lane was cut off by a session limit. See *Provenance* at the
 bottom for exactly what is and isn't measured here.
@@ -79,7 +89,8 @@ existing checkpoint and every number in `STATUS.md` and `reports/BENCHMARK.md` w
 with; switching the default would invalidate that history for a sub-1% gain that only
 materializes below ~500 names.
 
-**Reach for `--arch gru` on datasets under roughly 500 names** — it wins there, trains a
+~~**Reach for `--arch gru` on datasets under roughly 500 names**~~ — **retracted**, see the
+banner at the top. At matched-optimal capacity the LSTM wins. The finding that survives is — it wins there, trains a
 smaller model, and overfits less. Fifteen of the thirty datasets in `data/` are in that range.
 
 **Don't use `--arch transformer` for this task** on present evidence. It is implemented,
