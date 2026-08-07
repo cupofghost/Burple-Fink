@@ -1,0 +1,620 @@
+# birds_wingspan.tsv - bird common name <TAB> typical adult wingspan in centimetres
+# Values are APPROXIMATE central figures for the species. Possessive apostrophes are
+# stripped to fit the shared alphabet. See data/birds_wingspan_tsv.meta.json.
+Wandering Albatross	300
+Royal Albatross	300
+Black-browed Albatross	240
+Laysan Albatross	200
+Black-footed Albatross	200
+Short-tailed Albatross	220
+Waved Albatross	230
+Light-mantled Albatross	210
+Sooty Albatross	200
+Northern Giant Petrel	190
+Southern Giant Petrel	195
+Northern Fulmar	110
+Cape Petrel	85
+Snow Petrel	80
+Wilsons Storm Petrel	40
+European Storm Petrel	37
+Leachs Storm Petrel	45
+Manx Shearwater	82
+Sooty Shearwater	105
+Great Shearwater	110
+Corys Shearwater	115
+Northern Gannet	175
+Cape Gannet	180
+Australasian Gannet	170
+Blue-footed Booby	150
+Red-footed Booby	140
+Masked Booby	160
+Brown Booby	145
+Great Frigatebird	215
+Magnificent Frigatebird	230
+Lesser Frigatebird	185
+Brown Pelican	210
+American White Pelican	280
+Great White Pelican	300
+Dalmatian Pelican	320
+Pink-backed Pelican	250
+Australian Pelican	250
+Great Cormorant	145
+Double-crested Cormorant	130
+European Shag	100
+Anhinga	115
+African Darter	120
+White-tailed Tropicbird	90
+Red-billed Tropicbird	105
+Red-tailed Tropicbird	110
+Great Skua	140
+South Polar Skua	130
+Brown Skua	145
+Parasitic Jaeger	115
+Pomarine Jaeger	125
+Long-tailed Jaeger	105
+Great Black-backed Gull	158
+Lesser Black-backed Gull	142
+Herring Gull	145
+Glaucous Gull	155
+Iceland Gull	135
+Ring-billed Gull	122
+California Gull	130
+Western Gull	140
+Heermanns Gull	130
+Laughing Gull	105
+Franklins Gull	90
+Black-headed Gull	100
+Mediterranean Gull	100
+Common Gull	120
+Little Gull	75
+Bonapartes Gull	85
+Ivory Gull	110
+Sabines Gull	90
+Ross Gull	90
+Black-legged Kittiwake	108
+Caspian Tern	130
+Royal Tern	110
+Sandwich Tern	100
+Common Tern	80
+Arctic Tern	78
+Roseate Tern	78
+Little Tern	52
+Least Tern	50
+Black Tern	65
+Whiskered Tern	68
+Sooty Tern	90
+Bridled Tern	80
+Gull-billed Tern	95
+Forsters Tern	82
+Inca Tern	80
+Black Skimmer	112
+Atlantic Puffin	55
+Horned Puffin	58
+Tufted Puffin	65
+Common Murre	67
+Thick-billed Murre	70
+Razorbill	65
+Black Guillemot	55
+Pigeon Guillemot	58
+Little Auk	40
+Rhinoceros Auklet	56
+Cassins Auklet	38
+Marbled Murrelet	42
+Golden Eagle	215
+Bald Eagle	210
+White-tailed Eagle	230
+Stellers Sea Eagle	245
+African Fish Eagle	210
+Wedge-tailed Eagle	230
+Martial Eagle	240
+Crowned Eagle	180
+Harpy Eagle	200
+Philippine Eagle	200
+Bonellis Eagle	165
+Booted Eagle	120
+Short-toed Snake Eagle	175
+Bateleur	175
+Verreauxs Eagle	210
+Tawny Eagle	190
+Steppe Eagle	200
+Eastern Imperial Eagle	210
+Spanish Imperial Eagle	205
+Lesser Spotted Eagle	160
+Greater Spotted Eagle	175
+White-bellied Sea Eagle	210
+Osprey	160
+Andean Condor	300
+California Condor	285
+Cinereous Vulture	285
+Griffon Vulture	265
+Himalayan Griffon	280
+Bearded Vulture	275
+Egyptian Vulture	165
+Rueppells Vulture	260
+White-backed Vulture	220
+Lappet-faced Vulture	280
+Hooded Vulture	165
+Turkey Vulture	175
+Black Vulture	155
+King Vulture	190
+Palm-nut Vulture	150
+Common Buzzard	125
+Rough-legged Buzzard	140
+European Honey Buzzard	140
+Red-tailed Hawk	125
+Red-shouldered Hawk	105
+Broad-winged Hawk	88
+Swainsons Hawk	130
+Ferruginous Hawk	145
+Coopers Hawk	84
+Sharp-shinned Hawk	60
+Northern Goshawk	110
+Eurasian Sparrowhawk	65
+Harris Hawk	115
+Zone-tailed Hawk	125
+Grey Hawk	90
+Black Kite	155
+Red Kite	175
+Snail Kite	115
+Mississippi Kite	90
+Swallow-tailed Kite	130
+Brahminy Kite	120
+Northern Harrier	110
+Western Marsh Harrier	125
+Montagus Harrier	115
+Pallid Harrier	110
+Peregrine Falcon	105
+Gyrfalcon	125
+Saker Falcon	120
+Lanner Falcon	105
+Prairie Falcon	105
+Merlin	60
+American Kestrel	58
+Common Kestrel	73
+Lesser Kestrel	68
+Eurasian Hobby	80
+Amur Falcon	70
+Red-footed Falcon	75
+Aplomado Falcon	90
+Eurasian Eagle Owl	175
+Great Horned Owl	130
+Snowy Owl	150
+Great Grey Owl	145
+Barn Owl	95
+Barred Owl	110
+Tawny Owl	100
+Long-eared Owl	95
+Short-eared Owl	100
+Northern Hawk Owl	78
+Boreal Owl	58
+Northern Saw-whet Owl	45
+Burrowing Owl	55
+Little Owl	55
+Elf Owl	35
+Eastern Screech Owl	52
+Western Screech Owl	55
+Spotted Owl	110
+Ural Owl	120
+Verreauxs Eagle Owl	160
+Blakistons Fish Owl	190
+Powerful Owl	135
+Mute Swan	220
+Whooper Swan	225
+Trumpeter Swan	230
+Tundra Swan	200
+Black Swan	190
+Black-necked Swan	180
+Canada Goose	165
+Snow Goose	150
+Greylag Goose	165
+Greater White-fronted Goose	145
+Bean Goose	155
+Brant	120
+Barnacle Goose	140
+Egyptian Goose	140
+Bar-headed Goose	150
+Emperor Goose	120
+Nene	135
+Magpie Goose	160
+Mallard	90
+Northern Pintail	88
+Northern Shoveler	80
+Gadwall	85
+American Wigeon	80
+Eurasian Wigeon	82
+Common Teal	60
+Blue-winged Teal	60
+Cinnamon Teal	62
+Wood Duck	72
+Mandarin Duck	70
+Common Eider	100
+King Eider	95
+Spectacled Eider	90
+Stellers Eider	78
+Harlequin Duck	66
+Long-tailed Duck	73
+Common Goldeneye	78
+Barrows Goldeneye	80
+Bufflehead	55
+Common Merganser	88
+Red-breasted Merganser	80
+Hooded Merganser	62
+Smew	65
+Canvasback	85
+Redhead	80
+Common Pochard	78
+Tufted Duck	70
+Greater Scaup	78
+Lesser Scaup	72
+Ring-necked Duck	70
+Ruddy Duck	60
+Surf Scoter	78
+Black Scoter	76
+Velvet Scoter	95
+Muscovy Duck	145
+Ruddy Shelduck	130
+Common Shelduck	115
+Eurasian Curlew	95
+Whimbrel	82
+Long-billed Curlew	90
+Bar-tailed Godwit	75
+Black-tailed Godwit	72
+Marbled Godwit	78
+Hudsonian Godwit	72
+Common Redshank	62
+Spotted Redshank	65
+Common Greenshank	68
+Greater Yellowlegs	70
+Lesser Yellowlegs	60
+Willet	66
+Common Sandpiper	38
+Spotted Sandpiper	37
+Green Sandpiper	42
+Wood Sandpiper	40
+Ruff	55
+Dunlin	38
+Sanderling	40
+Red Knot	60
+Curlew Sandpiper	40
+Little Stint	32
+Least Sandpiper	30
+Semipalmated Sandpiper	32
+Western Sandpiper	32
+Purple Sandpiper	42
+Pectoral Sandpiper	45
+Ruddy Turnstone	52
+Eurasian Oystercatcher	82
+American Oystercatcher	88
+Black Oystercatcher	90
+Pied Avocet	78
+American Avocet	76
+Black-winged Stilt	75
+Black-necked Stilt	72
+Northern Lapwing	84
+Grey Plover	78
+American Golden Plover	68
+European Golden Plover	72
+Killdeer	60
+Common Ringed Plover	52
+Semipalmated Plover	48
+Little Ringed Plover	45
+Snowy Plover	42
+Piping Plover	48
+Wilsons Phalarope	43
+Red-necked Phalarope	34
+Red Phalarope	40
+Common Snipe	44
+Wilsons Snipe	44
+Eurasian Woodcock	58
+American Woodcock	45
+Eurasian Stone Curlew	80
+Crab Plover	78
+Great Blue Heron	180
+Grey Heron	180
+Great Egret	165
+Little Egret	92
+Snowy Egret	100
+Cattle Egret	92
+Green Heron	66
+Black-crowned Night Heron	115
+Yellow-crowned Night Heron	110
+Little Bittern	55
+American Bittern	105
+Eurasian Bittern	130
+Purple Heron	130
+Goliath Heron	210
+Reddish Egret	120
+Tricolored Heron	95
+Boat-billed Heron	80
+Shoebill	250
+Hamerkop	95
+White Stork	200
+Black Stork	175
+Marabou Stork	290
+Wood Stork	165
+Jabiru	250
+Saddle-billed Stork	250
+Painted Stork	160
+Greater Adjutant	250
+Glossy Ibis	90
+American White Ibis	95
+Scarlet Ibis	95
+African Sacred Ibis	120
+Roseate Spoonbill	130
+Eurasian Spoonbill	125
+Greater Flamingo	150
+Lesser Flamingo	100
+American Flamingo	145
+Chilean Flamingo	140
+Common Crane	220
+Sandhill Crane	200
+Whooping Crane	220
+Red-crowned Crane	230
+Sarus Crane	240
+Demoiselle Crane	170
+Grey Crowned Crane	200
+Black Crowned Crane	190
+Siberian Crane	220
+Brolga	230
+Blue Crane	200
+Wattled Crane	250
+Great Bustard	240
+Kori Bustard	260
+Little Bustard	105
+Houbara Bustard	150
+Common Loon	140
+Red-throated Loon	110
+Black-throated Loon	120
+Great Crested Grebe	88
+Little Grebe	42
+Horned Grebe	60
+Eared Grebe	58
+Western Grebe	85
+Pied-billed Grebe	58
+Wild Turkey	140
+Common Pheasant	80
+Golden Pheasant	70
+Reeves Pheasant	90
+Indian Peafowl	160
+Green Peafowl	165
+Helmeted Guineafowl	100
+Red Junglefowl	65
+Grey Partridge	55
+Red-legged Partridge	50
+Chukar	55
+Common Quail	34
+California Quail	36
+Northern Bobwhite	36
+Gambels Quail	36
+Willow Ptarmigan	60
+Rock Ptarmigan	55
+Black Grouse	75
+Western Capercaillie	110
+Ruffed Grouse	55
+Spruce Grouse	55
+Sharp-tailed Grouse	65
+Greater Sage-Grouse	95
+Hazel Grouse	50
+Rock Pigeon	66
+Common Wood Pigeon	78
+Stock Dove	66
+Eurasian Collared Dove	50
+Mourning Dove	45
+European Turtle Dove	50
+Band-tailed Pigeon	66
+White-winged Dove	50
+Inca Dove	30
+Common Ground Dove	27
+Victoria Crowned Pigeon	90
+Nicobar Pigeon	75
+Hyacinth Macaw	130
+Scarlet Macaw	110
+Blue-and-yellow Macaw	110
+Green-winged Macaw	120
+Military Macaw	100
+Sulphur-crested Cockatoo	100
+Galah	80
+Palm Cockatoo	100
+Major Mitchells Cockatoo	85
+Budgerigar	30
+Cockatiel	32
+African Grey Parrot	50
+Eclectus Parrot	60
+Rainbow Lorikeet	45
+Kea	90
+Monk Parakeet	48
+Rose-ringed Parakeet	45
+Sun Parakeet	40
+Common Cuckoo	58
+Greater Roadrunner	48
+Common Nighthawk	60
+European Nightjar	58
+Eastern Whip-poor-will	45
+Common Swift	42
+Chimney Swift	30
+Alpine Swift	57
+White-throated Needletail	53
+Ruby-throated Hummingbird	10
+Annas Hummingbird	12
+Bee Hummingbird	6
+Giant Hummingbird	22
+Rufous Hummingbird	11
+Belted Kingfisher	52
+Common Kingfisher	25
+Laughing Kookaburra	65
+Pied Kingfisher	45
+European Bee-eater	38
+European Roller	74
+Eurasian Hoopoe	46
+Great Hornbill	155
+Southern Ground Hornbill	180
+Rhinoceros Hornbill	150
+Great Spotted Woodpecker	38
+European Green Woodpecker	42
+Black Woodpecker	68
+Pileated Woodpecker	73
+Northern Flicker	50
+Downy Woodpecker	30
+Hairy Woodpecker	38
+Red-bellied Woodpecker	42
+Acorn Woodpecker	43
+Eurasian Wryneck	27
+Ivory-billed Woodpecker	80
+Common Raven	130
+Carrion Crow	98
+American Crow	95
+Rook	95
+Western Jackdaw	70
+Eurasian Magpie	55
+Black-billed Magpie	60
+Eurasian Jay	55
+Blue Jay	40
+Stellers Jay	45
+Clarks Nutcracker	60
+Spotted Nutcracker	55
+Alpine Chough	80
+Red-billed Chough	75
+Common Starling	40
+Common Myna	45
+House Sparrow	24
+Eurasian Tree Sparrow	22
+Common Chaffinch	27
+Brambling	26
+European Goldfinch	23
+European Greenfinch	26
+Common Linnet	24
+Eurasian Bullfinch	26
+Hawfinch	31
+Common Crossbill	30
+Pine Grosbeak	35
+Evening Grosbeak	35
+American Goldfinch	22
+House Finch	24
+Purple Finch	25
+Snow Bunting	34
+Lapland Longspur	30
+Yellowhammer	25
+Common Reed Bunting	23
+Corn Bunting	28
+Dark-eyed Junco	22
+Song Sparrow	21
+White-crowned Sparrow	24
+White-throated Sparrow	23
+Chipping Sparrow	21
+Fox Sparrow	27
+Northern Cardinal	30
+Rose-breasted Grosbeak	32
+Indigo Bunting	20
+Painted Bunting	22
+Scarlet Tanager	29
+Western Tanager	30
+Baltimore Oriole	28
+Red-winged Blackbird	33
+Common Grackle	40
+Brown-headed Cowbird	32
+Bobolink	28
+Eastern Meadowlark	38
+Western Meadowlark	38
+American Robin	35
+Common Blackbird	36
+Song Thrush	34
+Mistle Thrush	45
+Fieldfare	42
+Redwing	35
+Wood Thrush	33
+Hermit Thrush	30
+Veery	30
+Swainsons Thrush	30
+Eastern Bluebird	30
+Mountain Bluebird	36
+European Robin	21
+Common Nightingale	24
+Black Redstart	25
+Common Redstart	23
+Northern Wheatear	30
+European Stonechat	20
+Whinchat	22
+Barn Swallow	33
+Common House Martin	28
+Sand Martin	28
+Tree Swallow	34
+Cliff Swallow	30
+Purple Martin	42
+Great Tit	24
+Eurasian Blue Tit	18
+Coal Tit	18
+Marsh Tit	19
+Willow Tit	19
+Crested Tit	19
+Long-tailed Tit	17
+Black-capped Chickadee	20
+Carolina Chickadee	19
+Tufted Titmouse	24
+Bushtit	15
+White-breasted Nuthatch	26
+Red-breasted Nuthatch	20
+Eurasian Nuthatch	25
+Eurasian Treecreeper	19
+Brown Creeper	19
+Winter Wren	14
+Eurasian Wren	15
+House Wren	15
+Carolina Wren	29
+Goldcrest	14
+Common Firecrest	15
+Ruby-crowned Kinglet	18
+Golden-crowned Kinglet	17
+Cedar Waxwing	30
+Bohemian Waxwing	34
+Northern Mockingbird	32
+Grey Catbird	29
+Brown Thrasher	32
+Loggerhead Shrike	32
+Northern Shrike	35
+Red-backed Shrike	26
+Great Grey Shrike	34
+European Pied Flycatcher	23
+Spotted Flycatcher	25
+Eastern Phoebe	27
+Eastern Kingbird	36
+Great Crested Flycatcher	34
+Willow Flycatcher	22
+Red-eyed Vireo	25
+Warbling Vireo	22
+Yellow Warbler	20
+American Redstart	20
+Black-and-white Warbler	21
+Common Yellowthroat	17
+Ovenbird	22
+Blackpoll Warbler	23
+Magnolia Warbler	19
+Yellow-rumped Warbler	23
+Prothonotary Warbler	22
+Willow Warbler	20
+Common Chiffchaff	19
+Eurasian Blackcap	22
+Garden Warbler	22
+Common Whitethroat	21
+Sedge Warbler	19
+Eurasian Reed Warbler	19
+Meadow Pipit	23
+Tree Pipit	25
+White Wagtail	27
+Grey Wagtail	26
+Western Yellow Wagtail	25
+Eurasian Skylark	33
+Woodlark	30
+Horned Lark	32
+White-throated Dipper	27
+Dunnock	21
+Superb Fairywren	15
+Australian Magpie	75
+Superb Lyrebird	76
+Satin Bowerbird	40
+Red-billed Oxpecker	32
+Village Weaver	25
+Red-billed Quelea	20
+Zebra Finch	12
+Java Sparrow	20
+Gouldian Finch	15
+Common Waxbill	14

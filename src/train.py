@@ -603,6 +603,15 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=None)
     parser.add_argument("--lr", type=float, default=None, dest="learning_rate")
     parser.add_argument("--hidden-dim", type=int, default=None)
+    # Depth is the single largest lever reports/CAPACITY.md measured -- 0.143 nats one way
+    # on typefaces, +5.7% the other way on aircraft -- and until wave 4 it was the only
+    # swept axis with no CLI flag, reachable solely by editing Config. Note the sweep found
+    # NO rule mapping dataset size to a best depth: two datasets within 1.5x of each other
+    # in size wanted optima 29x apart in parameters. So this is a knob to try, not one to
+    # set from a table.
+    parser.add_argument("--num-layers", type=int, default=None, dest="num_layers",
+                        help="Stacked recurrent layers (default 2). The biggest single "
+                             "lever measured; worth trying 1 on small datasets.")
     parser.add_argument("--checkpoint-dir", default="checkpoints")
     # --- WS-6 training-quality flags; every default is None so the Config default
     # (i.e. today's behavior) survives unless you actually pass the flag. ---
@@ -623,7 +632,7 @@ def main() -> None:
     args = parser.parse_args()
 
     cfg = Config()
-    for field in ("epochs", "batch_size", "learning_rate", "hidden_dim",
+    for field in ("epochs", "batch_size", "learning_rate", "hidden_dim", "num_layers",
                   "val_fraction", "early_stop_patience", "lr_schedule"):
         val = getattr(args, field, None)
         if val is not None:

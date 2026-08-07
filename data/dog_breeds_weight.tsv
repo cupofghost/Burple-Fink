@@ -1,0 +1,351 @@
+# dog_breeds_weight.tsv - dog breed name <TAB> typical adult weight in kilograms
+# Values are a single defensible central figure (midpoint of the breed standard,
+# both sexes averaged) and are APPROXIMATE. See data/dog_breeds_weight_tsv.meta.json.
+Labrador Retriever	30
+Golden Retriever	30
+Flat-Coated Retriever	30
+Curly-Coated Retriever	32
+Chesapeake Bay Retriever	32
+Nova Scotia Duck Tolling Retriever	20
+English Springer Spaniel	21
+Welsh Springer Spaniel	18
+English Cocker Spaniel	13
+American Cocker Spaniel	12
+Field Spaniel	20
+Sussex Spaniel	20
+Clumber Spaniel	30
+Irish Water Spaniel	25
+American Water Spaniel	15
+Boykin Spaniel	15
+Brittany	16
+English Setter	27
+Irish Setter	29
+Irish Red and White Setter	27
+Gordon Setter	29
+English Pointer	25
+German Shorthaired Pointer	27
+German Wirehaired Pointer	28
+German Longhaired Pointer	28
+Vizsla	25
+Wirehaired Vizsla	25
+Weimaraner	32
+Bracco Italiano	32
+Spinone Italiano	34
+Braque du Bourbonnais	20
+Braque Francais	25
+Pudelpointer	27
+Small Munsterlander	20
+Large Munsterlander	27
+Cesky Fousek	28
+Portuguese Water Dog	22
+Spanish Water Dog	18
+Lagotto Romagnolo	14
+Barbet	20
+Wetterhoun	25
+Stabyhoun	22
+Drentse Patrijshond	22
+Kooikerhondje	10
+Beagle	10
+Basset Hound	25
+Bloodhound	45
+Black and Tan Coonhound	32
+Redbone Coonhound	30
+Bluetick Coonhound	32
+Treeing Walker Coonhound	30
+American English Coonhound	30
+Plott Hound	25
+American Foxhound	30
+English Foxhound	32
+Harrier	22
+Otterhound	45
+Grand Basset Griffon Vendeen	18
+Petit Basset Griffon Vendeen	16
+Grand Bleu de Gascogne	35
+Basset Bleu de Gascogne	18
+Griffon Nivernais	24
+Poitevin	30
+Porcelaine	26
+Ariegeois	30
+Beagle Harrier	22
+Segugio Italiano	22
+Hamiltonstovare	25
+Schillerstovare	25
+Smalandsstovare	17
+Drever	15
+Dachshund	9
+Miniature Dachshund	5
+Bavarian Mountain Hound	22
+Hanoverian Scenthound	35
+Alpine Dachsbracke	17
+Westphalian Dachsbracke	14
+Tyrolean Hound	20
+Posavac Hound	18
+Istrian Shorthaired Hound	18
+Transylvanian Hound	30
+Polish Hound	28
+Slovakian Hound	18
+Serbian Hound	20
+Rhodesian Ridgeback	36
+Basenji	10
+Greyhound	30
+Whippet	12
+Italian Greyhound	5
+Saluki	24
+Afghan Hound	27
+Borzoi	40
+Irish Wolfhound	55
+Scottish Deerhound	43
+Sloughi	22
+Azawakh	20
+Pharaoh Hound	22
+Ibizan Hound	23
+Portuguese Podengo	22
+Portuguese Podengo Pequeno	5
+Spanish Greyhound	27
+Hungarian Greyhound	28
+Polish Greyhound	32
+Silken Windhound	15
+Mudhol Hound	22
+Rampur Greyhound	30
+Taigan	25
+Kanni	18
+Airedale Terrier	25
+Welsh Terrier	9
+Lakeland Terrier	8
+Irish Terrier	12
+Kerry Blue Terrier	16
+Soft Coated Wheaten Terrier	17
+Bedlington Terrier	9
+Border Terrier	7
+Cairn Terrier	7
+West Highland White Terrier	8
+Scottish Terrier	9
+Skye Terrier	18
+Dandie Dinmont Terrier	9
+Norfolk Terrier	5
+Norwich Terrier	5
+Sealyham Terrier	9
+Smooth Fox Terrier	8
+Wire Fox Terrier	8
+Jack Russell Terrier	6
+Parson Russell Terrier	7
+Rat Terrier	8
+Manchester Terrier	8
+Toy Manchester Terrier	4
+English Toy Terrier	3
+Yorkshire Terrier	3
+Australian Silky Terrier	5
+Australian Terrier	6
+Tenterfield Terrier	5
+Miniature Schnauzer	7
+Standard Schnauzer	17
+Giant Schnauzer	38
+Miniature Pinscher	4
+German Pinscher	16
+Affenpinscher	4
+Brussels Griffon	5
+Austrian Pinscher	15
+Cesky Terrier	8
+Japanese Terrier	5
+Brazilian Terrier	9
+Patterdale Terrier	6
+Plummer Terrier	7
+Glen of Imaal Terrier	16
+Staffordshire Bull Terrier	14
+American Staffordshire Terrier	27
+Bull Terrier	27
+Miniature Bull Terrier	11
+American Pit Bull Terrier	25
+Boston Terrier	8
+Tibetan Terrier	12
+Toy Fox Terrier	3
+American Hairless Terrier	6
+Teddy Roosevelt Terrier	8
+Russian Black Terrier	52
+Mastiff	80
+Bullmastiff	55
+Neapolitan Mastiff	65
+Tibetan Mastiff	60
+Spanish Mastiff	75
+Pyrenean Mastiff	75
+Cane Corso	45
+Dogue de Bordeaux	55
+Boerboel	70
+Fila Brasileiro	55
+Presa Canario	50
+Tosa Inu	60
+Bully Kutta	70
+Great Dane	65
+Saint Bernard	75
+Newfoundland	60
+Leonberger	60
+Bernese Mountain Dog	45
+Greater Swiss Mountain Dog	50
+Appenzeller Sennenhund	28
+Entlebucher Mountain Dog	25
+Rottweiler	50
+Doberman Pinscher	38
+Boxer	30
+Great Pyrenees	45
+Kuvasz	45
+Komondor	45
+Maremma Sheepdog	40
+Anatolian Shepherd	55
+Kangal Shepherd Dog	55
+Akbash	45
+Caucasian Shepherd Dog	60
+Central Asian Shepherd Dog	55
+South Russian Ovcharka	45
+Sarplaninac	40
+Tornjak	40
+Karakachan	45
+Estrela Mountain Dog	45
+Rafeiro do Alentejo	45
+Cao de Castro Laboreiro	30
+Slovensky Cuvac	40
+Polish Tatra Sheepdog	45
+Bucovina Shepherd Dog	60
+Romanian Mioritic Shepherd Dog	50
+Romanian Carpathian Shepherd Dog	45
+Akita	40
+American Akita	45
+Alaskan Malamute	36
+Siberian Husky	22
+Samoyed	23
+Greenland Dog	32
+Canadian Eskimo Dog	32
+Chinook	30
+Alaskan Klee Kai	7
+American Eskimo Dog	12
+Keeshond	17
+German Spitz	10
+Pomeranian	3
+Japanese Spitz	8
+Finnish Spitz	12
+Norwegian Elkhound	22
+Jamthund	28
+Norrbottenspets	12
+Lapponian Herder	28
+Finnish Lapphund	20
+Swedish Lapphund	18
+Karelian Bear Dog	23
+Russo European Laika	22
+West Siberian Laika	25
+East Siberian Laika	27
+Shiba Inu	10
+Hokkaido	25
+Kai Ken	16
+Kishu Ken	20
+Shikoku	20
+Korean Jindo	18
+Thai Ridgeback	25
+Formosan Mountain Dog	16
+Chow Chow	25
+Eurasier	26
+Shar Pei	22
+Schipperke	6
+Norwegian Buhund	15
+Icelandic Sheepdog	12
+Norwegian Lundehund	7
+Border Collie	18
+Rough Collie	25
+Smooth Collie	24
+Shetland Sheepdog	9
+Australian Shepherd	25
+Miniature American Shepherd	12
+Australian Cattle Dog	20
+Australian Kelpie	17
+Stumpy Tail Cattle Dog	20
+German Shepherd Dog	34
+White Swiss Shepherd Dog	32
+Belgian Malinois	27
+Belgian Tervuren	27
+Belgian Sheepdog	27
+Belgian Laekenois	27
+Dutch Shepherd	28
+Bouvier des Flandres	38
+Briard	33
+Beauceron	38
+Berger Picard	30
+Pyrenean Shepherd	12
+Catalan Sheepdog	20
+Croatian Sheepdog	15
+Old English Sheepdog	32
+Bearded Collie	22
+Polish Lowland Sheepdog	18
+Puli	13
+Pumi	12
+Mudi	12
+Schapendoes	16
+Bergamasco Sheepdog	32
+Cardigan Welsh Corgi	14
+Pembroke Welsh Corgi	12
+Lancashire Heeler	6
+Swedish Vallhund	13
+McNab	18
+English Shepherd	22
+Welsh Sheepdog	18
+New Zealand Huntaway	30
+Chihuahua	2
+Papillon	4
+Phalene	4
+Maltese	3
+Havanese	5
+Bichon Frise	6
+Bolognese	4
+Coton de Tulear	5
+Lowchen	6
+Shih Tzu	6
+Lhasa Apso	7
+Pekingese	5
+Japanese Chin	4
+Pug	8
+French Bulldog	11
+Bulldog	23
+Olde English Bulldogge	30
+American Bulldog	40
+Cavalier King Charles Spaniel	7
+King Charles Spaniel	5
+Tibetan Spaniel	6
+Standard Poodle	25
+Miniature Poodle	7
+Toy Poodle	3
+Chinese Crested	5
+Xoloitzcuintli	20
+Peruvian Inca Orchid	15
+Russian Toy	2
+Prague Ratter	3
+Kromfohrlander	12
+Dalmatian	25
+Catahoula Leopard Dog	30
+Carolina Dog	18
+Canaan Dog	20
+New Guinea Singing Dog	12
+Telomian	9
+Aidi	25
+Armant	25
+Saarloos Wolfdog	40
+Czechoslovakian Wolfdog	26
+Tamaskan Dog	32
+Northern Inuit Dog	36
+Volpino Italiano	5
+Perro de Presa Mallorquin	38
+Ca de Bestiar	38
+Podenco Canario	22
+Alano Espanol	38
+Pachon Navarro	28
+Perdiguero de Burgos	27
+Ratonero Bodeguero Andaluz	7
+Gaddi Kutta	45
+Himalayan Sheepdog	35
+Indian Pariah Dog	18
+Rajapalayam	30
+Combai	22
+Labradoodle	25
+Goldendoodle	25
+Bernedoodle	30
+Cockapoo	8
+Cavapoo	7
+Maltipoo	4
+Puggle	9
+Pomsky	12

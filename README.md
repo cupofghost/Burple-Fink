@@ -229,12 +229,23 @@ sampler, so `--arch` is the only thing that changes. Measured on four datasets f
 
 (held-out loss, lower is better)
 
-**The GRU wins below roughly 500 training names and the LSTM wins above it** — and the GRU
-does it with 25% fewer parameters, while overfitting less on all four datasets. That crossover
-is the same conclusion [`reports/BENCHMARK.md`](reports/BENCHMARK.md) reaches from the other
-direction: the small datasets aren't just short of data, the stock model is too big for them.
-Fifteen of the thirty datasets in `data/` sit under 500 names, so `--arch gru` is worth
-trying on half the library.
+**A wave-3 report read this as "the GRU wins below roughly 500 training names", and
+wave 4 disproved it.** The numbers above are all measured at the stock `hidden_dim=256,
+num_layers=2` — so they compare a GRU against an LSTM that is 25% *larger*, not against a
+better LSTM. [`reports/CAPACITY.md`](reports/CAPACITY.md) let each architecture pick its own
+size and **the ordering reverses on both small datasets**:
+
+| dataset | gru at its best cell | lstm at its best cell | winner |
+|---|---|---|---|
+| `aircraft` (370) | 0.7725 `h=256,l=2` | **0.7608** `h=384,l=2` | lstm, by 1.5% |
+| `typefaces` (394) | 2.2975 `h=128,l=1` | **2.2873** `h=128,l=1` | lstm, by 0.4% |
+
+On a third small dataset the LSTM wins **23 of 24 paired comparisons across three
+independent splits**. "Use a GRU under 500 names" was really "use a different-sized model",
+and the gating mechanism was a red herring.
+
+So: **`--arch lstm` is the right default at every size measured**, and `--arch gru` is worth
+trying only as one more knob, not as a rule keyed to dataset size.
 
 The transformer is last on all four *while carrying 30% more parameters than the LSTM*, and
 posts the smallest train/val gap in the table next to its worst held-out loss — it underfits.
@@ -463,13 +474,25 @@ validates every one of them.
 | `greek_myth.txt` | Greek and Roman Mythology | 755 |
 | `racehorses.txt` | Racehorse names | 355 |
 
-### Dual-output demos (`name<TAB>value`)
+### Dual-output datasets (`name<TAB>value`)
+
+Wave 4 took this from three demo files to nine real ones — 3,246 pairs. Each sidecar
+records an honest **signal assessment**: whether the numeric value is actually predictable
+from the spelling of the name, which is the only thing a char-RNN can learn from. A value
+statistically independent of the characters trains the head to predict the mean and teaches
+nothing.
 
 | Dataset file | Contents | Count |
 |---|---|---|
 | `car_manufacturers_founding_year.tsv` | Car brands + founding year | 66 |
 | `paint_colors.tsv` | CSS named colors + luminance | 141 |
 | `periodic_elements.tsv` | Chemical elements + atomic number | 118 |
+| `birds_wingspan.tsv` | Bird species + typical wingspan (cm) | 617 |
+| `dinosaurs_length.tsv` | Dinosaur genera + body length (m) | 405 |
+| `dog_breeds_weight.tsv` | Dog breeds + typical adult weight (kg) | 348 |
+| `mountains_height.tsv` | Mountains + elevation (m) | 386 |
+| `pharma_drugs_year.tsv` | Drug INNs + year of first approval | 795 |
+| `spacecraft_year.tsv` | Spacecraft + launch year | 370 |
 
 **Provenance caveat.** Every dataset added in wave 3 carries `"verified": false`
 in its sidecar: the entries were recalled from model knowledge and are believed real,

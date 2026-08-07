@@ -1,0 +1,13 @@
+{
+  "name": "mountains_height_tsv",
+  "label": "Mountains and peaks + summit elevation",
+  "domain": "Geography",
+  "file": "mountains_height.tsv",
+  "format": "name_value",
+  "value_label": "Summit elevation in metres above sea level",
+  "count": 386,
+  "provenance": "WS-21 dual-output corpus expansion, 2026-08-05. Coverage is deliberately spread across ranges rather than being a top-N list: the fourteen eight-thousanders and a broad Himalayan and Karakoram selection, the Pamir and Tien Shan, the Caucasus and Iranian plateau, African volcanoes and massifs, the Alps four-thousanders plus lesser European ranges down to the British Isles and Scandinavia, the Alaskan and Yukon giants, all of Colorado's fourteeners, the Sierra Nevada and Cascades, the Andes from Aconcagua down, Japanese and Southeast Asian volcanoes, Australasia, Hawaii, New Guinea and Antarctica. Elevations are the commonly cited modern figures in whole metres (Everest at 8849, the 2020 China-Nepal joint survey). They are reliable to within a few metres for surveyed peaks; a handful of remote Karakoram and Andean summits carry larger real uncertainty. Diacritics and apostrophes are stripped for the shared alphabet (Monch, Piz Palu, Hochkonig, Popocatepetl), and where two well-known peaks share a name only one is kept, so Mount Olympus is the Greek one, Mount Baker the Cascade volcano and Mount Columbia the Colorado fourteener. Signal assessment: MODERATE, and weaker than it first looks. There is genuine regional structure a char-RNN can use - Kang, Ri, Sar, Chhish, Gasherbrum and Kangri mark 7000 to 8800 metre Himalayan and Karakoram peaks; -horn, -spitze, Piz, Aiguille and Mont mark 3000 to 4800 metre Alpine ones; Cerro, Nevado, Volcan and Pico mark the Andes; Ben, Jebel and Mount Something mark generally lower ground. But the single commonest prefix, Mount, spans 1085 to 6190 metres and is essentially uninformative on its own, and the Colorado fourteeners contribute 50 near-identical names clustered in a 130 metre band, which will make the value head look better than it is on any split that mixes them across train and test. Expect the model to learn range identity, not height.",
+  "verified": false,
+  "added": "2026-08-05",
+  "signature": "Claude Code | Opus 5 | high"
+}

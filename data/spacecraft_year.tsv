@@ -1,0 +1,373 @@
+# spacecraft_year.tsv - spacecraft or space mission name <TAB> launch year
+# Apostrophes and periods are stripped to fit the shared alphabet (Chang E, not Chang'e).
+# See data/spacecraft_year_tsv.meta.json.
+Sputnik 1	1957
+Sputnik 2	1957
+Sputnik 3	1958
+Explorer 1	1958
+Vanguard 1	1958
+Pioneer 1	1958
+Pioneer 3	1958
+Luna 1	1959
+Luna 2	1959
+Luna 3	1959
+Explorer 6	1959
+Pioneer 4	1959
+Vanguard 2	1959
+Discoverer 1	1959
+TIROS 1	1960
+Echo 1	1960
+Transit 1B	1960
+Vostok 1	1961
+Mercury Redstone 3	1961
+Venera 1	1961
+Ranger 1	1961
+Friendship 7	1962
+Mariner 2	1962
+Telstar 1	1962
+Ariel 1	1962
+Alouette 1	1962
+OSO 1	1962
+Mars 1	1962
+Relay 1	1962
+Ranger 3	1962
+Vela 1	1963
+Vostok 6	1963
+Syncom 2	1963
+Ranger 7	1964
+Mariner 4	1964
+Voskhod 1	1964
+Voskhod 2	1965
+Gemini 3	1965
+Gemini 4	1965
+Gemini 5	1965
+Gemini 6A	1965
+Gemini 7	1965
+Venera 3	1965
+Zond 3	1965
+Intelsat 1	1965
+Asterix	1965
+Gemini 8	1966
+Gemini 9A	1966
+Gemini 10	1966
+Gemini 11	1966
+Gemini 12	1966
+Luna 9	1966
+Luna 10	1966
+Surveyor 1	1966
+Lunar Orbiter 1	1966
+Venera 4	1967
+Kosmos 186	1967
+Soyuz 1	1967
+Surveyor 3	1967
+Mariner 5	1967
+Zond 5	1968
+Apollo 7	1968
+Apollo 8	1968
+Surveyor 7	1968
+Apollo 9	1969
+Apollo 10	1969
+Apollo 11	1969
+Apollo 12	1969
+Mariner 6	1969
+Mariner 7	1969
+Apollo 13	1970
+Venera 7	1970
+Luna 16	1970
+Luna 17	1970
+Lunokhod 1	1970
+Osumi	1970
+Dong Fang Hong 1	1970
+Uhuru	1970
+Apollo 14	1971
+Apollo 15	1971
+Soyuz 11	1971
+Salyut 1	1971
+Mariner 9	1971
+Mars 2	1971
+Mars 3	1971
+Prospero	1971
+Apollo 16	1972
+Apollo 17	1972
+Pioneer 10	1972
+Copernicus	1972
+Landsat 1	1972
+Anik A1	1972
+Skylab	1973
+Skylab 4	1973
+Mariner 10	1973
+Pioneer 11	1973
+Lunokhod 2	1973
+Helios A	1974
+Westar 1	1974
+Viking 1	1975
+Viking 2	1975
+Venera 9	1975
+Apollo Soyuz Test Project	1975
+GOES 1	1975
+Aryabhata	1975
+Helios B	1976
+Palapa A1	1976
+Voyager 1	1977
+Voyager 2	1977
+HEAO 1	1977
+Salyut 6	1977
+Meteosat 1	1977
+IUE	1978
+Pioneer Venus Orbiter	1978
+Pioneer Venus Multiprobe	1978
+ISEE 3	1978
+Seasat	1978
+Navstar 1	1978
+Progress 1	1978
+Einstein Observatory	1978
+Bhaskara 1	1979
+Solar Maximum Mission	1980
+Rohini	1980
+Columbia	1981
+Venera 13	1981
+Salyut 7	1982
+INSAT 1A	1982
+Challenger	1983
+Venera 15	1983
+IRAS	1983
+Vega 1	1984
+Vega 2	1984
+Discovery	1984
+Giotto	1985
+Sakigake	1985
+Suisei	1985
+Atlantis	1985
+Mir	1986
+SPOT 1	1986
+Phobos 1	1988
+Phobos 2	1988
+Ofek 1	1988
+Magellan	1989
+Galileo	1989
+COBE	1989
+Hipparcos	1989
+Hubble Space Telescope	1990
+ROSAT	1990
+Ulysses	1990
+Yohkoh	1991
+Compton Gamma Ray Observatory	1991
+UARS	1991
+ERS 1	1991
+Endeavour	1992
+EUVE	1992
+TOPEX Poseidon	1992
+Mars Observer	1992
+ASCA	1993
+Clementine	1994
+Wind	1994
+SOHO	1995
+Rossi X-ray Timing Explorer	1995
+ERS 2	1995
+Radarsat 1	1995
+Orbcomm 1	1995
+ISO	1995
+Polar	1996
+NEAR Shoemaker	1996
+Mars Global Surveyor	1996
+Mars Pathfinder	1996
+BeppoSAX	1996
+Mars 96	1996
+Cassini	1997
+Huygens	1997
+Iridium 1	1997
+Lunar Prospector	1998
+Deep Space 1	1998
+Mars Climate Orbiter	1998
+Globalstar 1	1998
+Nozomi	1998
+Zarya	1998
+Unity	1998
+Mars Polar Lander	1999
+Stardust	1999
+Chandra X-ray Observatory	1999
+XMM Newton	1999
+FUSE	1999
+Terra	1999
+IKONOS	1999
+Kompsat 1	1999
+Oceansat 1	1999
+Deep Space 2	1999
+IMAGE	2000
+Cluster II	2000
+HETE 2	2000
+Zvezda	2000
+Mars Odyssey	2001
+Genesis	2001
+WMAP	2001
+TIMED	2001
+QuickBird	2001
+Proba 1	2001
+Jason 1	2001
+Destiny	2001
+Aqua	2002
+INTEGRAL	2002
+GRACE	2002
+Envisat	2002
+Contour	2002
+Galex	2003
+Spitzer Space Telescope	2003
+Mars Express	2003
+Beagle 2	2003
+Spirit	2003
+Opportunity	2003
+Hayabusa	2003
+SMART 1	2003
+SORCE	2003
+Shenzhou 5	2003
+MOST	2003
+Swift	2004
+MESSENGER	2004
+Rosetta	2004
+Philae	2004
+Aura	2004
+SpaceShipOne	2004
+Deep Impact	2005
+Mars Reconnaissance Orbiter	2005
+Venus Express	2005
+Suzaku	2005
+Cartosat 1	2005
+New Horizons	2006
+STEREO	2006
+Hinode	2006
+CloudSat	2006
+CALIPSO	2006
+COROT	2006
+MetOp A	2006
+Akari	2006
+Dawn	2007
+Phoenix	2007
+Kaguya	2007
+Chang E 1	2007
+WorldView 1	2007
+TerraSAR X	2007
+Radarsat 2	2007
+AGILE	2007
+Chandrayaan 1	2008
+Fermi Gamma-ray Space Telescope	2008
+IBEX	2008
+GeoEye 1	2008
+Jason 2	2008
+Fengyun 3A	2008
+Columbus	2008
+Kibo	2008
+ATV Jules Verne	2008
+Kepler	2009
+Herschel	2009
+Planck	2009
+Lunar Reconnaissance Orbiter	2009
+LCROSS	2009
+WISE	2009
+GOCE	2009
+SMOS	2009
+NOAA 19	2009
+HTV 1	2009
+SDO	2010
+Akatsuki	2010
+IKAROS	2010
+Chang E 2	2010
+TanDEM X	2010
+CryoSat 2	2010
+Tranquility	2010
+Cupola	2010
+Dragon	2010
+Juno	2011
+GRAIL	2011
+Curiosity	2011
+Aquarius	2011
+Phobos Grunt	2011
+Yinghuo 1	2011
+Pleiades 1A	2011
+Suomi NPP	2011
+Elektro L1	2011
+Tiangong 1	2011
+NuSTAR	2012
+Van Allen Probes	2012
+RISAT 1	2012
+Shenzhou 9	2012
+IRIS	2013
+LADEE	2013
+MAVEN	2013
+Mars Orbiter Mission	2013
+Gaia	2013
+Swarm	2013
+Chang E 3	2013
+Cygnus	2013
+OCO 2	2014
+Hayabusa 2	2014
+Sentinel 1A	2014
+Himawari 8	2014
+Orion	2014
+DSCOVR	2015
+LISA Pathfinder	2015
+MMS	2015
+SMAP	2015
+Sentinel 2A	2015
+Astrosat	2015
+ExoMars Trace Gas Orbiter	2016
+OSIRIS REx	2016
+GOES 16	2016
+Sentinel 3A	2016
+Jason 3	2016
+Tiangong 2	2016
+Sentinel 5P	2017
+NICER	2017
+Insight HXMT	2017
+TESS	2018
+InSight	2018
+Parker Solar Probe	2018
+BepiColombo	2018
+GRACE FO	2018
+ICESat 2	2018
+Chang E 4	2018
+Aeolus	2018
+Beresheet	2019
+Chandrayaan 2	2019
+Spektr RG	2019
+CHEOPS	2019
+LightSail 2	2019
+Crew Dragon	2019
+Starliner	2019
+Solar Orbiter	2020
+Perseverance	2020
+Ingenuity	2020
+Tianwen 1	2020
+Hope Probe	2020
+Chang E 5	2020
+Sentinel 6	2020
+Lucy	2021
+DART	2021
+James Webb Space Telescope	2021
+IXPE	2021
+Landsat 9	2021
+Tianhe	2021
+Nauka	2021
+Artemis 1	2022
+CAPSTONE	2022
+Wentian	2022
+Mengtian	2022
+Psyche	2023
+Euclid	2023
+JUICE	2023
+Chandrayaan 3	2023
+Aditya L1	2023
+XRISM	2023
+SLIM	2023
+Starship	2023
+Peregrine	2024
+Odysseus	2024
+Europa Clipper	2024
+Hera	2024
+PACE	2024
+GOES 19	2024
+Einstein Probe	2024
+SVOM	2024
+Blue Ghost	2025
+Athena	2025
+SPHEREx	2025
+IMAP	2025

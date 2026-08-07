@@ -1,0 +1,13 @@
+{
+  "name": "pharma_drugs_year_tsv",
+  "label": "Pharmaceutical drugs + year of first approval",
+  "domain": "Medicine",
+  "file": "pharma_drugs_year.tsv",
+  "format": "name_value",
+  "value_label": "Year the drug was first approved or introduced in a major market (US, UK, EU or Japan)",
+  "count": 795,
+  "provenance": "WS-21 dual-output corpus expansion, 2026-08-05. Names are International Nonproprietary Names (generic names), not brand names, spanning 1899 to 2024 and covering antibiotics, antivirals, antifungals, oncology cytotoxics and targeted agents, monoclonal antibodies, cardiovascular, metabolic, CNS, respiratory and gastrointestinal drugs. The value is the year of first approval or first clinical introduction in a major market rather than strictly US FDA approval, because several important drugs (metformin, many 1950s and 1960s European agents) reached patients decades before their US filing and a US-only convention would misdate their era badly. Years are APPROXIMATE and should be read as accurate to within a year or two for post-1980 entries and within a few years for pre-1960 introductions, where 'approval' is often an anachronism and the date reflects first marketing. Where a drug was withdrawn and later reapproved (thalidomide) the modern approval year is used. Combination-only agents are listed by their novel component (sacubitril, pibrentasvir, elexacaftor). Signal assessment: STRONG, and the most linguistically interesting dataset in this batch. The WHO INN stem system makes drug names era-stamped by construction: -barbital, -caine, -cillin and sulfa- cluster in the first half of the century; -olol, -pril, -statin and -azepam mark the 1960s to 1990s; -tinib, -ciclib, -parib, -grastim, -gliflozin and -mab dominate after 2000; and the bispecific -tamab and -bart suffixes are strictly post-2018. A char-RNN should be able to date a name from its last five characters alone, which is exactly the kind of structure this architecture can capture. Note that the stem-to-era mapping is many-to-one and lossy: -mab spans 1986 to 2024, so the model should learn a broad within-class distribution rather than a point estimate for that suffix.",
+  "verified": false,
+  "added": "2026-08-05",
+  "signature": "Claude Code | Opus 5 | high"
+}

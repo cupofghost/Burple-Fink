@@ -1,0 +1,389 @@
+# mountains_height.tsv - mountain or peak name <TAB> summit elevation in metres above sea level
+# Accents and apostrophes are stripped to fit the shared alphabet.
+# See data/mountains_height_tsv.meta.json.
+Everest	8849
+K2	8611
+Kangchenjunga	8586
+Lhotse	8516
+Makalu	8485
+Cho Oyu	8188
+Dhaulagiri	8167
+Manaslu	8163
+Nanga Parbat	8126
+Annapurna	8091
+Gasherbrum I	8080
+Broad Peak	8051
+Gasherbrum II	8035
+Shishapangma	8027
+Gyachung Kang	7952
+Gasherbrum III	7952
+Annapurna II	7937
+Gasherbrum IV	7925
+Himalchuli	7893
+Distaghil Sar	7884
+Ngadi Chuli	7871
+Nuptse	7861
+Khunyang Chhish	7852
+Masherbrum	7821
+Nanda Devi	7816
+Chomo Lonzo	7804
+Batura Sar	7795
+Rakaposhi	7788
+Namcha Barwa	7782
+Kanjut Sar	7760
+Kamet	7756
+Saltoro Kangri	7742
+Jannu	7710
+Tirich Mir	7708
+Molamenqing	7703
+Gurla Mandhata	7694
+Saser Kangri	7672
+Chogolisa	7665
+Shispare	7611
+Trivor	7577
+Gangkhar Puensum	7570
+Annapurna III	7555
+Muztagh Ata	7546
+Kula Kangri	7538
+Ismoil Somoni Peak	7495
+Gangapurna	7455
+Jengish Chokusu	7439
+Jomolhari	7326
+Nun	7135
+Lenin Peak	7134
+Api	7132
+Baruntse	7129
+Trisul	7120
+Korzhenevskaya Peak	7105
+Kun	7077
+Dunagiri	7066
+Kongur Tagh	7649
+Khan Tengri	7010
+Panchchuli	6904
+Bhagirathi I	6856
+Changabang	6864
+Chaukhamba	7138
+Machapuchare	6993
+Kang Guru	6981
+Ama Dablam	6812
+Cho Polu	6735
+Thamserku	6608
+Shivling	6543
+Mera Peak	6476
+Cholatse	6440
+Chulu West	6419
+Kang Yatse	6400
+Kusum Kanguru	6367
+Pumori	7161
+Kongde Ri	6187
+Island Peak	6189
+Stok Kangri	6153
+Lobuche East	6119
+Pisang Peak	6091
+Tent Peak	5695
+Kala Patthar	5644
+Gokyo Ri	5357
+Mount Elbrus	5642
+Damavand	5610
+Dykh-Tau	5205
+Shkhara	5193
+Koshtan-Tau	5152
+Mount Ararat	5137
+Mount Kazbek	5054
+Sabalan	4811
+Ushba	4710
+Belukha	4506
+Zard Kuh	4221
+Mount Hermon	2814
+Jebel Shams	3009
+Mount Sinai	2285
+Kilimanjaro	5895
+Mount Kenya	5199
+Mount Stanley	5109
+Mount Speke	4890
+Mount Meru	4562
+Ras Dashen	4550
+Mount Karisimbi	4507
+Jebel Toubkal	4167
+Mount Cameroon	4095
+Thabana Ntlenyana	3482
+Nyiragongo	3470
+Mafadi	3450
+Emi Koussi	3445
+Jebel Marra	3042
+Table Mountain	1085
+Mont Blanc	4808
+Monte Rosa	4634
+Dom	4545
+Lyskamm	4527
+Weisshorn	4506
+Taschhorn	4491
+Matterhorn	4478
+Mont Maudit	4465
+Dent Blanche	4357
+Nadelhorn	4327
+Grand Combin	4314
+Mont Blanc du Tacul	4248
+Finsteraarhorn	4274
+Castor	4223
+Zinalrothorn	4221
+Grandes Jorasses	4208
+Alphubel	4206
+Rimpfischhorn	4199
+Aletschhorn	4194
+Breithorn	4164
+Jungfrau	4158
+Aiguille Verte	4122
+Monch	4107
+Barre des Ecrins	4102
+Obergabelhorn	4063
+Gran Paradiso	4061
+Piz Bernina	4049
+Eiger	3967
+Piz Roseg	3937
+Bietschhorn	3934
+Ortler	3905
+Piz Palu	3900
+Monte Viso	3841
+Grossglockner	3798
+Wildspitze	3768
+Grossvenediger	3666
+Marmolada	3343
+Tofana di Mezzo	3244
+Tre Cime di Lavaredo	2999
+Dachstein	2995
+Zugspitze	2962
+Hochkonig	2941
+Triglav	2864
+Watzmann	2713
+Pico de Aneto	3404
+Monte Perdido	3355
+Vignemale	3298
+Mulhacen	3479
+Pico Veleta	3396
+Mont Ventoux	1909
+Puy de Dome	1465
+Ben Nevis	1345
+Ben Macdui	1309
+Snowdon	1085
+Carrauntoohil	1038
+Scafell Pike	978
+Slieve Donard	850
+Galdhopiggen	2469
+Glittertind	2452
+Kebnekaise	2097
+Halti	1324
+Hvannadalshnukur	2110
+Etna	3357
+Corno Grande	2912
+Vesuvius	1281
+Stromboli	924
+Monte Cinto	2706
+Mount Olympus	2917
+Musala	2925
+Gerlachovsky Stit	2655
+Korab	2764
+Moldoveanu Peak	2544
+Rysy	2499
+Mount Vitosha	2290
+Midzor	2169
+Mount Athos	2033
+Snezka	1603
+Mount Parnassus	2457
+Psiloritis	2456
+Erciyes	3917
+Uludag	2543
+Mount Nemrut	2134
+Denali	6190
+Mount Logan	5959
+Pico de Orizaba	5636
+Mount Saint Elias	5489
+Popocatepetl	5426
+Mount Foraker	5304
+Iztaccihuatl	5230
+Mount Lucania	5226
+King Peak	5173
+Mount Bona	5044
+Mount Blackburn	4996
+Mount Sanford	4949
+Mount Wood	4842
+Mount Vancouver	4812
+Mount Churchill	4766
+Mount Fairweather	4671
+Mount Hubbard	4557
+Mount Bear	4520
+Mount Whitney	4421
+Mount Rainier	4392
+Mount Elbert	4401
+Mount Massive	4396
+Mount Harvard	4395
+Mount Williamson	4382
+Blanca Peak	4374
+La Plata Peak	4372
+Uncompahgre Peak	4365
+Crestone Peak	4359
+Mount Lincoln	4356
+Grays Peak	4352
+Mount Antero	4351
+Torreys Peak	4350
+Castle Peak	4349
+Quandary Peak	4348
+Mount Evans	4348
+Longs Peak	4346
+White Mountain Peak	4344
+Mount Wilson	4342
+North Palisade	4341
+Mount Shavano	4337
+Mount Princeton	4329
+Mount Belford	4328
+Crestone Needle	4327
+Mount Yale	4327
+Mount Bross	4322
+Mount Shasta	4322
+Kit Carson Peak	4317
+Tabeguache Peak	4316
+Maroon Peak	4315
+Mount Sneffels	4315
+Mount Oxford	4313
+Mount Democrat	4312
+Capitol Peak	4307
+Pikes Peak	4302
+Snowmass Mountain	4295
+Mount Eolus	4293
+Mount Russell	4293
+Windom Peak	4292
+Mount Columbia	4291
+Missouri Mountain	4289
+Humboldt Peak	4287
+Mount Bierstadt	4287
+Split Mountain	4287
+Sunlight Peak	4285
+Mount Sidley	4285
+Handies Peak	4282
+Culebra Peak	4282
+Little Bear Peak	4282
+Ellingwood Point	4280
+Mount Lindsey	4280
+Mount Sherman	4278
+Redcloud Peak	4277
+Mount Langley	4275
+Pyramid Peak	4273
+Mount Tyndall	4273
+Wilson Peak	4272
+Wetterhorn Peak	4272
+San Luis Peak	4272
+Mount Muir	4270
+Mount of the Holy Cross	4269
+Huron Peak	4269
+Sunshine Peak	4268
+Gannett Peak	4207
+Grand Teton	4199
+Kings Peak	4123
+Wheeler Peak	4013
+Mount Waddington	4019
+Granite Peak	3904
+Borah Peak	3859
+Mount Robson	3954
+Mount Adams	3743
+Mount Assiniboine	3618
+Mount Temple	3544
+Mount Hood	3429
+Mount Edith Cavell	3363
+Mount Baker	3286
+Glacier Peak	3213
+Mount Jefferson	3199
+Lassen Peak	3187
+South Sister	3157
+Mount Garibaldi	2678
+Mount Saint Helens	2549
+Mount Mitchell	2037
+Clingmans Dome	2025
+Mount Washington	1917
+Mount Marcy	1629
+Mount Katahdin	1606
+Aconcagua	6961
+Ojos del Salado	6893
+Monte Pissis	6793
+Mercedario	6770
+Huascaran	6768
+Cerro Bonete	6759
+Nevado Tres Cruces	6748
+Llullaillaco	6739
+Yerupaja	6635
+Cerro Tupungato	6570
+Sajama	6542
+Illimani	6438
+Ancohuma	6427
+Coropuna	6425
+Ausangate	6384
+Illampu	6368
+Ampato	6288
+Salcantay	6271
+Chimborazo	6263
+Chachani	6057
+Huayna Potosi	6088
+Artesonraju	6025
+Alpamayo	5947
+Cotopaxi	5897
+Misti	5822
+Cayambe	5790
+Antisana	5704
+Pico Cristobal Colon	5700
+Nevado del Ruiz	5321
+Sangay	5286
+Tungurahua	5023
+Pico Bolivar	4978
+Monte San Valentin	4058
+Lanin	3776
+Fitz Roy	3405
+Cerro Torre	3128
+Pico da Neblina	2995
+Pico Bandeira	2892
+Volcan Villarrica	2847
+Roraima	2810
+Osorno	2652
+Mount Fuji	3776
+Mount Kita	3193
+Mount Hotaka	3190
+Mount Yari	3180
+Mount Ontake	3067
+Mount Norikura	3026
+Mount Tate	3015
+Mount Asama	2568
+Mount Halla	1947
+Mount Aso	1592
+Baekdu Mountain	2744
+Mount Seorak	1708
+Jade Mountain	3952
+Mount Kinabalu	4095
+Puncak Jaya	4884
+Mount Kerinci	3805
+Mount Rinjani	3726
+Mount Semeru	3676
+Mount Agung	3031
+Mount Merapi	2930
+Mount Tambora	2850
+Mount Bromo	2329
+Krakatoa	813
+Mount Apo	2954
+Mayon Volcano	2463
+Mount Pinatubo	1486
+Mount Kosciuszko	2228
+Mount Bogong	1986
+Aoraki	3724
+Mount Tasman	3497
+Mount Aspiring	3033
+Mount Ruapehu	2797
+Mount Taranaki	2518
+Mount Ngauruhoe	2291
+Mauna Kea	4207
+Mauna Loa	4169
+Haleakala	3055
+Mount Wilhelm	4509
+Mount Giluwe	4368
+Mount Vinson	4892
+Mount Tyree	4852
+Mount Shinn	4661
+Mount Gardner	4587
+Mount Erebus	3794
+Mount Jackson	3184

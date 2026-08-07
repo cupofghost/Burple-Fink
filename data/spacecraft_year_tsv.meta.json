@@ -1,0 +1,13 @@
+{
+  "name": "spacecraft_year_tsv",
+  "label": "Spacecraft and space missions + launch year",
+  "domain": "Space",
+  "file": "spacecraft_year.tsv",
+  "format": "name_value",
+  "value_label": "Calendar year the spacecraft was launched",
+  "count": 370,
+  "provenance": "WS-21 dual-output corpus expansion, 2026-08-05. Covers 1957 to 2025: Soviet and US firsts, the crewed programmes (Vostok, Mercury, Voskhod, Gemini, Apollo, Soyuz, Shenzhou), space stations and their modules, planetary and lunar probes, space telescopes, and a representative slice of Earth-observation, weather and communications satellites so the corpus is not purely deep-space. The value is the launch year, which is unambiguous and needs no approximation - unlike an approval or founding date there is a single launch event - so these numbers are firm apart from a handful of 2025 entries whose launch dates were the announced ones. Landers and orbiters that flew together are dated by their shared launch (Philae 2004 with Rosetta, Ingenuity 2020 with Perseverance). Names are stripped of punctuation for the shared alphabet: Chang E rather than Chang'e, Insight HXMT rather than the dotted form. Signal assessment: MODERATE and honestly mixed. Genuine era structure exists - Sputnik, Vostok, Vanguard, Explorer, Ranger, Surveyor, Zond and Venera are effectively date stamps for 1957 to 1975, the acronym era (UARS, EUVE, FUSE, SOHO, WMAP) is centred on the 1990s, and Sentinel, Tianwen, Chang E, Euclid, JUICE, Perseverance and Blue Ghost only exist after 2010 - and numbered series carry an ordinal that rises with time (Apollo 7 to 17, Luna 1 to 17, Sentinel 1A to 6). Two things fight this. First, the classical-name convention (Galileo, Cassini, Kepler, Copernicus, Juno, Psyche, Hera, Orion, Athena) is spread thinly across the entire 68-year span and is nearly uninformative. Second, the corpus is unavoidably front-loaded with short numbered names from the 1960s, so a model could get a decent loss by keying on numerals alone. Useful, but expect a wider residual than pharma_drugs_year.",
+  "verified": false,
+  "added": "2026-08-05",
+  "signature": "Claude Code | Opus 5 | high"
+}
