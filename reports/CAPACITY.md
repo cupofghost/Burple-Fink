@@ -223,24 +223,49 @@ So capacity is worth 1–8% depending on the dataset, against the 7–14% that
 `reports/BENCHMARK.md` got from adding data. It is a real lever and a smaller one, and on
 `car_models` it is almost nothing at all.
 
-Set that against the measured noise floor. Re-running the *same cells* under three different
-seeds — which, because `src/train.train` passes `cfg.seed` to `split_names`, redraws the
-validation set as well as the initialization — gives a median across-seed range of **0.088
-nats** per cell on `motorcycle_brands`. **The entire capacity effect on that dataset (0.051
-nats, best to worst) is smaller than the run-to-run range of a single cell.** With a
-46-name validation set, that is what one should expect.
+Set that against the measured noise floor — and the noise floor has two parts, which is the
+useful part of this finding. Because `src/train.train` derives the train/val split from
+`cfg.seed`, changing the seed redraws the validation set *and* the initialization. Pinning
+the split with `--split-seed` and varying only the seed separates them. Re-running the full
+grid three more times each way:
 
-One thing *does* survive the noise: the best **width**, marginalized over depth, is `h=64`
+| dataset | val names | seed changes **split + init** | seed changes **init only** | share that is the split |
+|---|---:|---:|---:|---:|
+| `motorcycle_brands` | 46 | 0.091 | 0.020 | ~78% |
+| `typefaces` | 69 | 0.299 | 0.033 | ~89% |
+
+(median across-cell range of best held-out loss, in nats, over 3–4 seeds per cell.)
+
+**Almost all of the run-to-run variation is which names landed in the validation set, not
+which random initialization the model started from.** That single fact decides how every
+comparison in this report has to be read:
+
+- **Absolute held-out losses on a small dataset are worth ±0.1 to ±0.3 nats.** `typefaces`'
+  best cell scores 2.2873 on seed 1337's split and 2.5598 on seed 7's — the same
+  configuration, an 11.9% difference, entirely from holding out 69 different names. No
+  number in this report, or in `reports/ARCH.md` or `reports/BENCHMARK.md`, should be
+  compared against a number computed on a different split.
+- **Rankings within one split are much better resolved than that suggests.** A redrawn split
+  shifts the whole grid together; against the initialization-only floor (0.020 and 0.033) the
+  capacity spreads of 0.051 and 0.143 stand at 2.5× and 4.3×. So the *orderings* in this
+  report are measurable, which is why findings 3 and 4 are stated as paired same-split
+  comparisons and checked for replication across splits, and why finding 1 — a 29× effect —
+  is never in danger.
+- **The margins `reports/ARCH.md` acted on are real but local.** Its 0.6–2.0% GRU-vs-LSTM
+  gaps were all measured on seed 1337's split, so they clear the 0.020–0.033 initialization
+  floor. They are honest statements about those 69 held-out names. Finding 4 is what happens
+  when the same question is asked across three splits and eight capacities instead.
+
+One further thing survives the noise: the best **width**, marginalized over depth, is `h=64`
 on `motorcycle_brands` at all three seeds — 1337, 7 and 99 — even though the best individual
-*cell* moves between `h64/l1` and `h64/l2`. On `typefaces` it is less stable, moving 128 → 256
-between seeds 1337 and 7. So "which width band" is roughly a one-seed-supportable question on
-these datasets and "which exact cell" is not, which is why finding 1 is stated in bands and
+*cell* moves between `h64/l1` and `h64/l2`. On `typefaces` it is less stable, moving 128 →
+256 between seeds 1337 and 7. "Which width band" is roughly a one-seed-supportable question
+on these datasets; "which exact cell" is not, which is why finding 1 is stated in bands and
 orders of magnitude rather than in located optima.
 
-So no per-cell ranking on a ~300-name dataset is supportable from one seed — including the
-rankings in this report, and including the 0.6–2.0% margins `reports/ARCH.md` acted on. What
-*is* supportable is paired, same-seed, same-split comparisons repeated across seeds, which is
-how findings 3 and 4 are stated.
+**The cheap fix for anyone who wants to rank models on a small dataset in future** is not
+more seeds — it is a bigger validation set, or k-fold over the whole file. 15% of 309 names
+is a 46-name instrument, and this table is what it costs.
 
 ### 3. Depth is the largest single lever in the sweep — and it is the one the CLI cannot reach.
 
@@ -342,8 +367,8 @@ it does not hold up.
 
 **1. Change nothing about `hidden_dim` or `num_layers`.** This lane was chartered to find a
 better default and the evidence does not support one. `h=256` is the winning width outright
-on `car_models`, `pharma_drugs` and `aircraft`-GRU, and where it loses it loses by 1–3%;
-`l=1` is better on 4 of 7 complete grids and worse on 3. Every alternative fixed default I
+on `car_models` and on `aircraft`-GRU, and where it loses it usually loses by 1–3%; `l=1` is
+better on 4 of 7 complete grids and worse on 3. Every alternative fixed default I
 can construct from this data is beaten by the current one on some dataset by more than it
 wins on another, because the variable that would let you choose — how learnable the domain
 is — is not known until after you have trained something. **A wrong-but-central default
@@ -369,12 +394,21 @@ exactly, five cells for five, on all four columns — it is the generalization f
 does not hold. `ARCH.md` should keep its numbers and drop the ~500-name rule. Its other two
 conclusions (transformer last, LSTM as the default) are untouched by this lane.
 
-**4. Stop ranking configurations on sub-500-name datasets from a single seed.** A 15% split
-of a 300-name dataset is 46 validation names, and finding 2 measures that as a ±0.088-nat
-instrument on `motorcycle_brands` and ±0.297 on `typefaces` — larger, in both cases, than the
-entire capacity effect being measured. This affects existing reports, not just this one: the
-0.6–2.0% margins in `reports/ARCH.md` are well inside it. The cheap fix is to report a
-seed range on any small-dataset comparison, or to say the comparison could not be made.
+**4. Hold out more than 15% on small datasets, or say the comparison could not be made.**
+A 15% split of a 300-name dataset is 46 validation names, and finding 2 measures that
+instrument at ±0.09 nats on `motorcycle_brands` and ±0.30 on `typefaces` — in both cases
+larger than the entire capacity effect being measured. The decomposition shows this is
+almost entirely the *split*, not the seed, so the fix is a bigger validation set (or k-fold
+over the whole file), not more seeds.
+
+This constrains how existing numbers should be quoted rather than invalidating them. Every
+comparison in `reports/ARCH.md` and `reports/BENCHMARK.md` was made within seed 1337's
+split, so those margins clear the initialization-only floor and are honest statements about
+those particular held-out names. What they cannot support is a number-to-number comparison
+against any run on a different split — and `reports/CAPACITY.md`, `reports/ARCH.md` and
+`reports/BENCHMARK.md` all happen to use seed 1337, so that discipline is currently being
+kept by luck rather than by design. Worth writing down before a lane picks a different seed
+and the four reports quietly stop being comparable.
 
 ## Every cell
 
@@ -464,24 +498,23 @@ in `reports/_capacity/`, and `--summary --all-seeds` prints them.
 ## Caveats
 
 <!-- BEGIN:CAVEATS -->
-**The noise floor is the dominant caveat, and it is measured rather than asserted.** On
-`motorcycle_brands` the median across-seed range of a single cell is 0.088 nats; on
-`typefaces` it is 0.297. Both exceed that dataset's entire best-to-worst capacity spread
-(0.051 and 0.143 respectively). Because `src/train.train` derives the train/val split from
-`cfg.seed`, changing the seed redraws the validation set, so most of that range is *which
-46–69 names got held out*, not initialization luck — `typefaces` best-cell held-out loss is
-2.2873 at seed 1337 and 2.5598 at seed 7, a level shift applied to the whole grid.
+**The noise floor is the dominant caveat**, it is measured rather than asserted, and
+finding 2 is where it is quantified: a redrawn 46–69-name validation set moves held-out loss
+by 0.09–0.30 nats, four to nine times more than a redrawn initialization does. The
+consequence is that this report's *orderings* are much better resolved than its *levels*.
+Every claim in findings 3 and 4 is therefore stated as a paired same-split comparison and
+checked for replication across splits — `l=1` over `l=2` reproduces 8/8 on `typefaces` at
+seed 1337 and 8/8 at seed 7; the LSTM over the GRU reproduces 8/8, 8/8 and 7/8 on
+`motorcycle_brands` at seeds 1337, 7 and 99. The claims that are *not* paired — chiefly
+"which single cell is best", and the params/name figures in finding 1 — should be read as
+±one grid step rather than as located optima. Finding 1 survives that slack easily: a 29×
+contrast in parameters is not closed by ±one step.
 
-That distinction is what keeps the report's claims standing. A level shift moves every cell
-in a split together, so **paired within-split comparisons remain informative even when
-absolute numbers are not**, and every claim in findings 3 and 4 is stated that way and
-checked for replication across splits: `l=1` over `l=2` reproduces 8/8 on `typefaces` at
-seed 1337 and 8/8 at seed 7, and the LSTM over the GRU reproduces 8/8, 8/8 and 7/8 on
-`motorcycle_brands` at seeds 1337, 7 and 99. The claims that are
-*not* paired — chiefly "which single cell is best" and the params/name figures in finding 1 —
-should be read as ±one grid step, not as located optima. Finding 1's conclusion survives
-that slack easily: the `aircraft`-vs-`motorcycle_brands` contrast is 29× in parameters,
-which no amount of ±one-step uncertainty closes.
+**The replicate sweeps cover two datasets, not six.** The noise floor was measured on
+`motorcycle_brands` and `typefaces` only, because replicating the full grid on
+`english_words` would have cost more than the whole rest of the sweep. It is assumed, not
+shown, that the larger datasets are quieter; their validation sets are 10–100× larger, so
+this is a safe assumption in direction but an unmeasured one in size.
 
 **`Config.seed_init` defaults to True**, so identical commands give bitwise identical
 checkpoints and every number here is exactly reproducible from the command in *Method*.

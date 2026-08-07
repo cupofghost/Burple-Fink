@@ -389,6 +389,9 @@ def main() -> None:
                              "drives initialization and batch order. Use it to separate "
                              "initialization noise from which-names-were-held-out noise; "
                              "the cell filename gains an __x<seed> suffix.")
+    parser.add_argument("--checkpoint-dir", default="checkpoints",
+                        help=f"Where --save-checkpoints writes, as "
+                             f"{CHECKPOINT_PREFIX}<cell>.pt. Default 'checkpoints'.")
     parser.add_argument("--save-checkpoints", action="store_true",
                         help=f"Also write checkpoints/{CHECKPOINT_PREFIX}<cell>.pt. Off "
                              "by default: the sweep needs the metrics, not the weights, "
@@ -440,6 +443,7 @@ def main() -> None:
             val_fraction=args.val_fraction, seed=args.seed,
             split_seed=args.split_seed,
             save_checkpoints=args.save_checkpoints,
+            checkpoint_dir=args.checkpoint_dir,
         )
         done += 1
     print(f"\n{done} cells run, {skipped} skipped, {len(planned)} planned.")
